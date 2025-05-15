@@ -6,7 +6,8 @@
 #
 """Device command runner."""
 import asyncio
-import pprint
+
+# import pprint
 from typing import Any, List, Union
 
 from fastapi import HTTPException
@@ -24,7 +25,7 @@ from lgapi.maps import (
 )
 from lgapi.ttp import get_template, parse_txt
 
-pp = pprint.PrettyPrinter(indent=2, width=120)
+# pp = pprint.PrettyPrinter(indent=2, width=120)
 
 DEFAULT_TIMEOUT = 60
 COMMAND_TIMEOUTS = {"traceroute": 600}

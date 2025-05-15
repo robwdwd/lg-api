@@ -12,8 +12,6 @@ import sqlite3
 
 import aiosqlite
 
-from lgapi.config import settings
-
 
 def init_db():
     """Initialise the mappings database."""

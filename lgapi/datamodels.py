@@ -29,7 +29,7 @@ class MultiPingBody(BaseModel):
         list[
             Annotated[
                 IPvAnyAddress,
-                Field(description="Destination IP addresses", examples=["10.1.1.1", "8.8.8.8"]),
+                Field(description="Destination IP addresses", examples=["10.2.3.1", "8.8.8.8"]),
             ]
         ],
         Len(min_length=1, max_length=settings.bgp_multi_max_ip),
@@ -52,7 +52,7 @@ class MultiBgpBody(BaseModel):
         list[
             Annotated[
                 IPvAnyAddress | IPvAnyNetwork,
-                Field(description="Destination IP addresses or CIDRs", examples=["10.1.1.1", "8.8.8.0/24"]),
+                Field(description="Destination IP addresses or CIDRs", examples=["10.4.8.1", "8.8.8.0/24"]),
             ]
         ],
         Len(min_length=1, max_length=settings.bgp_multi_max_ip),
@@ -82,9 +82,9 @@ class BgpPath(BaseModel):
 class BgpData(BaseModel):
     """BGP Prefix"""
 
-    prefix: Annotated[str, Field(description="IP Address or CIDR", examples=["10.1.1.1", "10.1.2.0/24"])]
+    prefix: Annotated[str, Field(description="Prefix in CIDR format", examples=["10.0.0.0/21", "10.1.2.0/24"])]
     paths: list[BgpPath]
-    as_paths: list[list[int]] | None = None
+    as_paths: Annotated[list[list[int]], Field(description="List of unique AS paths for this prefix.")] | None = None
 
 
 class BgpResult(BaseModel):

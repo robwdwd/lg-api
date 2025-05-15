@@ -6,7 +6,6 @@
 #
 """Convert .env settings into fastapi config."""
 
-import pprint
 
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,8 +14,6 @@ try:
     from yaml import CSafeLoader as Loader
 except ImportError:
     from yaml import Loader
-
-pp = pprint.PrettyPrinter(indent=2, width=120)
 
 
 def load_config(config_file: str):

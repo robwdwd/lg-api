@@ -6,7 +6,7 @@ authors = ["Rob Woodward <rob@twfmail.uk>"]
 license = "BSD-2-Clause"
 readme = "README.md"
 repository = "https://github.com/robwdwd/lg-api"
-include = ["README.md", "LICENSE", "app.py", "examples"]
+include = ["README.md", "LICENSE", "examples"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
