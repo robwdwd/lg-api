@@ -1,0 +1,28 @@
+[Unit]
+Description=Network Looking Glass API
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+SyslogIdentifier=lgapi
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/dev/lgapi
+ExecStart=/var/www/dev/lgapi/.venv/bin/gunicorn -k lgapi.workers.CustomWorker -w $WORKERS -b ${LISTEN}:${PORT} --timeout $TIMEOUT --pid /var/run/lgapi/server.pid --log-file=${LOG_DIR}/lg-api-gunicorn.log lgapi.main:app
+Restart=always
+
+RuntimeDirectory=lgapi
+
+Environment=VIRTUAL_ENV=/var/www/dev/lgapi/.venv/
+Environment=WORKERS=4
+Environment=LISTEN=127.0.0.1
+Environment=TIMEOUT=60
+Environment=PORT=8013
+Environment=LOG_DIR=/var/log/lg/
+Environment=PATH=/var/www/dev/lgapi/.venv/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/var/www/dev/lgapi/.env
+
+
+[Install]
+WantedBy=multi-user.target

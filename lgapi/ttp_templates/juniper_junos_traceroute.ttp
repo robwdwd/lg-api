@@ -1,0 +1,9 @@
+<group name="_.{{ destination }}">
+traceroute to {{ destination | IP | IPV6 | _start_}}{{ignore(r"(.+)?")}}
+<group name="hops*" method="table">
+ {{hop_number | DIGIT }}  {{ignore(r"[\d\.]+")}} ({{ip_address | IP | IPV6}})  {{ rtt | re(".+")}}
+ {{hop_number | DIGIT }}  {{fqdn | re("[\.\w\d\-]+")}} ({{ip_address | IP | IPV6}})  {{ rtt | re(".+")}}
+ {{hop_number | DIGIT }}  {{ rtt | re(".+")}}
+    {{ip_address|IP | IPV6}} {{ rtt | re(".+")}}
+</group>
+</group>

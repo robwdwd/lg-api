@@ -1,0 +1,31 @@
+locations:
+  AMS:
+    name: Amsterdam
+    region: Western Europe
+    device: router.ams.example.net
+    type: cisco_iosxr
+    source: loopback999
+  BCN:
+    name: Barcelona
+    region: Western Europe
+    device: router.bcn.example.net
+    type: cisco_iosxr
+    source: loopback999
+  PAR:
+    name: Paris
+    region: Western Europe
+    device: router.par.example.net
+    type: juniper_junos
+    source: 10.1.1.2
+
+
+commands:
+  ping:
+    cisco_iosxr: ping IPADDRESS source SOURCE
+    juniper_junos: ping IPADDRESS source SOURCE count 5
+  bgp:
+    cisco_iosxr: show bgp IPADDRESS
+    juniper_junos: show route IPADDRESS protocol bgp detail
+  traceroute:
+    cisco_iosxr: traceroute IPADDRESS source SOURCE
+    juniper_junos: traceroute IPADDRESS source SOURCE

@@ -1,0 +1,12 @@
+<group name="_.{{ prefix }}">
+{{ prefix | PREFIX | _start_}}{{ignore(r".+")}}
+<group name="paths*">
+{{ignore(r"\s+")}}{{best_path | re("BGP") | _start_ | let(False)}}    Preference:  {{ignore}}
+{{ignore(r"\s+")}}{{best_path | re("\*BGP") | _start_ | let(True)}}    Preference:  {{ignore}}
+                Next hop: {{next_hop | IP | IPV6}}{{ignore(r"(.+)?")}}
+                AS path: {{as_path | re("I") | re("\?") | re("\d+(\s[\d\sI\?]+)")}}{{ignore(r"(.+)?")}}
+                Localpref: {{local_pref | DIGIT}}
+                Age: {{ignore(r"(.+)?")}} Metric: {{metric | DIGIT}}{{ignore(r".+")}}
+                Communities: {{ communities | ORPHRASE | split(" ")}}
+</group>
+</group>

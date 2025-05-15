@@ -1,0 +1,11 @@
+<group name="_.{{ prefix }}">
+BGP routing table entry for {{ prefix | PREFIX | _start_}}
+  <group name="paths*">
+  Path #{{ignore}}:{{ ignore(r".+") }}{{_start_}}
+  {{as_path | re("Local") | re("\d+(\s[\d\s]+)?") }}{{ignore(r"(,.+)?")}}
+    {{next_hop | IP | IPV6}} ({{ignore(r".+") }}
+      Origin {{ignore}}, metric {{metric | DIGIT}}, localpref {{local_pref | DIGIT}}{{best_path | re("([,\w\s\-]+)?, best(,.+)?") | let(True)}}
+      Origin {{ignore}}, metric {{metric | DIGIT}}, localpref {{local_pref | DIGIT | let(best_path, False) }}{{ignore(r"(,.+)?")}}
+      Community: {{ communities | ORPHRASE | split(" ")}}
+  </group>
+</group>

@@ -1,0 +1,680 @@
+#
+# Colt AS8220
+#
+
+# Cities
+8220:65010  London
+8220:65011  Birmingham
+8220:65020  Paris
+8220:65022  Lyon
+8220:65023  Toulouse
+8220:65024  Marseille
+8220:65025  Bordeaux
+8220:65030  Frankfurt
+8220:65031  Cologne
+8220:65032  Duesseldorf
+8220:65033  Hamburg
+8220:65034  Hannover
+8220:65035  Berlin
+8220:65036  Stuttgart
+8220:65037  Munich
+8220:65040  Amsterdam
+8220:65050  Madrid
+8220:65051  Valencia
+8220:65060  Milan
+8220:65061  Turin
+8220:65062  Rome
+8220:65070  Barcelona
+8220:65080  Brussels
+8220:65085  Luxembourg
+8220:65090  Vienna
+8220:65100  Warsaw
+8220:65101  Prague
+8220:65102  Bratislava
+8220:65103  Budapest
+8220:65104  Bucharest
+8220:65105  Sofia
+8220:65110  Zurich
+8220:65111  Basel
+8220:65120  Geneva
+8220:65130  Stockholm
+8220:65131  Helsinki
+8220:65140  Dublin
+8220:65151  Rouen
+8220:65152  Nantes
+8220:65160  Copenhagen
+8220:65170  Dubai
+8220:65171  Istanbul
+8220:65180  Lisbon
+8220:65201  New York
+8220:65201  Newark
+8220:65250  Chicago
+8220:65251  Seattle
+8220:65252  San Jose
+8220:65253  Los Angeles
+8220:65254  Phoenix
+8220:65255  Dallas
+8220:65256  Atlanta
+8220:65257  Washington
+8220:65300  Hong Kong
+8220:65301  Osaka
+8220:65302  Singapore
+8220:65303  Tokyo
+8220:65304  Sydney
+
+# Regions
+#
+8220:65000  Europe
+8220:65001  North America
+8220:65002  Asia Pacific
+8220:65003  Africa
+8220:65004  South America
+8220:65005  Oceania
+
+# Peer, Customer Type
+#
+8220:65400  Transit
+8220:65401  Public Peer
+8220:65402  Private Peer
+8220:65403  Customer
+8220:65404  Customer No Export
+8220:65405  Customer Local
+
+# Route types
+#
+8220:64002  Keep in Country
+8220:64006  Keep in Region
+
+# Local Pref
+#
+8220:63600 LP100
+8220:63700 LP120
+8220:63900 LP40
+
+# Blackhole
+#
+8220:63999  Blackhole
+
+# Prepends and no-advertise
+#
+8220:63800  No_Colt_Export
+
+8220:63092  Suppress Upstream
+8220:63192  Prepend Upstream x1
+8220:63292  Prepend Upstream x2
+8220:63392  Prepend Upstream x3
+
+8220:63099  No_Adv_Peers
+8220:63199  Prepend Peers x1
+8220:63299  Prepend Peers x2
+8220:63399  Prepend Peers x3
+
+# City Specific Prepends and no advertise
+#
+8220:63001  London Suppress
+8220:63101  London Prepend x1
+8220:63201  London Prepend x2
+8220:63301  London Prepend x3
+
+8220:63002  Frankfurt Suppress
+8220:63102  Frankfurt Prepend x1
+8220:63202  Frankfurt Prepend x2
+8220:63302  Frankfurt Prepend x3
+
+8220:63003  Paris Suppress
+8220:63103  Paris Prepend x1
+8220:63203  Paris Prepend x2
+8220:63303  Paris Prepend x3
+
+8220:63004  Berlin Suppress
+8220:63104  Berlin Prepend x1
+8220:63204  Berlin Prepend x2
+8220:63304  Berlin Prepend x3
+
+8220:63005  Milan Suppress
+8220:63105  Milan Prepend x1
+8220:63205  Milan Prepend x2
+8220:63305  Milan Prepend x3
+
+8220:63006  Madrid Suppress
+8220:63106  Madrid Prepend x1
+8220:63206  Madrid Prepend x2
+8220:63306  Madrid Prepend x3
+
+8220:63007  Barcelona Suppress
+8220:63107  Barcelona Prepend x1
+8220:63207  Barcelona Prepend x2
+8220:63307  Barcelona Prepend x3
+
+8220:63008  Amstedam Suppress
+8220:63108  Amstedam Prepend x1
+8220:63208  Amstedam Prepend x2
+8220:63308  Amstedam Prepend x3
+
+8220:63009  Brussels Suppress
+8220:63109  Brussels Prepend x1
+8220:63209  Brussels Prepend x2
+8220:63309  Brussels Prepend x3
+
+8220:63010  Zurich Suppress
+8220:63110  Zurich Prepend x1
+8220:63210  Zurich Prepend x2
+8220:63310  Zurich Prepend x3
+
+8220:63012  Vienna Suppress
+8220:63112  Vienna Prepend x1
+8220:63212  Vienna Prepend x2
+8220:63312  Vienna Prepend x3
+
+8220:63014  Stockholm Suppress
+8220:63114  Stockholm Prepend x1
+8220:63214  Stockholm Prepend x2
+8220:63314  Stockholm Prepend x3
+
+8220:63015  Prague Suppress
+8220:63115  Prague Prepend x1
+8220:63215  Prague Prepend x2
+8220:63315  Prague Prepend x3
+
+8220:63017  Copenhagen Suppress
+8220:63117  Copenhagen Prepend x1
+8220:63217  Copenhagen Prepend x2
+8220:63317  Copenhagen Prepend x3
+
+8220:63018  Dublin Suppress
+8220:63118  Dublin Prepend x1
+8220:63218  Dublin Prepend x2
+8220:63318  Dublin Prepend x3
+
+8220:63021  Lisbon Suppress
+8220:63121  Lisbon Prepend x1
+8220:63221  Lisbon Prepend x2
+8220:63321  Lisbon Prepend x3
+
+8220:63023  Rome Suppress
+8220:63123  Rome Prepend x1
+8220:63223  Rome Prepend x2
+8220:63323  Rome Prepend x3
+
+8220:63024  Turin Suppress
+8220:63124  Turin Prepend x1
+8220:63224  Turin Prepend x2
+8220:63324  Turin Prepend x3
+
+8220:63025  Tokyo Suppress
+8220:63125  Tokyo Prepend x1
+8220:63225  Tokyo Prepend x2
+8220:63325  Tokyo Prepend x3
+
+8220:63026  Osaka Suppress
+8220:63126  Osaka Prepend x1
+8220:63226  Osaka Prepend x2
+8220:63326  Osaka Prepend x3
+
+8220:63027  HongKong Suppress
+8220:63127  HongKong Prepend x1
+8220:63227  HongKong Prepend x2
+8220:63327  HongKong Prepend x3
+
+8220:63028  Singapore Suppress
+8220:63128  Singapore Prepend x1
+8220:63228  Singapore Prepend x2
+8220:63328  Singapore Prepend x3
+
+8220:63039  Ashburn Suppress
+8220:63139  Ashburn Prepend x1
+8220:63239  Ashburn Prepend x2
+8220:63339  Ashburn Prepend x3
+
+8220:63040  San Jose Suppress
+8220:63140  San Jose Prepend x1
+8220:63240  San Jose Prepend x2
+8220:63340  San Jose Prepend x3
+
+8220:63041  Hamburg Suppress
+8220:63141  Hamburg Prepend x1
+8220:63241  Hamburg Prepend x2
+8220:63341  Hamburg Prepend x3
+
+8220:63042  Bucharest Suppress
+8220:63142  Bucharest Prepend x1
+8220:63242  Bucharest Prepend x2
+8220:63342  Bucharest Prepend x3
+
+8220:63043  Wawsaw Suppress
+8220:63143  Wawsaw Prepend x1
+8220:63243  Wawsaw Prepend x2
+8220:63343  Wawsaw Prepend x3
+
+8220:63044  Sydney Suppress
+8220:63144  Sydney Prepend x1
+8220:63244  Sydney Prepend x2
+8220:63344  Sydney Prepend x3
+
+8220:63045  Marseille Suppress
+8220:63145  Marseille Prepend x1
+8220:63245  Marseille Prepend x2
+8220:63345  Marseille Prepend x3
+
+
+# Peers
+#
+8220:3356  Lumen
+8220:1299  Twelve99
+8220:2914  NTT
+
+# Level3
+#
+3356:123  Lumen Customer
+3356:666  Lumen Peer
+
+# Lumen Country Communities
+#
+3356:500  UK
+3356:501  Germany
+3356:502  France
+3356:503  Netherlands
+3356:504  Belgium
+3356:505  Italy
+3356:506  Switzerland
+3356:507  Sweden
+3356:508  Spain
+3356:509  Ireland
+3356:510  Denmark
+3356:511  Austria
+3356:512  Czech Republic
+3356:513  Poland
+3356:514  Bulgaria
+3356:515  Romania
+3356:516  Hungary
+3356:517  Norway
+3356:518  Slovakia
+3356:519  Finland
+3356:520  Luxembourg
+3356:521  Croatia
+3356:522  Slovenia
+3356:523  Estonia
+3356:524  Serbia
+3356:525  Iceland
+3356:550  Saudi Arabia
+3356:551  Djibouti
+3356:552  South Africa
+3356:553  United Arab Emirates
+3356:554  Russia
+3356:555  Kenya
+3356:556  Turkey
+3356:557  Israel
+3356:575  USA
+3356:576  Canada
+3356:577  Mexico
+3356:701  China
+3356:702  Australia
+3356:703  Singapore
+3356:704  Japan
+3356:800  Brazil
+3356:801  Argentina
+
+3356:2  Europe
+3356:3  North America
+3356:4  APAC
+3356:5  Latin America
+
+# Lumen Cities
+
+3356:2001  Chicago
+3356:2002  San Diego
+3356:2003  Los Angeles
+3356:2004  Denver
+3356:2005  Philadelphia
+3356:2006  Washington DC
+3356:2007  Detroit
+3356:2008  Dallas
+3356:2009  San Francisco
+3356:2010  New York City
+3356:2011  San Jose
+3356:2012  Seattle
+3356:2013  Atlanta
+3356:2014  Houston
+3356:2015  Boston
+3356:2016  Minneapolis
+3356:2017  Honolulu
+3356:2018  Weehawken
+3356:2019  Baltimore
+3356:2020  Cincinnati
+3356:2021  Stamford
+3356:2022  Miami
+3356:2023  Tampa
+3356:2024  Orlando
+3356:2025  St Louis
+3356:2026  Phoenix
+3356:2027  Richmond
+3356:2029  Salt Lake City
+3356:2030  Sacramento
+3356:2031  Raleigh
+3356:2032  San Antonio
+3356:2033  Las Vegas
+3356:2034  Charlotte
+3356:2035  Cleveland
+3356:2036  Oakland
+3356:2038  Tustin
+3356:2039  Newark
+3356:2040  Pittsburgh
+3356:2041  Kansas City
+3356:2042  Chicago 2
+3356:2043  New York City 2
+3356:2044  Louisville
+3356:2045  Nashville
+3356:2046  Buffalo
+3356:2047  Toronto 2
+3356:2048  Montreal 2
+3356:2049  Syracuse 2
+3356:2050  Washington DC 12
+3356:2051  San Jose 5
+3356:2052  Toronto 1
+3356:2053  Portland
+3356:2054  Memphis
+3356:2055  Tulsa 2
+3356:2056  New York City 6
+3356:2057  Washington DC 111
+3356:2058  Charlottesville 1
+3356:2064  London
+3356:2065  Frankfurt
+3356:2066  Paris
+3356:2067  Amsterdam
+3356:2068  Brussels
+3356:2069  Dusseldorf
+3356:2070  Hamburg
+3356:2071  Berlin
+3356:2072  Munich
+3356:2073  London 2
+3356:2074  Milan
+3356:2075  Zurich
+3356:2076  Stockholm
+3356:2077  Madrid 2
+3356:2078  Geneva
+3356:2079  Manchester
+3356:2080  Dublin
+3356:2081  Copenhagen
+3356:2082  Vienna
+3356:2083  Prague
+3356:2084  Warsaw
+3356:2085  Valencia 3
+3356:2086  Barcelona
+3356:2087  Sofia
+3356:2088  Bucharest
+3356:2089  Budapest
+3356:2090  Marseille
+3356:2091  Copenhagen 2
+3356:2092  Oslo
+3356:2093  Bratislava
+3356:2094  Helsinki
+3356:2095  Dublin 3
+3356:2096  Warsaw 3
+3356:2097  Luxembourg 1
+3356:2098  Toulouse 1
+3356:2099  Lyon 1
+3356:2100  Jeddah 1
+3356:2101  Zagreb 1
+3356:2102  Ljubljana 1
+3356:2103  Madrid 1
+3356:2104  Djibouti 1
+3356:2105  London 16
+3356:2106  London 15
+3356:2107  CapeTown2
+3356:2108  Johannesburg2
+3356:2109  Kenya3
+3356:2110  UnitedArabEmirates3
+3356:2111  Stockholm2
+3356:2112  Marseille2
+3356:2113  Estonia2
+3356:2114  Paris10
+3356:2115  Sofia2
+3356:2116  Russia2
+3356:2117  Italy2
+3356:2118  RepublicOfSerbia2
+3356:2119  Oslo2
+3356:2120  Manchester2
+3356:2121  Milan2
+3356:2122  UnitedArabEmirates2
+3356:2123  Iceland2
+3356:2124  Paris7
+3356:2125  London4
+3356:2126  Iceland4
+3356:2127  Istanbul2
+3356:2128  Leeds1
+3356:2129  Birmingham1
+3356:2130  TelAviv1
+3356:2131  Zurich3
+3356:2132  London14
+3356:2133  Ankara1
+3356:2171  Hong Kong3
+3356:2172  Singapore3
+3356:2173  Sydney1
+3356:2174  Tokyo4
+3356:2190  Sao Paulo
+
+3356:70  Lumen LP70
+3356:80  Lumen LP80
+3356:90  Lumen LP90
+
+
+# 1299
+#
+1299:20000  EU Peers
+1299:25000  North American Peers
+1299:27000  Asia & Pacific Peers
+1299:30000  EU Customers
+1299:35000  North American Customers
+1299:37000  APAC Customers
+
+1299:30000  Europe
+1299:35000  North America
+1299:37000  APAC
+
+1299:30100  Copenhagen
+1299:30110  Gothenburg
+1299:30200  Stockholm
+1299:30210  Kaunas/Vilnius
+1299:30220  Oslo
+1299:30230  Helsinki
+1299:30240  Tallinn
+1299:30250  Moscow
+1299:30260  St Petersburg
+1299:30270  Riga
+1299:30300  Hamburg
+1299:30310  Berlin
+1299:30320  Warsaw/Poznan
+1299:30330  Kiev
+1299:30340  Kristiansand
+1299:30400  Paris
+1299:30410  Marseille
+1299:30420  Lyon
+1299:30430  Madrid
+1299:30440  Barcelona
+1299:30450  Valencia
+1299:30500  Amsterdam
+1299:30510  Rotterdam
+1299:30520  Brussels
+1299:30600  London/Slough
+1299:30620  Dublin
+1299:30700  Frankfurt/Nurnberg
+1299:30710  Dusseldorf
+1299:30720  Munich
+1299:30730  Milan
+1299:30740  Zurich
+1299:30750  Stuttgart
+1299:30760  Cologne
+1299:30770  Rome
+1299:30780  Geneva
+1299:30800  Vienna
+1299:30810  Belgrade
+1299:30820  Budapest
+1299:30830  Sofia
+1299:30840  Bucharest
+1299:30850  Prague
+1299:30860  Bratislava
+1299:30870  Zagreb
+
+1299:35100  New York City
+1299:35110  Buffalo
+1299:35120  Toronto
+1299:35130  Boston
+1299:35140  Philadelphia
+1299:35150  Montreal
+1299:35200  San Jose/Palo Alto/Santa Clara
+1299:35210  Seattle
+1299:35220  Vancouver
+1299:35230  Portland
+1299:35240  Salt Lake City
+1299:35250  Sacramento
+1299:35300  Chicago
+1299:35310  Cleveland
+1299:35320  Denver
+1299:35330  Kansas City
+1299:35340  St Louis
+1299:35350  Omaha
+1299:35360  Indianapolis
+1299:35370  Detroit
+1299:35380  Minneapolis
+1299:35390  Des Moines
+1299:35400  Los Angeles
+1299:35410  Phoenix
+1299:35420  San Diego
+1299:35430  Las Vegas
+1299:35500  Dallas
+1299:35510  McAllen
+1299:35520  San Antonio
+1299:35530  Austin
+1299:35540  Houston
+1299:35550  Queretaro
+1299:35560  Monterrey
+1299:35570  El Paso
+1299:35580  Laredo
+1299:35590  Mexico City
+1299:35600  Ashburn/Reston/Manassas
+1299:35610  Pittsburgh
+1299:35620  Richmond
+1299:35700  Atlanta
+1299:35710  Charlotte
+1299:35720  Nashville
+1299:35730  Chattanooga
+1299:35740  Memphis
+1299:35750  Raleigh
+1299:35800  Miami
+1299:35810  Boca Raton
+1299:35820  Jacksonville
+
+1299:37100  Hong Kong
+1299:37200  Singapore
+1299:37300  Tokyo
+1299:37310  Osaka
+
+
+1299:50  Arelion LP50
+1299:150  Arelion LP150
+
+# NTT
+#
+2914:410  NTT Customer
+2914:420  NTT Peer
+
+2914:2000  United States
+2914:2001  Canada
+
+2914:2601  Brazil
+
+2914:2201  United Kingdom
+2914:2202  Germany
+2914:2203  Netherlands
+2914:2204  France
+2914:2205  Spain
+2914:2206  Switzerland
+2914:2207  Poland
+2914:2208  Bulgaria
+2914:2209  Hungary
+2914:2210  Romania
+2914:2211  Belgium
+2914:2212  Italy
+2914:2213  Sweden
+2914:2214  Austria
+2914:2215  Luxembourg
+2914:2216  Ireland
+
+2914:2401  Japan
+2914:2402  Australia
+2914:2403  Hong Kong
+2914:2404  Taiwan
+2914:2405  Korea
+2914:2406  Singapore
+2914:2407  Malaysia
+2914:2408  Indonesia
+2914:2409  Brunei
+2914:2410  Thailand
+
+2914:1001  Ashburn
+2914:1002  Atlanta
+2914:1003  Chicago
+2914:1004  Dallas
+2914:1004  Houston
+2914:1005  Los Angeles
+2914:1006  Miami
+2914:1007  Seattle
+2914:1008  Milpitas
+2914:1008  Mountain View
+2914:1008  Palo Alto
+2914:1008  San Jose
+2914:1008  Santa Clara
+2914:1008  San Francisco
+2914:1009  New York
+2914:1009  Newark
+2914:1010  Sacramento
+2914:1011  Boston
+2914:1012  Toronto
+
+2914:1201  Dusseldorf
+2914:1201  Frankfurt
+2914:1202  Geneva
+2914:1203  London
+2914:1204  Madrid
+2914:1205  Paris
+2914:1206  Amsterdam
+2914:1207  Warsaw
+2914:1208  Sofia
+2914:1209  Budapest
+2914:1210  Bucharest
+2914:1211  Brussels
+2914:1212  Milan
+2914:1213  Munich
+2914:1214  Stockholm
+2914:1215  Vienna
+2914:1216  Barcelona
+2914:1217  Valencia
+2914:1218  Luxembourg City
+2914:1219  Marseilles
+2914:1220  Berlin
+2914:1221  Manchester
+2914:1222  Dublin
+
+2914:1401  Kuala Lumpur
+2914:1402  New Territories
+2914:1403  Osaka
+2914:1404  Seoul
+2914:1405  Singapore
+2914:1406  Sydney
+2914:1407  Taipei
+2914:1408  Tokyo
+2914:1409  Tseung Kwan O
+2914:1410  Jakarta
+2914:1411  Bandar Seri Begawan
+2914:1412  Bangkok
+
+2914:1601  Brazil
+
+2914:3000  North America
+2914:3075  North America regional customer
+2914:3200  Europe
+2914:3275  Europe regional customer
+2914:3400  Asia
+2914:3475  Asia regional customer
+2914:3600  South America
+2914:3675  South America regional customer

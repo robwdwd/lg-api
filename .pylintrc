@@ -1,0 +1,12 @@
+[MESSAGES CONTROL]
+disable=broad-except,no-method-argument,locally-disabled,too-many-locals,too-many-branches,too-many-statements,too-many-arguments,too-many-public-methods
+
+[TYPECHECK]
+# Note: This modules are manipulated during the runtime so we can't detect all the properties during
+# static analysis
+ignored-modules=distutils,eventlet.green.subprocess
+
+[FORMAT]
+max-line-length=160
+max-module-lines=1000
+indent-string='    '

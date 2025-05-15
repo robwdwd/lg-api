@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "lgapi"
+version = "1.0.0"
+description = "Python Network Looking Glass backend API."
+authors = ["Rob Woodward <rob@twfmail.uk>"]
+license = "BSD-2-Clause"
+readme = "README.md"
+repository = "https://github.com/robwdwd/lg-api"
+include = ["README.md", "LICENSE", "app.py", "examples"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyyaml = "^6.0"
+ttp = "^0.9.2"
+scrapli = "^2025.1.30"
+asyncssh = "^2.20.0"
+fastapi = {extras = ["standard"], version = "^0.115.12"}
+pydantic-settings = "^2.8.1"
+python-dotenv = "^1.1.0"
+gunicorn = "^23.0.0"
+aiosqlite = "^0.21.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pytest = "^8.3.1"
+pylint = "^3.3.0"
+pydocstyle = "^6.1.1"
+flake8 = "^7.2.0"
+isort = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
