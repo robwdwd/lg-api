@@ -22,7 +22,7 @@ from lgapi.datamodels import (
     PingResult,
     TracerouteResult,
 )
-from lgapi.device import run_cmd, run_cmd_multi
+from lgapi.device import do_multi_lg_command, do_single_lg_command
 from lgapi.maps import process_location_output_by_region
 from lgapi.validation import IPNetOrAddress, validate_location
 
@@ -44,7 +44,7 @@ app.add_middleware(
 async def execute_command(location: str, command: str, destination: str, raw: bool) -> dict:
     """Helper function to execute a command."""
     try:
-        return await run_cmd(location=location, command=command, ipaddress=destination, raw_only=raw)
+        return await do_single_lg_command(location=location, command=command, ipaddress=destination, raw_only=raw)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Command execution failed: {str(e)}")
 
@@ -109,10 +109,10 @@ async def bgp(
 @app.post("/multi/ping", response_model=MultiPingResult)
 async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
     """Ping from multiple sources to multiple destinations"""
-    return await run_cmd_multi(targets, "ping", raw)
+    return await do_multi_lg_command(targets, "ping", raw)
 
 
 @app.post("/multi/bgp", response_model=MultiBgpResult)
 async def multi_bgp(targets: MultiBgpBody, raw: bool = False) -> dict:
     """Get BGP output from multiple sources to multiple destinations"""
-    return await run_cmd_multi(targets, "bgp", raw)
+    return await do_multi_lg_command(targets, "bgp", raw)

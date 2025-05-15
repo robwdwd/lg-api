@@ -72,8 +72,9 @@ Change the group permissions of the mapsdb folder to the group of your web serve
 and add group sticky bit. Make the .env file readable to the web server.
 
 ```console
-chgrp www-data mapsdb .env
+chgrp <web_server_user> mapsdb .env
 chmod g+s mapsdb
+setfacl -dR -m u:<web_server_user>:rwX -m u:<your_user>:rwX mapsdb
 ```
 
 ## Running development server
