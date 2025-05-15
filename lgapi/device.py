@@ -131,10 +131,7 @@ def organise_by_location(results: list, raw_only: bool = False) -> dict:
 
 async def gather_device_results(devices: dict[str, Any], command: str, raw_only: bool) -> list:
     """Gather responses from devices asynchronously when running a multi command."""
-    tasks = [
-        get_multi_results(hostname, device, command, raw_only)
-        for hostname, device in devices.items()
-    ]
+    tasks = [get_multi_results(hostname, device, command, raw_only) for hostname, device in devices.items()]
     return await asyncio.gather(*tasks, return_exceptions=True)
 
 

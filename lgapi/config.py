@@ -7,6 +7,8 @@
 """Convert .env settings into fastapi config."""
 
 
+from typing import Any
+
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -16,38 +18,23 @@ except ImportError:
     from yaml import Loader
 
 
-def load_config(config_file: str):
-    """Loads the looking glass configuration.
-
-    Args:
-        config_file (str): filename to loads
-
-    Returns:
-        dict: Configuration dictionary
-    """
+def load_config(config_file: str) -> dict[str, Any]:
+    """Loads the looking glass api configuration"""
     with open(config_file, "r") as conf:
-        cfg = yaml.load(conf, Loader)
-        return cfg
+        return yaml.load(conf, Loader)
+        
 
 
 def get_locations(locations: dict) -> list:
-    """Get a list of locations from config file.
-
-    Returns:
-        dict: Locations
-    """
-    new_locations = []
-
-    for location, data in locations.items():
-        new_locations.append(
-            {
-                "code": location,
-                "name": data["name"],
-                "region": data["region"],
-            }
-        )
-
-    return new_locations
+    """Get a list of locations from config file."""
+    return [
+        {
+            "code": location,
+            "name": data["name"],
+            "region": data["region"],
+        }
+        for location, data in locations.items()
+    ]
 
 
 class Settings(BaseSettings):
@@ -66,8 +53,8 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    lg_config: dict = load_config(config_file)
-    device_locations: list = get_locations(lg_config["locations"])
+    lg_config: dict[str, Any] = load_config(config_file)
+    device_locations: list[dict[str, str]]  = get_locations(lg_config["locations"])
 
 
 settings = Settings()

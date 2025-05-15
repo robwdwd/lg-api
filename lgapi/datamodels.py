@@ -182,7 +182,7 @@ class TracerouteResult(BaseModel):
 
 # Location output
 #
-class LocationReponse(BaseModel):
+class LocationResponse(BaseModel):
     """Location details"""
 
     code: str
@@ -190,8 +190,8 @@ class LocationReponse(BaseModel):
     region: str
 
 
-class LocationRegionReponse(BaseModel):
+class LocationRegionResponse(BaseModel):
     """Locations grouped by regions"""
 
     name: Annotated[str, Field(description="Region name", examples=["Western Europe", "Asia"])]
-    locations: list[LocationReponse]
+    locations: list[LocationResponse]

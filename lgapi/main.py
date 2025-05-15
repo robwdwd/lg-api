@@ -13,8 +13,8 @@ from pydantic import AfterValidator, IPvAnyAddress
 from lgapi.config import settings
 from lgapi.datamodels import (
     BgpResult,
-    LocationRegionReponse,
-    LocationReponse,
+    LocationRegionResponse,
+    LocationResponse,
     MultiBgpBody,
     MultiBgpResult,
     MultiPingBody,
@@ -49,13 +49,13 @@ async def execute_command(location: str, command: str, destination: str, raw: bo
         raise HTTPException(status_code=500, detail=f"Command execution failed: {str(e)}")
 
 
-@app.get("/locations", response_model=list[LocationReponse])
+@app.get("/locations", response_model=list[LocationResponse])
 async def locations() -> list:
     """Get list of available locations."""
     return settings.device_locations
 
 
-@app.get("/locations/regional", response_model=list[LocationRegionReponse])
+@app.get("/locations/regional", response_model=list[LocationRegionResponse])
 async def locations_region() -> list:
     """Get list of available locations, grouped by region."""
     return await process_location_output_by_region(settings.device_locations)
