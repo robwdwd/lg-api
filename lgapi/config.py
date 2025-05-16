@@ -22,10 +22,9 @@ def load_config(config_file: str) -> dict[str, Any]:
     """Loads the looking glass api configuration"""
     with open(config_file, "r") as conf:
         return yaml.load(conf, Loader)
-        
 
 
-def get_locations(locations: dict) -> list:
+def get_locations(locations: dict[str, Any]) -> list[dict[str, str]]:
     """Get a list of locations from config file."""
     return [
         {
@@ -46,15 +45,18 @@ class Settings(BaseSettings):
     ping_multi_max_source: int = 3
     ping_multi_max_ip: int = 5
     bgp_multi_max_source: int = 3
-    bgp_multi_max_ip: int = 10
+    bgp_multi_max_ip: int = 5
     log_level: str
     root_path: str = "/"
     debug: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    lg_config: dict[str, Any] = {}
+    device_locations: list[dict[str, str]] = []
 
-    lg_config: dict[str, Any] = load_config(config_file)
-    device_locations: list[dict[str, str]]  = get_locations(lg_config["locations"])
+    def model_post_init(self, __context: Any) -> None:
+        self.lg_config = load_config(self.config_file)
+        self.device_locations = get_locations(self.lg_config["locations"])
 
 
 settings = Settings()

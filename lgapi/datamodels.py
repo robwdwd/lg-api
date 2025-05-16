@@ -4,7 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-from typing import Annotated
+from typing import Annotated, Union
 
 from annotated_types import Len
 from pydantic import AfterValidator, BaseModel, Field, IPvAnyAddress, IPvAnyNetwork
@@ -12,27 +12,31 @@ from pydantic import AfterValidator, BaseModel, Field, IPvAnyAddress, IPvAnyNetw
 from lgapi.config import settings
 from lgapi.validation import validate_location
 
+LocationStr = Annotated[
+    str, Field(description="Source location", examples=["LON", "FRA", "SIN"]), AfterValidator(validate_location)
+]
+
+DestIP = Annotated[
+    IPvAnyAddress, Field(description="Destination IP address", examples=["10.2.3.1", "8.8.8.8", "1.1.1.1"])
+]
+
+DestIPNet = Annotated[
+    Union[IPvAnyAddress, IPvAnyNetwork],
+    Field(description="Destination IP or CIDR", examples=["10.4.8.1", "8.8.8.0/24", "4.0.0.0/9"]),
+]
+
 
 class MultiPingBody(BaseModel):
     """Request body for Multi-Ping requests"""
 
     locations: Annotated[
-        list[
-            Annotated[
-                str, Field(description="Source location", examples=["LON", "FRA"]), AfterValidator(validate_location)
-            ]
-        ],
+        list[LocationStr],
         Len(min_length=1, max_length=settings.ping_multi_max_source),
     ]
 
     destinations: Annotated[
-        list[
-            Annotated[
-                IPvAnyAddress,
-                Field(description="Destination IP addresses", examples=["10.2.3.1", "8.8.8.8"]),
-            ]
-        ],
-        Len(min_length=1, max_length=settings.bgp_multi_max_ip),
+        list[DestIP],
+        Len(min_length=1, max_length=settings.ping_multi_max_ip),
     ]
 
 
@@ -40,23 +44,42 @@ class MultiBgpBody(BaseModel):
     """Request body for Multi-Bgp requests"""
 
     locations: Annotated[
-        list[
-            Annotated[
-                str, Field(description="Source location", examples=["LON", "FRA"]), AfterValidator(validate_location)
-            ]
-        ],
+        list[LocationStr],
         Len(min_length=1, max_length=settings.bgp_multi_max_source),
     ]
 
     destinations: Annotated[
-        list[
-            Annotated[
-                IPvAnyAddress | IPvAnyNetwork,
-                Field(description="Destination IP addresses or CIDRs", examples=["10.4.8.1", "8.8.8.0/24"]),
-            ]
-        ],
+        list[DestIPNet],
         Len(min_length=1, max_length=settings.bgp_multi_max_ip),
     ]
+
+
+# Base models
+#
+class BaseResult(BaseModel):
+    """Base results"""
+
+    parsed_output: list[object] | None
+    raw_output: str
+    command: str | None = None
+    location: str | None = None
+    location_name: str | None = None
+    raw_only: bool
+
+
+class BaseLocation(BaseModel):
+    """Results per location"""
+
+    name: str
+    results: BaseResult | None
+
+
+class BaseMultiResult(BaseModel):
+    """Multi result Base"""
+
+    errors: list[str]
+    locations: list[BaseLocation]
+    raw_only: bool
 
 
 # BGP Output
@@ -87,30 +110,22 @@ class BgpData(BaseModel):
     as_paths: Annotated[list[list[int]], Field(description="List of unique AS paths for this prefix.")] | None = None
 
 
-class BgpResult(BaseModel):
+class BgpResult(BaseResult):
     """BGP results"""
 
     parsed_output: list[BgpData] | None
-    raw_output: str
-    command: str | None = None
-    location: str | None = None
-    location_name: str | None = None
-    raw_only: bool
 
 
-class BgpLocation(BaseModel):
+class BgpLocation(BaseLocation):
     """BGP results per location"""
 
-    name: str
     results: BgpResult | None
 
 
-class MultiBgpResult(BaseModel):
+class MultiBgpResult(BaseMultiResult):
     """Multi Ping results"""
 
-    errors: list[str]
     locations: list[BgpLocation]
-    raw_only: bool
 
 
 # Ping output
@@ -127,30 +142,22 @@ class PingData(BaseModel):
     packet_size: str | None = None
 
 
-class PingResult(BaseModel):
+class PingResult(BaseResult):
     """Ping results"""
 
     parsed_output: list[PingData] | None
-    raw_output: str
-    command: str | None = None
-    location: str | None = None
-    location_name: str | None = None
-    raw_only: bool
 
 
-class PingLocation(BaseModel):
+class PingLocation(BaseLocation):
     """Ping results per location"""
 
-    name: str
     results: PingResult | None
 
 
-class MultiPingResult(BaseModel):
+class MultiPingResult(BaseMultiResult):
     """Multi Ping results"""
 
-    errors: list[str]
     locations: list[PingLocation]
-    raw_only: bool
 
 
 # Traceroute output
@@ -171,13 +178,10 @@ class TracerouteData(BaseModel):
     hops: list[TracerouteHop]
 
 
-class TracerouteResult(BaseModel):
+class TracerouteResult(BaseResult):
     """Traceroute results"""
 
     parsed_output: list[TracerouteData] | None
-    raw_output: str
-    command: str
-    raw_only: bool
 
 
 # Location output
