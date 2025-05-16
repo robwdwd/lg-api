@@ -90,12 +90,12 @@ async def process_bgp_output(output: dict) -> list:
 async def process_ping_output(output: dict) -> list:
     """Process the output of the ping command."""
 
-    return [{**destination, "prefix": prefix} for prefix, destination in output.items()]
+    return [{**destination, "ip_address": ip_address} for ip_address, destination in output.items()]
 
 
 async def process_traceroute_output(output: dict) -> list[dict]:
     """Process the output of the traceroute command."""
-    return [{"prefix": prefix, "hops": data["hops"]} for prefix, data in output.items()]
+    return [{"ip_address": ip_address, "hops": data["hops"]} for ip_address, data in output.items()]
 
 
 async def process_location_output_by_region(locations: list[dict]) -> list[dict]:
