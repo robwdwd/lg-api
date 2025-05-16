@@ -28,13 +28,9 @@ from lgapi.validation import IPNetOrAddress, validate_location
 
 app = FastAPI(debug=settings.debug)
 
-origins = [
-    "http://localhost:*",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

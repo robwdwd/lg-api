@@ -27,6 +27,8 @@ from lgapi.ttp import get_template, parse_txt
 
 # pp = pprint.PrettyPrinter(indent=2, width=120)
 
+LOCATIONS_CFG = settings.lg_config["locations"]
+
 DEFAULT_TIMEOUT = 60
 COMMAND_TIMEOUTS = {"traceroute": 600}
 
@@ -116,14 +118,13 @@ def organise_by_location(results: list, raw_only: bool = False) -> dict:
     """Organise results by location."""
 
     output_table = {"locations": [], "errors": [], "raw_only": raw_only}
-    locations_cfg = settings.lg_config["locations"]
 
     for result in results:
         if isinstance(result, Exception):
             output_table["errors"].append(str(result))
         else:
             location = result["location"]
-            location_name = locations_cfg[location]["name"]
+            location_name = LOCATIONS_CFG[location]["name"]
             output_table["locations"].append({"name": location_name, "results": result})
 
     return output_table
@@ -183,12 +184,8 @@ async def do_single_lg_command(location: str, command: str, ipaddress: str, raw_
 
     # Parse output if raw_only is False and a template exists
     parsed_output = []
-    if not raw_only:
-        if template_name := get_template(command, cli["type"]):
-            parsed_output = await process_response(response.result, template_name, command)
-        else:
-            raw_only = True  # Fallback to only raw output if no template is found
-
+    if not raw_only and (template_name := get_template(command, cli["type"])):
+        parsed_output = await process_response(response.result, template_name, command)
     if not parsed_output:
         raw_only = True
 
@@ -198,5 +195,5 @@ async def do_single_lg_command(location: str, command: str, ipaddress: str, raw_
         "raw_only": raw_only,
         "command": command,
         "location": location,
-        "location_name": settings.lg_config["locations"][location]["name"],
+        "location_name": LOCATIONS_CFG[location]["name"],
     }

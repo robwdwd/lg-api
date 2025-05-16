@@ -22,8 +22,10 @@ DestIP = Annotated[
 
 DestIPNet = Annotated[
     Union[IPvAnyAddress, IPvAnyNetwork],
-    Field(description="Destination IP or CIDR", examples=["10.4.8.1", "8.8.8.0/24", "4.0.0.0/9"]),
+    Field(description="Destination IP or Prefix", examples=["10.4.8.1", "8.8.8.0/24", "4.0.0.0/9"]),
 ]
+
+IPAddressStr = Annotated[str, Field(description="IP Address", examples=["10.1.1.1"])]
 
 
 class MultiPingBody(BaseModel):
@@ -64,7 +66,7 @@ class BaseResult(BaseModel):
     command: str | None = None
     location: str | None = None
     location_name: str | None = None
-    raw_only: bool
+    raw_only: bool = False
 
 
 class BaseLocation(BaseModel):
@@ -133,7 +135,7 @@ class MultiBgpResult(BaseMultiResult):
 class PingData(BaseModel):
     """Ping response to destination IP Address"""
 
-    prefix: Annotated[str, Field(description="IP Address", examples=["10.1.1.1"])]
+    prefix: IPAddressStr
     packet_loss: int | None = None
     rtt_min: str | None = None
     rtt_avg: str | None = None
@@ -174,7 +176,7 @@ class TracerouteHop(BaseModel):
 class TracerouteData(BaseModel):
     """Traceroute hops"""
 
-    prefix: Annotated[str, Field(description="IP Address", examples=["10.1.1.1"])]
+    prefix: IPAddressStr
     hops: list[TracerouteHop]
 
 

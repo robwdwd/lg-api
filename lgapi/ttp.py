@@ -12,15 +12,7 @@ from ttp import ttp
 
 
 def parse_txt(raw_output: str, template: str) -> list[dict[str, dict]]:
-    """Parse raw device output with ttp template.
-
-    Args:
-        raw_output (str): Raw output from network device
-        template (str): Filename of TTP template for this device and output
-
-    Returns:
-        list[dict[str, dict]: TTP parsed structure or empty list if unable to parse
-    """
+    """Parse raw device output with ttp template."""
     try:
         ttp_parser = ttp(data=raw_output, template=template)
         ttp_parser.parse()
@@ -30,10 +22,6 @@ def parse_txt(raw_output: str, template: str) -> list[dict[str, dict]]:
 
 
 def get_template(command: str, device_type: str) -> str | None:
-    """Get TTP Template file name.
-
-    Returns:
-        Template filename or None if file not found.
-    """
+    """Get TTP Template file name."""
     template_path = Path("lgapi/ttp_templates") / f"{device_type}_{command}.ttp"
     return str(template_path) if template_path.is_file() else None

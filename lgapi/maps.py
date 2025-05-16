@@ -46,15 +46,13 @@ async def process_bgp_output(output: dict) -> list:
     async with aiosqlite.connect("mapsdb/maps.db") as db_con:
         async with db_con.cursor() as db_cursor:
             # Collect all communities to batch-fetch their descriptions
-            all_communities = set(
+            # Fetch community descriptions in one query
+            if all_communities := {
                 community
                 for prefix in output
                 for path in output[prefix]["paths"]
                 for community in path.get("communities", [])
-            )
-
-            # Fetch community descriptions in one query
-            if all_communities:
+            }:
                 placeholders = ",".join("?" for _ in all_communities)
                 sql = f"SELECT community, name FROM communities WHERE community IN ({placeholders})"
                 res = await db_cursor.execute(sql, tuple(all_communities))
@@ -68,15 +66,13 @@ async def process_bgp_output(output: dict) -> list:
 
                 for path in output[prefix]["paths"]:
                     # Parse AS path
-                    aspath = path.get("as_path")
-                    if aspath:
+                    if aspath := path.get("as_path"):
                         parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
                         path["as_path"] = parsed_aspath
                         as_path_list.append(parsed_aspath)
 
                     # Map communities
-                    communities = path.get("communities")
-                    if communities:
+                    if communities := path.get("communities"):
                         path["communities"] = [
                             {"community": community, "description": community_map.get(community)}
                             for community in communities
@@ -94,13 +90,7 @@ async def process_bgp_output(output: dict) -> list:
 async def process_ping_output(output: dict) -> list:
     """Process the output of the ping command."""
 
-    result = []
-    for prefix in output:
-        destination = output[prefix]
-        destination["prefix"] = prefix
-        result.append(destination)
-
-    return result
+    return [{**destination, "prefix": prefix} for prefix, destination in output.items()]
 
 
 async def process_traceroute_output(output: dict) -> list[dict]:

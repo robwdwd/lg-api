@@ -9,7 +9,7 @@ repository = "https://github.com/robwdwd/lg-api"
 include = ["README.md", "LICENSE", "examples"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 pyyaml = "^6.0"
 ttp = "^0.9.2"
 scrapli = "^2025.1.30"

@@ -15,6 +15,8 @@ from pydantic_core import CoreSchema, PydanticCustomError, core_schema
 from lgapi.config import settings
 from lgapi.types import IPvAnyNetworkOrIPType
 
+LOCATIONS_CFG = settings.lg_config["locations"]
+
 
 class IPNetOrAddress:
     """Validate an IPv4 or IPv6 network or IP address."""
@@ -22,27 +24,18 @@ class IPNetOrAddress:
     __slots__ = ()
 
     def __new__(cls, value: str) -> IPvAnyNetworkOrIPType:
-        """Validate an IPv4 or IPv6 network."""
-
-        try:
-            return IPv4Address(address=value)
-        except ValueError:
-            pass
-
-        try:
-            return IPv6Address(address=value)
-        except ValueError:
-            pass
-
-        try:
-            return IPv4Network(address=value, strict=False)
-        except ValueError:
-            pass
-
-        try:
-            return IPv6Network(address=value, strict=False)
-        except ValueError:
-            raise PydanticCustomError("ip_or_network", "value is not a valid IPv4 or IPv6 network or address")
+        """Validate an IPv4 or IPv6 network or address."""
+        for constructor, kwargs in [
+            (IPv4Address, {"address": value}),
+            (IPv6Address, {"address": value}),
+            (IPv4Network, {"address": value, "strict": False}),
+            (IPv6Network, {"address": value, "strict": False}),
+        ]:
+            try:
+                return constructor(**kwargs)
+            except ValueError:
+                continue
+        raise PydanticCustomError("ip_or_network", "Value is not a valid IPv4 or IPv6 network or address")
 
     @classmethod
     def __get_pydantic_json_schema__(cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler) -> JsonSchemaValue:
@@ -68,9 +61,6 @@ class IPNetOrAddress:
 def validate_location(location: str):
     """Validate a location Key"""
 
-    # Check the location is valid
-    #
-    if location not in settings.lg_config["locations"].keys():
+    if location not in LOCATIONS_CFG:
         raise ValueError("Location not found")
-
     return location

@@ -8,6 +8,8 @@
 
 from lgapi.config import settings
 
+LOCATIONS_CFG = settings.lg_config["locations"]
+
 
 def get_multi_commands(locations: list[str], ip_addresses: list[str], command: str) -> dict[str, dict]:
     """Get commands and devices types to run based on location and ip addresses.
@@ -22,16 +24,17 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
     """
     command_list: dict[str, dict] = {}
 
+    commands_cfg = settings.lg_config["commands"]
+
     for location in locations:
-        loc_cfg = settings.lg_config["locations"][location]
+        loc_cfg = LOCATIONS_CFG[location]
         device = loc_cfg["device"]
         device_type = loc_cfg["type"]
         source = loc_cfg["source"]
-        location_name = loc_cfg["name"]
 
         cli_cmds = []
         for ip_address in ip_addresses:
-            cli_cmd = settings.lg_config["commands"][command][device_type].replace("IPADDRESS", ip_address)
+            cli_cmd = commands_cfg[command][device_type].replace("IPADDRESS", ip_address)
             if command != "bgp":
                 cli_cmd = cli_cmd.replace("SOURCE", source)
 
@@ -39,7 +42,7 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
 
         command_list[device] = {
             "location": location,
-            "location_name": location_name,
+            "location_name": loc_cfg["name"],
             "type": device_type,
             "cmds": cli_cmds,
         }
@@ -58,13 +61,12 @@ def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
     Returns:
         dict[str, str]: Device, type of device, and CLI command to run
     """
-    loc_cfg = settings.lg_config["locations"][location]
+    loc_cfg = LOCATIONS_CFG[location]
     device = loc_cfg["device"]
     device_type = loc_cfg["type"]
-    source = loc_cfg["source"]
 
     cli_cmd = settings.lg_config["commands"][command][device_type].replace("IPADDRESS", ip_address)
     if command != "bgp":
-        cli_cmd = cli_cmd.replace("SOURCE", source)
+        cli_cmd = cli_cmd.replace("SOURCE", loc_cfg["source"])
 
     return {"device": device, "type": device_type, "cmd": cli_cmd}
