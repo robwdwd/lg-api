@@ -86,6 +86,22 @@ class BaseMultiResult(BaseModel):
 
 # BGP Output
 #
+class ASNOrganization(BaseModel):
+    orgName: str
+
+
+class ASNCountry(BaseModel):
+    iso: str
+    name: str
+
+
+class ASNInfoEntry(BaseModel):
+    asnName: str
+    rank: int
+    organization: ASNOrganization
+    country: ASNCountry
+
+
 class BgpCommunity(BaseModel):
     """Community string and human readable mapping for this BGP Path"""
 
@@ -110,6 +126,7 @@ class BgpData(BaseModel):
     prefix: Annotated[str, Field(description="Prefix in CIDR format", examples=["10.0.0.0/21", "10.1.2.0/24"])]
     paths: list[BgpPath]
     as_paths: Annotated[list[list[int]], Field(description="List of unique AS paths for this prefix.")] | None = None
+    asn_info: dict[str, ASNInfoEntry] | dict = Field(default_factory=dict)
 
 
 class BgpResult(BaseResult):

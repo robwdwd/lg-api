@@ -12,6 +12,8 @@ import sqlite3
 
 import aiosqlite
 
+from lgapi.asrank import asn_to_name
+
 
 def init_db():
     """Initialise the mappings database."""
@@ -82,6 +84,11 @@ async def process_bgp_output(output: dict) -> list:
 
                 # Deduplicate and sort AS paths
                 new_prefix["as_paths"] = [list(path) for path in {tuple(path) for path in as_path_list if path}]
+                unique_asns = list({asn for path in new_prefix["as_paths"] for asn in path})
+                new_prefix['asn_info'] = {}
+                for asn in unique_asns:
+                    new_prefix['asn_info'][asn] = await asn_to_name(asn)
+
                 result.append(new_prefix)
 
     return result
