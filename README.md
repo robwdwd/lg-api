@@ -1,75 +1,120 @@
 # Looking Glass
 
-Python Network Looking Glass, API backend
+Python Network Looking Glass API backend
 
-## Install
+---
 
-Download either source or release file and put somewhere on your filesystem.
+## Installation
 
-### Build Virtual environment
+1. **Download**  
+   Download the source or release file and place it anywhere on your filesystem.
 
-Poetry is used to build the virtual environment although
-any other venv tools can be used to build it. Pipx is a good way to [install
-poetry](https://python-poetry.org/docs/#installing-with-pipx) although you
-can use any of the install methods listed
-[here](https://python-poetry.org/docs/#installation)
+2. **Create a Virtual Environment**  
+   [Poetry](https://python-poetry.org/docs/#installation) is recommended, but any venv tool will work.  
+   Install dependencies:
 
-```console
-poetry install --nodev
-```
+   ```console
+   poetry install --nodev
+   ```
 
-### Configuration
+---
 
-Copy the [examples/env.example](examples/env.example) to `.env` in lg
-root folder (not in the package folder.)
+## Configuration
 
-Make sure to change the `SECRET_KEY` and `CSRF_SECRET` in the `.env` file
-and also set `DEBUG=False` for a production environment.
+Copy `examples/env.example` to `.env` in the project root (not the package folder).
 
-### Location and command configuration
+### Environment Variables
 
-Copy the [examples/config.yml.example](examples/config.yml.example) to config.yml in
-the lg root folder (not in the package folder.) The path to this file can be changed
-by changing CONFIG_FILE in the .env file.
+| Variable                   | Description                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------|
+| `PORT`                     | Port number the application listens on (default: 8012).                                      |
+| `LISTEN`                   | IP/interface to bind the server (default: 127.0.0.1).                                        |
+| `WORKERS`                  | Number of worker processes (default: 4).                                                     |
+| `ROOT_PATH`                | Root path for the app (e.g., `/` or `/lg`).                                                  |
+| `USERNAME`                 | Username for authentication.                                                                 |
+| `PASSWORD`                 | Password for authentication.                                                                 |
+| `ENVIRONMENT`              | Environment type (`development` or `production`).                                            |
+| `DEBUG`                    | Enables debug mode if `True`.                                                                |
+| `LOG_LEVEL`                | Logging level (`debug`, `info`, `warning`).                                                  |
+| `LOG_DIR`                  | Directory for log files (default: `/var/log/lg/`).                                           |
+| `CONFIG_FILE`              | Path to main config file (default: `config.yml`).                                            |
+| `PING_MULTI_MAX_SOURCE`    | Max source locations for multi-ping (default: 3).                                            |
+| `PING_MULTI_MAX_IP`        | Max IPs for multi-ping (default: 5).                                                         |
+| `BGP_MULTI_MAX_SOURCE`     | Max source locations for multi-BGP (default: 3).                                             |
+| `BGP_MULTI_MAX_IP`         | Max IPs for multi-BGP (default: 5).                                                          |
+| `RESOLVE_TRACEROUTE_HOPS`  | Traceroute hop resolution: `off`, `missing`, or `all` (default: `off`).                      |
 
-The config file contains the list of cities, devices and cli commands
-to run on each device type.
+---
 
-Any device type supported by scrapli is supported by the looking glass.
-To find all the device types look
-[here](https://carlmontanari.github.io/scrapli/user_guide/basic_usage/)
+### Location and Command Configuration
 
-Every location needs a device (hostname), the device type, the full name of the
-location, a region and a source interface or ip address (for traceroute and
-ping commands).
+Copy `examples/config.yml.example` to `config.yml` in the root folder.  
+Change the configuration file path using `CONFIG_FILE` in `.env` if needed.
 
-```console
+- The config file lists locations, devices, and CLI commands for each device type.
+- Supported device types: [scrapli device types](https://carlmontanari.github.io/scrapli/user_guide/basic_usage/)
+
+**Example:**
+
+```yaml
 locations:
-  AMS:
-    name: Amsterdam
-    region: Western Europe
-    device: router.ams.example.net
-    type: cisco_iosxr
-    source: loopback999
+  AMS:                              # Location Code
+    name: Amsterdam                 # Location name
+    region: Western Europe          # Region
+    device: router.ams.example.net  # Device hostname
+    type: cisco_iosxr               # Any scrapli supported device type
+    source: loopback999             # Source interface or IP address for ping and traceroute commands
 ```
 
-The config.yml file also contains the commands to run on each device type.
-In each command the string IPADDRESS is substituted for the IP Address or CIDR
-the user enters on the form and SOURCE is substiuted for the source in the location
-configuration. IOS-XR and JunOS commands are in the example but you can add more
-support for other devices provided netmiko supports that device type.
+**Commands:**
 
-### Community maps
+`IPADDRESS` is substituted for the destination IP address or prefix, and `SOURCE` is substituted for the source IP or interface (from the location's `source` key):
 
-Community maps convert the community output in the bgp command to be more human
-friendly. Copy [examples/communities.txt](examples/communities.txt) to the mapsdb folder.
-This is then read at start up and saved to a sqlite database for access. Making any
-changes to the communities.txt file requires a server restart.
+```yaml
+commands:
+  ping:
+    cisco_iosxr: ping IPADDRESS source SOURCE
+    juniper_junos: ping IPADDRESS source SOURCE count 5
+  bgp:
+    cisco_iosxr: show bgp IPADDRESS
+    juniper_junos: show route IPADDRESS protocol bgp detail
+  traceroute:
+    cisco_iosxr: traceroute IPADDRESS source SOURCE timeout 2
+    juniper_junos: traceroute IPADDRESS source SOURCE
+```
 
-### Change permissions
+---
 
-Change the group permissions of the mapsdb folder to the group of your web server
-and add group sticky bit. Make the .env file readable to the web server.
+## Traceroute Hop Resolution
+
+Set `RESOLVE_TRACEROUTE_HOPS` in `.env`:
+
+- `off`: Use router output only.
+- `missing`: Resolve only unresolved hops.
+- `all`: Resolve all hops, ignoring router resolution.
+
+**Tip:**  
+Disable reverse DNS lookup on routers to speed up traceroute. Example config:
+
+```yaml
+traceroute:
+  cisco_iosxr: traceroute IPADDRESS numeric source SOURCE timeout 2
+  juniper_junos: traceroute IPADDRESS no-resolve source SOURCE
+```
+
+---
+
+## Community Maps
+
+Community maps convert BGP community output to human-friendly text.  
+Copy `examples/communities.txt` to the `mapsdb` folder.  
+Restart the server after changes.
+
+---
+
+## Permissions
+
+Set permissions for the `mapsdb` folder and `.env` file:
 
 ```console
 chgrp <web_server_user> mapsdb .env
@@ -77,55 +122,49 @@ chmod g+s mapsdb
 setfacl -dR -m u:<web_server_user>:rwX -m u:<your_user>:rwX mapsdb
 ```
 
-## Running development server
+---
 
-Run the helper app directly. Use poetry or another virtual environment.
+## Running the Development Server
+
+Use Poetry or another virtual environment:
 
 ```console
 poetry shell
 fastapi dev lgapi/main.py
 ```
 
-## Systemd service
+---
 
-Create a systemd unit file to start the lg service at startup.
-An example unit file [examples/lgapi.service](examples//lgapi.service)
-can be used and edited as needed.
+## Systemd Service
 
-```console
-cp examples/lgapi.service /etc/systemd/system/lgapi.service
-```
+1. Copy the example unit file:
 
-Edit the file and change the following as needed `WorkingDirectory`,
-`User`, `Group`. Also alter `PATH` and `VIRTUAL_ENV`
-Environment variables to match your install location.
+   ```console
+   cp examples/lgapi.service /etc/systemd/system/lgapi.service
+   ```
 
-Make the log directory used by the service (gunicorn logs). Set `LOG_DIR` in
-the `.env` file to change this if required and change the username to the
-same user and group as in the unit file.
+2. Edit `WorkingDirectory`, `User`, `Group`, `PATH`, and `VIRTUAL_ENV` as needed.
 
-```console
-mkdir /var/log/lg/
-chown www-data.www-data /var/log/lg/
-```
+3. Create the log directory and set permissions:
 
-By default it runs on port 8010 and listens only on localhost. Change
-this in the `.env` file.
+   ```console
+   mkdir /var/log/lg/
+   chown www-data.www-data /var/log/lg/
+   ```
 
-Finally enable the service
+4. Enable and start the service:
 
-```console
-systemctl daemon-reload
-systemctl enable lgapi.service
-systemctl start lgapi.service
-```
+   ```console
+   systemctl daemon-reload
+   systemctl enable lgapi.service
+   systemctl start lgapi.service
+   ```
 
-## Nginx configuration
+---
 
-A reverse proxy via Nginix is optional but recommeded step. If the pages are
-served under a sub path modify the `ROOT_PATH` in `.env`
-to match for example `ROOT_PATH=/lg`
+## Nginx Configuration
 
-See [examples/nginx.conf](examples/nginx.conf) and
-[examples/nginx-subpath.conf](examples/nginx-subpath.conf) configuration for
-a base to get started.
+A reverse proxy via Nginx is recommended.  
+If serving under a subpath, set `ROOT_PATH` in `.env` (e.g., `ROOT_PATH=/lg`).
+
+See [examples/nginx.conf](examples/nginx.conf) and [examples/nginx-subpath.conf](examples/nginx-subpath.conf) for sample configs.

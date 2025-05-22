@@ -18,7 +18,6 @@ locations:
     type: juniper_junos
     source: 10.1.1.2
 
-
 commands:
   ping:
     cisco_iosxr: ping IPADDRESS source SOURCE
@@ -27,5 +26,5 @@ commands:
     cisco_iosxr: show bgp IPADDRESS
     juniper_junos: show route IPADDRESS protocol bgp detail
   traceroute:
-    cisco_iosxr: traceroute IPADDRESS source SOURCE
+    cisco_iosxr: traceroute IPADDRESS source SOURCE timeout 2
     juniper_junos: traceroute IPADDRESS source SOURCE

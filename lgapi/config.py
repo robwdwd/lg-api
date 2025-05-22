@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     ping_multi_max_ip: int = 5
     bgp_multi_max_source: int = 3
     bgp_multi_max_ip: int = 5
-    resolve_traceroute_hops: Literal['ignore', 'all', 'missing'] = 'ignore'
+    resolve_traceroute_hops: Literal['off', 'all', 'missing'] = 'off'
     log_level: str
     root_path: str = "/"
     debug: bool = False
