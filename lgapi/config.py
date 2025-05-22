@@ -7,7 +7,7 @@
 """Convert .env settings into fastapi config."""
 
 
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     ping_multi_max_ip: int = 5
     bgp_multi_max_source: int = 3
     bgp_multi_max_ip: int = 5
+    resolve_traceroute_hops: Literal['ignore', 'all', 'missing'] = 'ignore'
     log_level: str
     root_path: str = "/"
     debug: bool = False

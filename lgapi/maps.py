@@ -7,12 +7,15 @@
 """Map communities and ASNs to more human values and other data mapping function."""
 
 
+import asyncio
 import re
+import socket
 import sqlite3
 
 import aiosqlite
 
 from lgapi.asrank import asn_to_name
+from lgapi.config import settings
 
 
 def init_db():
@@ -85,9 +88,9 @@ async def process_bgp_output(output: dict) -> list:
                 # Deduplicate and sort AS paths
                 new_prefix["as_paths"] = [list(path) for path in {tuple(path) for path in as_path_list if path}]
                 unique_asns = list({asn for path in new_prefix["as_paths"] for asn in path})
-                new_prefix['asn_info'] = {}
+                new_prefix["asn_info"] = {}
                 for asn in unique_asns:
-                    new_prefix['asn_info'][asn] = await asn_to_name(asn)
+                    new_prefix["asn_info"][asn] = await asn_to_name(asn)
 
                 result.append(new_prefix)
 
@@ -100,8 +103,46 @@ async def process_ping_output(output: dict) -> list:
     return [{**destination, "ip_address": ip_address} for ip_address, destination in output.items()]
 
 
+async def reverse_lookup(ipaddr: str) -> str | None:
+    """Do a reverse lookup on an IP address asynchronously."""
+    loop = asyncio.get_running_loop()
+    try:
+        fqdn, _, _ = await loop.run_in_executor(None, socket.gethostbyaddr, ipaddr)
+        return fqdn
+    except socket.herror:
+        return None
+
+
 async def process_traceroute_output(output: dict) -> list[dict]:
     """Process the output of the traceroute command."""
+    resolve_mode = settings.resolve_traceroute_hops
+
+    if resolve_mode in {"missing", "all"}:
+        results = []
+        for ip_address, data in output.items():
+            hops = data["hops"]
+
+            # Prepare tasks for hops that need resolution
+            tasks = []
+            hop_indices = []
+            for idx, hop in enumerate(hops):
+                hop_ip = hop.get("ip_address")
+                fqdn = hop.get("fqdn")
+                if hop_ip and (not fqdn or resolve_mode == "all"):
+                    tasks.append(reverse_lookup(hop_ip))
+                    hop_indices.append(idx)
+
+            # Run all reverse lookups concurrently
+            resolved_fqdns = await asyncio.gather(*tasks) if tasks else []
+
+            # Assign resolved FQDNs back to hops
+            for idx, fqdn in zip(hop_indices, resolved_fqdns):
+                if fqdn:
+                    hops[idx]["fqdn"] = fqdn
+
+            results.append({"ip_address": ip_address, "hops": hops})
+        return results
+
     return [{"ip_address": ip_address, "hops": data["hops"]} for ip_address, data in output.items()]
 
 
