@@ -1,9 +1,9 @@
 <group name="_.{{ destination }}">
 Tracing the route to {{ destination | IP | IPV6 | _start_}}
 <group name="hops*" method="table">
- {{hop_number| DIGIT }}  {{ip_address|IP | IPV6}} {{ rtt | re(".+")}}
- {{hop_number| DIGIT }}  {{fqdn}} ({{ip_address|IP | IPV6}}) {{ rtt | re(".+")}}
- {{hop_number| DIGIT }}  {{ rtt | re(".+")}}
-    {{ip_address|IP | IPV6}} {{ rtt | re(".+")}}
+ {{hop_number| DIGIT }}  {{ip_address|IP | IPV6}} {{ rtt | re(r".+")}}
+ {{hop_number| DIGIT }}  {{fqdn}} ({{ip_address|IP | IPV6}}) {{ rtt | re(r".+")}}
+ {{hop_number| DIGIT }}  {{ rtt | re(r".+")}}
+    {{ip_address|IP | IPV6}} {{ rtt | re(r".+")}}
 </group>
 </group>
