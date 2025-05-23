@@ -1,5 +1,5 @@
 <group name="_.{{ prefix }}">
-BGP routing table entry for {{ prefix | PREFIX | _start_}}
+BGP routing table entry for {{ prefix | PREFIX | PREFIXV6 |_start_}}
   <group name="paths*">
   Path #{{ignore}}:{{ ignore(r".+") }}{{_start_}}
   {{as_path | re("Local") | re("\d+(?:\s\d+)*") }}{{ignore(r"(,.+)?")}}
