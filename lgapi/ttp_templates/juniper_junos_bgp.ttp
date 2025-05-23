@@ -1,5 +1,5 @@
 <group name="_.{{ prefix }}">
-{{ prefix | PREFIX | _start_}}{{ignore(r".+")}}
+{{ prefix | PREFIX | PREFIXV6 | _start_}}{{ignore(r".+")}}
 <group name="paths*">
 {{ignore(r"\s+")}}{{best_path | re("BGP") | _start_ | let(False)}}    Preference:  {{ignore}}
 {{ignore(r"\s+")}}{{best_path | re("\*BGP") | _start_ | let(True)}}    Preference:  {{ignore}}
