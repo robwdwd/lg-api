@@ -73,14 +73,26 @@ locations:
 ```yaml
 commands:
   ping:
-    cisco_iosxr: ping IPADDRESS source SOURCE
-    juniper_junos: ping IPADDRESS source SOURCE count 5
+    cisco_iosxr:
+      ipv4: ping IPADDRESS source SOURCE
+      ipv6: ping IPADDRESS source SOURCE
+    juniper_junos:
+      ipv4: ping IPADDRESS source SOURCE count 5
+      ipv6: ping IPADDRESS source SOURCE count 5
   bgp:
-    cisco_iosxr: show bgp IPADDRESS
-    juniper_junos: show route IPADDRESS protocol bgp detail
+    cisco_iosxr:
+      ipv4: show bgp ipv4 unicast IPADDRESS
+      ipv6: show bgp ipv6 unicast IPADDRESS
+    juniper_junos:
+      ipv4: show route IPADDRESS protocol bgp detail
+      ipv6: show route IPADDRESS protocol bgp detail
   traceroute:
-    cisco_iosxr: traceroute IPADDRESS source SOURCE timeout 2
-    juniper_junos: traceroute IPADDRESS source SOURCE
+    cisco_iosxr:
+      ipv4: traceroute IPADDRESS source SOURCE timeout 2
+      ipv6: traceroute IPADDRESS source SOURCE timeout 2
+    juniper_junos:
+      ipv4: traceroute IPADDRESS source SOURCE
+      ipv6: traceroute IPADDRESS source SOURCE
 ```
 
 ---
@@ -98,8 +110,12 @@ Disable reverse DNS lookup on routers to speed up traceroute. Example config:
 
 ```yaml
 traceroute:
-  cisco_iosxr: traceroute IPADDRESS numeric source SOURCE timeout 2
-  juniper_junos: traceroute IPADDRESS no-resolve source SOURCE
+    cisco_iosxr:
+      ipv4: traceroute IPADDRESS numeric source SOURCE timeout 2
+      ipv6: traceroute IPADDRESS numeric source SOURCE timeout 2
+    juniper_junos:
+      ipv4: traceroute IPADDRESS no-resolve source SOURCE
+      ipv6: traceroute IPADDRESS no-resolve source SOURCE
 ```
 
 ---

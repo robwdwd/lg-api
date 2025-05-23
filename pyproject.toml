@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lgapi"
-version = "1.0.0"
+version = "1.0.1"
 description = "Python Network Looking Glass backend API."
 authors = ["Rob Woodward <rob@twfmail.uk>"]
 license = "BSD-2-Clause"
