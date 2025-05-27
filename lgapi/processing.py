@@ -9,6 +9,7 @@
 
 import asyncio
 import collections
+import re
 import socket
 
 import aiosqlite
