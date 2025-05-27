@@ -26,6 +26,7 @@ DestIPNet = Annotated[
 ]
 
 IPAddressStr = Annotated[str, Field(description="IP Address", examples=["10.1.1.1", "4.4.4.4", "9.9.9.9"])]
+PrefixStr = Annotated[str, Field(description="Prefix in CIDR format", examples=["10.0.0.0/21", "10.1.2.0/24"])]
 
 
 class MultiPingBody(BaseModel):
@@ -123,7 +124,7 @@ class BgpPath(BaseModel):
 class BgpData(BaseModel):
     """BGP Prefix"""
 
-    prefix: Annotated[str, Field(description="Prefix in CIDR format", examples=["10.0.0.0/21", "10.1.2.0/24"])]
+    prefix: PrefixStr
     paths: list[BgpPath]
     as_paths: Annotated[list[list[int]], Field(description="List of unique AS paths for this prefix.")] | None = None
     asn_info: dict[str, ASNInfoEntry] | dict = Field(default_factory=dict)
@@ -181,6 +182,15 @@ class MultiPingResult(BaseMultiResult):
 
 # Traceroute output
 #
+class IPAddressInfo(BaseModel):
+    """Additional IP address information"""
+
+    asn: str | None = None
+    bgp_prefix: PrefixStr | None = None
+    as_name: str | None = None
+    registry: str | None = None
+
+
 class TracerouteHop(BaseModel):
     """Individual Traceroute hop"""
 
@@ -188,6 +198,7 @@ class TracerouteHop(BaseModel):
     ip_address: str | None = None
     rtt: str | None = None
     fqdn: str | None = None
+    info: IPAddressInfo | None = None
 
 
 class TracerouteData(BaseModel):
