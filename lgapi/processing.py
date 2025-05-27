@@ -9,10 +9,12 @@
 
 import asyncio
 import collections
+import ipaddress
 import re
 import socket
 
 import aiosqlite
+import dns.asyncresolver
 
 from lgapi.asrank import asn_to_name
 from lgapi.config import settings
@@ -160,19 +162,46 @@ async def process_junos_hops(hops: list):
     return combined
 
 
+async def cymru_ip_to_asn(ip: str) -> dict | None:
+    """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
+    try:
+        ip_obj = ipaddress.ip_address(ip)
+        if ip_obj.version == 4:
+            reversed_ip = ".".join(reversed(ip.split(".")))
+            query = f"{reversed_ip}.origin.asn.cymru.com"
+        else:
+            nibbles = ip_obj.exploded.replace(":", "")
+            reversed_nibbles = ".".join(reversed(nibbles))
+            query = f"{reversed_nibbles}.origin6.asn.cymru.com"
+        resolver = dns.asyncresolver.Resolver()
+        answer = await resolver.resolve(query, "TXT")
+        txt = answer[0].to_text().strip('"')
+        parts = [p.strip() for p in txt.split("|")]
+        return {
+            "asn": parts[0],
+            "bgp_prefix": parts[2],
+            "cc": parts[3],
+            "registry": parts[4],
+            "allocated": parts[5],
+            "as_name": parts[6],
+        }
+    except Exception:
+        return None
+
+
 async def process_traceroute_output(output: dict, device_type: str) -> list[dict]:
     """Process the output of the traceroute command."""
     resolve_mode = settings.resolve_traceroute_hops
 
-    if resolve_mode in {"missing", "all"}:
-        results = []
-        for ip_address, data in output.items():
-            hops = data["hops"]
+    results = []
+    for ip_address, data in output.items():
+        hops = data["hops"]
 
-            if device_type == "juniper_junos":
-                hops = await process_junos_hops(hops)
+        if device_type == "juniper_junos":
+            hops = await process_junos_hops(hops)
 
-            # Prepare tasks for hops that need resolution, avoid duplicate lookups
+        # Prepare tasks for hops that need resolution, avoid duplicate lookups
+        if resolve_mode in {"missing", "all"}:
             ip_to_indices = collections.defaultdict(list)
             for idx, hop in enumerate(hops):
                 hop_ip = hop.get("ip_address")
@@ -193,10 +222,20 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
                     for idx in indices:
                         hops[idx]["fqdn"] = fqdn
 
-            results.append({"ip_address": ip_address, "hops": hops})
-        return results
+        # --- ASN info for all hops with IPs ---
+        all_ips = {hop.get("ip_address") for hop in hops if hop.get("ip_address")}
+        cymru_results = {}
+        if all_ips:
+            cymru_infos = await asyncio.gather(*(cymru_ip_to_asn(ip) for ip in all_ips))
+            cymru_results = dict(zip(all_ips, cymru_infos))
+        for hop in hops:
+            ip = hop.get("ip_address")
+            if ip and ip in cymru_results:
+                hop["asn_info"] = cymru_results[ip]
 
-    return [{"ip_address": ip_address, "hops": data["hops"]} for ip_address, data in output.items()]
+        results.append({"ip_address": ip_address, "hops": hops})
+
+    return results
 
 
 async def process_location_output_by_region(locations: list[dict]) -> list[dict]:
