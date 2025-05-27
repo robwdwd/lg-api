@@ -189,6 +189,7 @@ class IPAddressInfo(BaseModel):
     bgp_prefix: PrefixStr | None = None
     as_name: str | None = None
     registry: str | None = None
+    asn_cc: str | None = None
 
 
 class TracerouteHop(BaseModel):

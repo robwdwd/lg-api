@@ -178,12 +178,12 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
         txt = answer[0].to_text().strip('"')
         parts = [p.strip() for p in txt.split("|")]
 
-
         def get_part(idx):
             try:
                 return parts[idx]
             except ValueError:
                 return None
+
         asn = get_part(0)
         result = {
             "asn": asn,
@@ -191,13 +191,13 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
             "registry": get_part(3),
         }
 
-
         # If ASN is present, get more info from ASN DNS interface
         if asn and asn.isdigit():
             asn_query = f"AS{asn}.asn.cymru.com"
             asn_answer = await resolver.resolve(asn_query, "TXT")
             asn_txt = asn_answer[0].to_text().strip('"')
             asn_parts = [p.strip() for p in asn_txt.split("|")]
+
             def get_asn_part(idx):
                 try:
                     return asn_parts[idx]
@@ -205,8 +205,10 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
                     return None
 
             result["as_name"] = get_asn_part(4)
+            result["as_cc"] = get_asn_part(1)
         else:
             result["as_name"] = None
+            result["as_cc"] = None
 
         return result
     except Exception:
@@ -258,7 +260,6 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
                 hop["info"] = cymru_results[ip]
 
         results.append({"ip_address": ip_address, "hops": hops})
-
 
     return results
 
