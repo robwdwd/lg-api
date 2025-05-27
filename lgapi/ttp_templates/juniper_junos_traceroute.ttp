@@ -1,10 +1,6 @@
 <group name="_.{{ destination }}">
 traceroute to {{ destination | IP | IPV6 | _start_}}{{ignore(r"(.+)?")}}
 <group name="hops*" method="table">
- {{hop_number | DIGIT }}  {{ip_address | IP | IPV6}}  {{ rtt | re(r".+")}}
- {{hop_number | DIGIT }}  {{ignore(r"[\d\.]+")}} ({{ip_address | IP | IPV6}})  {{ rtt | re(r".+")}}
- {{hop_number | DIGIT }}  {{fqdn | re(r"[\.\w\d\-]+")}} ({{ip_address | IP | IPV6}})  {{ rtt | re(r".+")}}
- {{hop_number | DIGIT }}  {{ rtt | re(r".+")}}
-    {{ip_address|IP | IPV6}} {{ rtt | re(r".+")}}
+ {{ hop_number | DIGIT }}  {{ probes | re(r".+")}}
 </group>
 </group>

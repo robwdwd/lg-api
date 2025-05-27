@@ -6,8 +6,6 @@
 #
 """Device command runner."""
 import asyncio
-
-# import pprint
 from typing import Any
 
 from fastapi import HTTPException
@@ -24,8 +22,6 @@ from lgapi.maps import (
     process_traceroute_output,
 )
 from lgapi.ttp import get_template, parse_txt
-
-# pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 
@@ -67,7 +63,7 @@ async def execute_on_device(
         return await net_connect.send_commands(commands=cli_cmds, timeout_ops=timeout)
 
 
-async def process_response(result: str, template: str, command: str) -> list:
+async def process_response(result: str, template: str, command: str, device_type: str) -> list:
     """Process the device output based on command type."""
 
     parsed_result = parse_txt(result, template)
@@ -78,7 +74,7 @@ async def process_response(result: str, template: str, command: str) -> list:
         if command == "ping":
             return await process_ping_output(parsed_result[0])
         if command == "traceroute":
-            return await process_traceroute_output(parsed_result[0])
+            return await process_traceroute_output(parsed_result[0], device_type)
 
     return []
 
@@ -100,7 +96,7 @@ async def get_multi_results(hostname: str, device: dict, command: str, raw_only:
     raw_output = "\n".join(resp.result for resp in response.data)
 
     if not raw_only and (template := device.get("template")):
-        parsed_output = await process_response(raw_output, template, command)
+        parsed_output = await process_response(raw_output, template, command, device["type"])
         if not parsed_output:
             raw_only = True
 
@@ -124,8 +120,7 @@ def organise_by_location(results: list, raw_only: bool = False) -> dict:
             output_table["errors"].append(str(result))
         else:
             location = result["location"]
-            location_name = LOCATIONS_CFG[location]["name"]
-            output_table["locations"].append({"name": location_name, "results": result})
+            output_table["locations"].append({"name": LOCATIONS_CFG[location]["name"], "results": result})
 
     return output_table
 
@@ -185,7 +180,7 @@ async def do_single_lg_command(location: str, command: str, ipaddress: str, raw_
     # Parse output if raw_only is False and a template exists
     parsed_output = []
     if not raw_only and (template_name := get_template(command, cli["type"])):
-        parsed_output = await process_response(response.result, template_name, command)
+        parsed_output = await process_response(response.result, template_name, command, LOCATIONS_CFG[location]["type"])
     if not parsed_output:
         raw_only = True
 

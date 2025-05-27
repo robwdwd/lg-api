@@ -14,7 +14,7 @@ pyyaml = "^6.0"
 ttp = "^0.9.2"
 scrapli = "^2025.1.30"
 asyncssh = "^2.20.0"
-fastapi = {extras = ["standard"], version = "^0.115.12"}
+fastapi = { extras = ["standard"], version = "^0.115.12" }
 pydantic-settings = "^2.8.1"
 python-dotenv = "^1.1.0"
 gunicorn = "^23.0.0"

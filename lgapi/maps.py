@@ -8,6 +8,7 @@
 
 
 import asyncio
+import collections
 import re
 import socket
 import sqlite3
@@ -113,7 +114,80 @@ async def reverse_lookup(ipaddr: str) -> str | None:
         return None
 
 
-async def process_traceroute_output(output: dict) -> list[dict]:
+async def process_junos_hops(hops: list):
+    """Process JunOS traceroute hops"""
+    probe_regex = re.compile(
+        r"^(?:(?P<fqdn>[\w\.-]+) \((?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+)\)"
+        r"|(?P<ip_only>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+))?\s*(?P<rtt>\d+\.\d+)?$"
+    )
+
+    flat_hops = []
+    for hop in hops:
+        hop_number = str(hop["hop_number"])
+        probes = hop["probes"]
+        segments = [seg.strip() for seg in probes.split("ms") if seg.strip()]
+        last_fqdn = None
+        last_ip = None
+
+        for seg in segments:
+            timeout_count = seg.count("*")
+            for _ in range(timeout_count):
+                flat_hops.append({"hop_number": hop_number, "ip_address": None, "rtt": "*", "fqdn": None})
+                hop_number = None  # Only set hop_number for the first probe in this hop
+            seg = seg.replace("*", "").strip()
+            if not seg:
+                continue
+
+            m = probe_regex.match(seg)
+            if m:
+                fqdn = m.group("fqdn")
+                ip = m.group("ip") or m.group("ip_only")
+                rtt = m.group("rtt")
+                if fqdn == ip:
+                    fqdn = None
+                if ip and rtt:
+                    flat_hops.append(
+                        {"hop_number": hop_number, "ip_address": ip, "rtt": f"{float(rtt):g} msec", "fqdn": fqdn}
+                    )
+                    hop_number = None
+                elif rtt and last_ip:
+                    flat_hops.append(
+                        {
+                            "hop_number": hop_number,
+                            "ip_address": last_ip,
+                            "rtt": f"{float(rtt):g} msec",
+                            "fqdn": last_fqdn,
+                        }
+                    )
+                    hop_number = None
+                if ip:
+                    last_ip = ip
+                    last_fqdn = fqdn
+
+    # Now combine consecutive entries with the same IP
+    combined = []
+    for entry in flat_hops:
+        if combined and entry["ip_address"] == combined[-1]["ip_address"] and entry["fqdn"] == combined[-1]["fqdn"]:
+            # Combine RTTs
+            combined[-1]["rtt"] += f" {entry['rtt']}"
+            # If this entry is a timeout, preserve it
+            if entry["rtt"] == "*":
+                combined[-1]["rtt"] += ""
+        else:
+            combined.append(entry)
+
+    # Set hop_number to None except for the first occurrence of each original hop
+    last_hop_number = None
+    for entry in combined:
+        if entry["hop_number"] == last_hop_number:
+            entry["hop_number"] = None
+        else:
+            last_hop_number = entry["hop_number"]
+
+    return combined
+
+
+async def process_traceroute_output(output: dict, device_type: str) -> list[dict]:
     """Process the output of the traceroute command."""
     resolve_mode = settings.resolve_traceroute_hops
 
@@ -122,28 +196,37 @@ async def process_traceroute_output(output: dict) -> list[dict]:
         for ip_address, data in output.items():
             hops = data["hops"]
 
-            # Prepare tasks for hops that need resolution
-            tasks = []
-            hop_indices = []
+            if device_type == "juniper_junos":
+                hops = await process_junos_hops(hops)
+
+            # Prepare tasks for hops that need resolution, avoid duplicate lookups
+            ip_to_indices = collections.defaultdict(list)
             for idx, hop in enumerate(hops):
                 hop_ip = hop.get("ip_address")
                 fqdn = hop.get("fqdn")
                 if hop_ip and (not fqdn or resolve_mode == "all"):
-                    tasks.append(reverse_lookup(hop_ip))
-                    hop_indices.append(idx)
+                    ip_to_indices[hop_ip].append(idx)
 
-            # Run all reverse lookups concurrently
-            resolved_fqdns = await asyncio.gather(*tasks) if tasks else []
+            # Run all reverse lookups concurrently (unique IPs only)
+            resolved_fqdns = {}
+            if ip_to_indices:
+                lookup_results = await asyncio.gather(
+                    *(reverse_lookup(ip) for ip in ip_to_indices)
+                )
+                resolved_fqdns = dict(zip(ip_to_indices, lookup_results))
 
             # Assign resolved FQDNs back to hops
-            for idx, fqdn in zip(hop_indices, resolved_fqdns):
+            for ip, indices in ip_to_indices.items():
+                fqdn = resolved_fqdns.get(ip)
                 if fqdn:
-                    hops[idx]["fqdn"] = fqdn
+                    for idx in indices:
+                        hops[idx]["fqdn"] = fqdn
 
             results.append({"ip_address": ip_address, "hops": hops})
         return results
 
     return [{"ip_address": ip_address, "hops": data["hops"]} for ip_address, data in output.items()]
+
 
 
 async def process_location_output_by_region(locations: list[dict]) -> list[dict]:

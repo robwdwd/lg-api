@@ -6,6 +6,7 @@
 #
 """TTP Template helper functions."""
 
+
 from pathlib import Path
 
 from ttp import ttp
@@ -15,6 +16,7 @@ def parse_txt(raw_output: str, template: str) -> list[dict[str, dict]]:
     """Parse raw device output with ttp template."""
     try:
         ttp_parser = ttp(data=raw_output, template=template)
+
         ttp_parser.parse()
         return ttp_parser.result(structure="flat_list")
     except Exception:

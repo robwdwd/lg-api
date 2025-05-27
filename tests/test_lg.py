@@ -1,4 +1,4 @@
-from lg import __version__
+from lgapi import __version__
 
 
 def test_version():
