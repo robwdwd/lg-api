@@ -23,7 +23,7 @@ from lgapi.datamodels import (
     TracerouteResult,
 )
 from lgapi.device import do_multi_lg_command, do_single_lg_command
-from lgapi.maps import process_location_output_by_region
+from lgapi.processing import process_location_output_by_region
 from lgapi.validation import IPNetOrAddress, validate_location
 
 app = FastAPI(debug=settings.debug)

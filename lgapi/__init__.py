@@ -6,7 +6,33 @@
 #
 """Looking glass API init."""
 
+import re
+import sqlite3
 
-from lgapi.maps import init_db
+
+def init_db():
+    """Initialise the mappings database."""
+
+    db_con = sqlite3.connect("mapsdb/maps.db")
+
+    db_cursor = db_con.cursor()
+    db_cursor.execute("DROP TABLE IF EXISTS communities")
+    db_cursor.execute("CREATE TABLE communities(community, name)")
+
+    records = []
+
+    with open("mapsdb/communities.txt", "r") as communities_file:
+        for line in communities_file:
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue
+
+            data = re.split(r"\s+", line, maxsplit=1)
+            if len(data) == 2:
+                records.append(data)
+
+    db_cursor.executemany("INSERT INTO communities VALUES(?,?);", records)
+    db_con.commit()
+    db_con.close()
 
 init_db()

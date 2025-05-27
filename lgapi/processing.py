@@ -9,40 +9,12 @@
 
 import asyncio
 import collections
-import re
 import socket
-import sqlite3
 
 import aiosqlite
 
 from lgapi.asrank import asn_to_name
 from lgapi.config import settings
-
-
-def init_db():
-    """Initialise the mappings database."""
-
-    db_con = sqlite3.connect("mapsdb/maps.db")
-
-    db_cursor = db_con.cursor()
-    db_cursor.execute("DROP TABLE IF EXISTS communities")
-    db_cursor.execute("CREATE TABLE communities(community, name)")
-
-    records = []
-
-    with open("mapsdb/communities.txt", "r") as communities_file:
-        for line in communities_file:
-            line = line.strip()
-            if line.startswith("#") or not line:
-                continue
-
-            data = re.split(r"\s+", line, maxsplit=1)
-            if len(data) == 2:
-                records.append(data)
-
-    db_cursor.executemany("INSERT INTO communities VALUES(?,?);", records)
-    db_con.commit()
-    db_con.close()
 
 
 async def process_bgp_output(output: dict) -> list:
@@ -210,9 +182,7 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
             # Run all reverse lookups concurrently (unique IPs only)
             resolved_fqdns = {}
             if ip_to_indices:
-                lookup_results = await asyncio.gather(
-                    *(reverse_lookup(ip) for ip in ip_to_indices)
-                )
+                lookup_results = await asyncio.gather(*(reverse_lookup(ip) for ip in ip_to_indices))
                 resolved_fqdns = dict(zip(ip_to_indices, lookup_results))
 
             # Assign resolved FQDNs back to hops
@@ -226,7 +196,6 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
         return results
 
     return [{"ip_address": ip_address, "hops": data["hops"]} for ip_address, data in output.items()]
-
 
 
 async def process_location_output_by_region(locations: list[dict]) -> list[dict]:

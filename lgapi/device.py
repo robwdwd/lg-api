@@ -16,7 +16,7 @@ from scrapli.response import MultiResponse, Response
 from lgapi.commands import get_cmd, get_multi_commands
 from lgapi.config import settings
 from lgapi.datamodels import MultiBgpBody, MultiPingBody
-from lgapi.maps import (
+from lgapi.processing import (
     process_bgp_output,
     process_ping_output,
     process_traceroute_output,
