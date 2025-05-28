@@ -4,13 +4,18 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-from typing import Annotated
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Annotated, TypedDict, cast
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from httpx import AsyncClient, Limits
 from pydantic import AfterValidator, IPvAnyAddress
 
+from lgapi.commands import execute_multiple_commands, execute_single_command
 from lgapi.config import settings
+from lgapi.database import init_community_map_db
 from lgapi.datamodels import (
     BgpResult,
     LocationRegionResponse,
@@ -22,11 +27,38 @@ from lgapi.datamodels import (
     PingResult,
     TracerouteResult,
 )
-from lgapi.device import do_multi_lg_command, do_single_lg_command
-from lgapi.processing import process_location_output_by_region
+from lgapi.processing import (
+    process_bgp_output,
+    process_location_output_by_region,
+    process_ping_output,
+    process_traceroute_output,
+)
+from lgapi.ttp import get_template, parse_txt
 from lgapi.validation import IPNetOrAddress, validate_location
 
-app = FastAPI(debug=settings.debug)
+LOCATIONS_CFG = settings.lg_config["locations"]
+
+
+class State(TypedDict):
+    """Stores the state variables from the lifespan"""
+
+    httpclient: AsyncClient
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
+    """Lifespan for setup etc with fastAPI"""
+
+    # Populate the community mapping database
+    init_community_map_db()
+
+    # Set up the http client
+    httpclient = AsyncClient(limits=Limits(max_connections=None, max_keepalive_connections=20))
+    yield {"httpclient": httpclient}
+    await httpclient.aclose()
+
+
+app = FastAPI(debug=settings.debug, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,14 +67,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-async def execute_command(location: str, command: str, destination: str, raw: bool) -> dict:
-    """Helper function to execute a command."""
-    try:
-        return await do_single_lg_command(location=location, command=command, ipaddress=destination, raw_only=raw)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Command execution failed: {str(e)}")
 
 
 @app.get("/locations", response_model=list[LocationResponse])
@@ -69,7 +93,26 @@ async def ping(
     - **destination**: Destination IP address to ping
     - **raw**: Return only raw output without any parsing.
     """
-    return await execute_command(location, "ping", str(destination), raw)
+    result = await execute_single_command(location, "ping", str(destination))
+
+    # Parse output if raw_only is False and a template exists
+    parsed_output = []
+    if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location]["type"])):
+        parsed_result = parse_txt(result, template_name)
+        if isinstance(parsed_result, list) and parsed_result:
+            parsed_output = await process_ping_output(parsed_result[0])
+
+    if not parsed_output:
+        raw = True
+
+    return {
+        "parsed_output": parsed_output,
+        "raw_output": result,
+        "raw_only": raw,
+        "command": "bgp",
+        "location": location,
+        "location_name": LOCATIONS_CFG[location]["name"],
+    }
 
 
 @app.get("/traceroute/{location}/{destination}", response_model=TracerouteResult)
@@ -84,11 +127,31 @@ async def traceroute(
     - **destination**: Destination IP address to traceroute to
     - **raw**: Return only raw output without any parsing.
     """
-    return await execute_command(location, "traceroute", str(destination), raw)
+    result = await execute_single_command(location, "traceroute", str(destination))
+
+    # Parse output if raw_only is False and a template exists
+    parsed_output = []
+    if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location]["type"])):
+        parsed_result = parse_txt(result, template_name)
+        if isinstance(parsed_result, list) and parsed_result:
+            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location]["type"])
+
+    if not parsed_output:
+        raw = True
+
+    return {
+        "parsed_output": parsed_output,
+        "raw_output": result,
+        "raw_only": raw,
+        "command": "bgp",
+        "location": location,
+        "location_name": LOCATIONS_CFG[location]["name"],
+    }
 
 
 @app.get("/bgp/{location}/{destination:path}", response_model=BgpResult)
 async def bgp(
+    request: Request,
     location: Annotated[str, AfterValidator(validate_location)],
     destination: IPNetOrAddress,
     raw: bool = False,
@@ -99,16 +162,36 @@ async def bgp(
     - **destination**: Destination IP address or CIDR to view
     - **raw**: Return only raw output without any parsing.
     """
-    return await execute_command(location, "bgp", str(destination), raw)
+    result = await execute_single_command(location, "bgp", str(destination))
+
+    # Parse output if raw_only is False and a template exists
+    parsed_output = []
+    if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location]["type"])):
+        parsed_result = parse_txt(result, template_name)
+        if isinstance(parsed_result, list) and parsed_result:
+            httpclient = cast(AsyncClient, request.state.httpclient)
+            parsed_output = await process_bgp_output(parsed_result[0], httpclient)
+
+    if not parsed_output:
+        raw = True
+
+    return {
+        "parsed_output": parsed_output,
+        "raw_output": result,
+        "raw_only": raw,
+        "command": "bgp",
+        "location": location,
+        "location_name": LOCATIONS_CFG[location]["name"],
+    }
 
 
 @app.post("/multi/ping", response_model=MultiPingResult)
 async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
     """Ping from multiple sources to multiple destinations"""
-    return await do_multi_lg_command(targets, "ping", raw)
+    return await execute_multiple_commands(targets, "ping")
 
 
 @app.post("/multi/bgp", response_model=MultiBgpResult)
 async def multi_bgp(targets: MultiBgpBody, raw: bool = False) -> dict:
     """Get BGP output from multiple sources to multiple destinations"""
-    return await do_multi_lg_command(targets, "bgp", raw)
+    return await execute_multiple_commands(targets, "bgp")

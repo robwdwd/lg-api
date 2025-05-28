@@ -13,7 +13,7 @@ from scrapli import AsyncScrapli
 from scrapli.exceptions import ScrapliException
 from scrapli.response import MultiResponse, Response
 
-from lgapi.commands import get_cmd, get_multi_commands
+from lgapi.commands import DEFAULT_TIMEOUT, get_command_timeout, get_multi_commands
 from lgapi.config import settings
 from lgapi.datamodels import MultiBgpBody, MultiPingBody
 from lgapi.processing import (
@@ -24,14 +24,6 @@ from lgapi.processing import (
 from lgapi.ttp import get_template, parse_txt
 
 LOCATIONS_CFG = settings.lg_config["locations"]
-
-DEFAULT_TIMEOUT = 60
-COMMAND_TIMEOUTS = {"traceroute": 600}
-
-
-def get_command_timeout(command: str) -> int:
-    """Get timeout for a specific command."""
-    return COMMAND_TIMEOUTS.get(command, DEFAULT_TIMEOUT)
 
 
 def get_default_args(hostname: str, device_type: str) -> dict:
@@ -63,6 +55,24 @@ async def execute_on_device(
         return await net_connect.send_commands(commands=cli_cmds, timeout_ops=timeout)
 
 
+async def execute_on_devices(hostname: str, device: dict, command: str) -> tuple[str, str]:
+    """Run multiple commands on the device and parse/process the output"""
+    try:
+        response = await execute_on_device(
+            hostname=hostname,
+            device_type=device["type"],
+            cli_cmds=device["cmds"],
+            timeout=get_command_timeout(command),
+        )
+
+    except (ScrapliException, OSError) as err:
+        raise Exception(f"Error getting output for {device['location']}") from err
+
+    raw_output = "\n".join(resp.result for resp in response.data)
+
+    return (hostname, raw_output)
+
+
 async def process_response(result: str, template: str, command: str, device_type: str) -> list:
     """Process the device output based on command type."""
 
@@ -77,37 +87,6 @@ async def process_response(result: str, template: str, command: str, device_type
             return await process_traceroute_output(parsed_result[0], device_type)
 
     return []
-
-
-async def get_multi_results(hostname: str, device: dict, command: str, raw_only: bool = False) -> dict:
-    """Run multiple commands on the device and parse/process the output"""
-    parsed_output = []
-    try:
-        response = await execute_on_device(
-            hostname=hostname,
-            device_type=device["type"],
-            cli_cmds=device["cmds"],
-            timeout=get_command_timeout(command),
-        )
-
-    except (ScrapliException, OSError) as err:
-        raise Exception(f"Error getting output for {device['location']}") from err
-
-    raw_output = "\n".join(resp.result for resp in response.data)
-
-    if not raw_only and (template := device.get("template")):
-        parsed_output = await process_response(raw_output, template, command, device["type"])
-        if not parsed_output:
-            raw_only = True
-
-    return {
-        "parsed_output": parsed_output,
-        "raw_output": raw_output,
-        "command": command,
-        "location": device["location"],
-        "location_name": device["location_name"],
-        "raw_only": raw_only,
-    }
 
 
 def organise_by_location(results: list, raw_only: bool = False) -> dict:
@@ -125,9 +104,9 @@ def organise_by_location(results: list, raw_only: bool = False) -> dict:
     return output_table
 
 
-async def gather_device_results(devices: dict[str, Any], command: str, raw_only: bool) -> list:
+async def gather_device_results(devices: dict[str, Any], command: str) -> list:
     """Gather responses from devices asynchronously when running a multi command."""
-    tasks = [get_multi_results(hostname, device, command, raw_only) for hostname, device in devices.items()]
+    tasks = [execute_on_devices(hostname, device, command) for hostname, device in devices.items()]
     return await asyncio.gather(*tasks, return_exceptions=True)
 
 
@@ -157,38 +136,3 @@ async def do_multi_lg_command(targets: MultiPingBody | MultiBgpBody, command: st
         ) from err
 
     return organise_by_location(results, raw_only)
-
-
-async def do_single_lg_command(location: str, command: str, ipaddress: str, raw_only: bool = False) -> dict:
-    """Run a looking glass command on a device."""
-
-    cli = get_cmd(location, command, ipaddress)
-
-    try:
-        response = await execute_on_device(
-            hostname=cli["device"],
-            device_type=cli["type"],
-            cli_cmds=cli["cmd"],
-            timeout=get_command_timeout(command),
-        )
-    except (ScrapliException, OSError) as err:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error executing command '{command}' at location '{location}'",
-        ) from err
-
-    # Parse output if raw_only is False and a template exists
-    parsed_output = []
-    if not raw_only and (template_name := get_template(command, cli["type"])):
-        parsed_output = await process_response(response.result, template_name, command, LOCATIONS_CFG[location]["type"])
-    if not parsed_output:
-        raw_only = True
-
-    return {
-        "parsed_output": parsed_output,
-        "raw_output": response.result,
-        "raw_only": raw_only,
-        "command": command,
-        "location": location,
-        "location_name": LOCATIONS_CFG[location]["name"],
-    }

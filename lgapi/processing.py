@@ -15,12 +15,13 @@ import socket
 
 import aiosqlite
 import dns.asyncresolver
+from httpx import AsyncClient
 
 from lgapi.asrank import asn_to_name
 from lgapi.config import settings
 
 
-async def process_bgp_output(output: dict) -> list:
+async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
     """Process the output of the BGP command."""
     result = []
 
@@ -66,7 +67,7 @@ async def process_bgp_output(output: dict) -> list:
                 unique_asns = list({asn for path in new_prefix["as_paths"] for asn in path})
                 new_prefix["asn_info"] = {}
                 for asn in unique_asns:
-                    new_prefix["asn_info"][asn] = await asn_to_name(asn)
+                    new_prefix["asn_info"][asn] = await asn_to_name(asn, httpclient)
 
                 result.append(new_prefix)
 
@@ -218,8 +219,8 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
 async def process_traceroute_output(output: dict, device_type: str) -> list[dict]:
     """Process the output of the traceroute command."""
     resolve_mode = settings.resolve_traceroute_hops
-
     results = []
+
     for ip_address, data in output.items():
         hops = data["hops"]
 
@@ -236,28 +237,26 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
                     ip_to_indices[hop_ip].append(idx)
 
             # Run all reverse lookups concurrently (unique IPs only)
-            resolved_fqdns = {}
             if ip_to_indices:
                 lookup_results = await asyncio.gather(*(reverse_lookup(ip) for ip in ip_to_indices))
                 resolved_fqdns = dict(zip(ip_to_indices, lookup_results))
 
-            # Assign resolved FQDNs back to hops
-            for ip, indices in ip_to_indices.items():
-                fqdn = resolved_fqdns.get(ip)
-                if fqdn:
-                    for idx in indices:
-                        hops[idx]["fqdn"] = fqdn
+                # Assign resolved FQDNs back to hops
+                for ip, indices in ip_to_indices.items():
+                    fqdn = resolved_fqdns.get(ip)
+                    if fqdn:
+                        for idx in indices:
+                            hops[idx]["fqdn"] = fqdn
 
         # --- ASN info for all hops with IPs ---
         all_ips = {hop.get("ip_address") for hop in hops if hop.get("ip_address")}
-        cymru_results = {}
         if all_ips:
             cymru_infos = await asyncio.gather(*(cymru_ip_to_asn(ip) for ip in all_ips))
             cymru_results = dict(zip(all_ips, cymru_infos))
-        for hop in hops:
-            ip = hop.get("ip_address")
-            if ip and ip in cymru_results:
-                hop["info"] = cymru_results[ip]
+            for hop in hops:
+                ip = hop.get("ip_address")
+                if ip:
+                    hop["info"] = cymru_results.get(ip)
 
         results.append({"ip_address": ip_address, "hops": hops})
 

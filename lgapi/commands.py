@@ -7,11 +7,26 @@
 """Get commands to run on devices."""
 
 import ipaddress
+import pprint
+
+from fastapi import HTTPException
+from scrapli.exceptions import ScrapliException
 
 from lgapi.config import settings
+from lgapi.datamodels import MultiBgpBody, MultiPingBody
+from lgapi.device import execute_on_device, gather_device_results
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 COMMANDS_CFG = settings.lg_config["commands"]
+
+DEFAULT_TIMEOUT = 60
+COMMAND_TIMEOUTS = {"traceroute": 600}
+
+pp = pprint.PrettyPrinter(indent=2, width=120)
+
+def get_command_timeout(command: str) -> int:
+    """Get timeout for a specific command."""
+    return COMMAND_TIMEOUTS.get(command, DEFAULT_TIMEOUT)
 
 
 def get_ip_version(ip: str) -> str:
@@ -68,16 +83,7 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
 
 
 def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
-    """Get command to run on device.
-
-    Args:
-        location (str): Location user selected
-        command (str): Command user selected (bgp, ping, traceroute)
-        ip_address (str): IP or CIDR user entered
-
-    Returns:
-        dict[str, str]: Device, type of device, and CLI command to run
-    """
+    """Get command to run on device."""
     loc_cfg = LOCATIONS_CFG[location]
     device = loc_cfg["device"]
     device_type = loc_cfg["type"]
@@ -86,3 +92,47 @@ def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
     cli_cmd = build_cli_cmd(command, device_type, ip_address, source)
 
     return {"device": device, "type": device_type, "cmd": cli_cmd}
+
+
+async def execute_multiple_commands(
+    targets: MultiPingBody | MultiBgpBody,
+    command: str,
+) -> list:
+    """Execute command on device."""
+
+    locations = list(dict.fromkeys(targets.locations))
+
+    # Convert IP list to strings and remove any duplicates
+    ipaddresses = list(dict.fromkeys(map(str, targets.destinations)))
+
+    device_commands = get_multi_commands(locations, ipaddresses, command)
+
+    try:
+        results = await gather_device_results(device_commands, command)
+        pp.pprint(results)
+        return results
+    except Exception as err:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing multiple {command} commands: {err}",
+        ) from err
+
+
+async def execute_single_command(location: str, command: str, destination: str) -> str:
+    """Execute command on device."""
+
+    device_commands = get_cmd(location, command, destination)
+
+    try:
+        response = await execute_on_device(
+            hostname=device_commands["device"],
+            device_type=device_commands["type"],
+            cli_cmds=device_commands["cmd"],
+            timeout=get_command_timeout(command),
+        )
+        return response.result
+    except (ScrapliException, OSError) as err:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing command '{command}' at location '{location}'",
+        ) from err

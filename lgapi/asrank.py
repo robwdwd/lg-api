@@ -5,11 +5,11 @@
 # have been included as part of this distribution.
 #
 """Caida AS Rank API client."""
-import httpx
+from httpx import AsyncClient, HTTPError
 
 
-def AsnQuery(asn: int):
-    """Format the GraphQL content for retriving the data."""
+def get_graphql_query(asn: int):
+    """Format the GraphQL query for retriving the ASN data."""
     return """{
         asn(asn:"%i") {
             asnName
@@ -27,16 +27,15 @@ def AsnQuery(asn: int):
     )
 
 
-async def asn_to_name(asn: int) -> dict:
+async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
     """Map the ASN to a name."""
 
-    async with httpx.AsyncClient() as client:
-        try:
-            query = AsnQuery(asn)
-            response = await client.post("https://api.asrank.caida.org/v2/graphql", json={"query": query})
-            response.raise_for_status()
-            result = response.json()
-        except httpx.HTTPError:
-            return {}
+    try:
+        query = get_graphql_query(asn)
+        response = await httpclient.post("https://api.asrank.caida.org/v2/graphql", json={"query": query})
+        response.raise_for_status()
+        result = response.json()
+    except HTTPError:
+        return {}
 
     return {} if "error" in result or "data" not in result or "asn" not in result["data"] else result["data"]["asn"]
