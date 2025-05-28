@@ -6,23 +6,15 @@
 #
 """Device command runner."""
 import asyncio
+import pprint
 from typing import Any
 
-import pprint
-from fastapi import HTTPException
 from scrapli import AsyncScrapli
 from scrapli.exceptions import ScrapliException
 from scrapli.response import MultiResponse, Response
 
-#from lgapi.commands import get_multi_commands
+# from lgapi.commands import get_multi_commands
 from lgapi.config import settings
-from lgapi.datamodels import MultiBgpBody, MultiPingBody
-from lgapi.processing import (
-    process_bgp_output,
-    process_ping_output,
-    process_traceroute_output,
-)
-from lgapi.ttp import get_template, parse_txt
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 
@@ -30,6 +22,7 @@ DEFAULT_TIMEOUT = 60
 COMMAND_TIMEOUTS = {"traceroute": 600}
 
 pp = pprint.PrettyPrinter(indent=2, width=120)
+
 
 def get_command_timeout(command: str) -> int:
     """Get timeout for a specific command."""
@@ -80,69 +73,10 @@ async def execute_on_devices(hostname: str, device: dict, command: str) -> tuple
 
     raw_output = "\n".join(resp.result for resp in response.data)
 
-    return (hostname, raw_output)
-
-
-async def process_response(result: str, template: str, command: str, device_type: str) -> list:
-    """Process the device output based on command type."""
-
-    parsed_result = parse_txt(result, template)
-
-    if isinstance(parsed_result, list) and parsed_result:
-        if command == "bgp":
-            return await process_bgp_output(parsed_result[0])
-        if command == "ping":
-            return await process_ping_output(parsed_result[0])
-        if command == "traceroute":
-            return await process_traceroute_output(parsed_result[0], device_type)
-
-    return []
-
-
-def organise_by_location(results: list, raw_only: bool = False) -> dict:
-    """Organise results by location."""
-
-    output_table = {"locations": [], "errors": [], "raw_only": raw_only}
-
-    for result in results:
-        if isinstance(result, Exception):
-            output_table["errors"].append(str(result))
-        else:
-            location = result["location"]
-            output_table["locations"].append({"name": LOCATIONS_CFG[location]["name"], "results": result})
-
-    return output_table
+    return (device["location"], raw_output)
 
 
 async def gather_device_results(devices: dict[str, Any], command: str) -> list:
     """Gather responses from devices asynchronously when running a multi command."""
     tasks = [execute_on_devices(hostname, device, command) for hostname, device in devices.items()]
     return await asyncio.gather(*tasks, return_exceptions=True)
-
-
-async def do_multi_lg_command(targets: MultiPingBody | MultiBgpBody, command: str, raw_only: bool = False) -> dict:
-    """Run looking glass commands on multiple devices and destination"""
-    locations = list(dict.fromkeys(targets.locations))
-
-    # Convert IP list to strings and remove any duplicates
-    ipaddresses = list(dict.fromkeys(map(str, targets.destinations)))
-
-    devices = get_multi_commands(locations, ipaddresses, command)
-
-    # Assign templates and check if any are missing
-    for device in devices.values():
-        template_name = get_template(command, device["type"])
-        device["template"] = template_name
-
-        if not template_name:
-            raw_only = True
-
-    try:
-        results = await gather_device_results(devices, command, raw_only)
-    except Exception as err:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error executing multiple {command} commands: {err}",
-        ) from err
-
-    return organise_by_location(results, raw_only)

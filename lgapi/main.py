@@ -4,6 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
+import pprint
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
@@ -35,6 +36,8 @@ from lgapi.processing import (
 )
 from lgapi.ttp import get_template, parse_txt
 from lgapi.validation import IPNetOrAddress, validate_location
+
+pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 
@@ -188,10 +191,72 @@ async def bgp(
 @app.post("/multi/ping", response_model=MultiPingResult)
 async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
     """Ping from multiple sources to multiple destinations"""
-    return await execute_multiple_commands(targets, "ping")
+
+    output_table = {"locations": [], "errors": [], "raw_only": raw}
+
+    results = await execute_multiple_commands(targets, "ping")
+
+    for result in results:
+
+        if isinstance(result, Exception):
+            output_table["errors"].append(str(result))
+        else:
+            location = result["location"]
+            location_name = LOCATIONS_CFG[location]["name"]
+
+            new_result = {
+                "parsed_output": [],
+                "raw_output": result["result"],
+                "raw_only": raw,
+                "command": "ping",
+                "location": location,
+                "location_name": location_name,
+            }
+
+            if not raw and (template_name := get_template("ping", result["type"])):
+                parsed_result = parse_txt(result["result"], template_name)
+                if isinstance(parsed_result, list) and parsed_result:
+                    new_result["parsed_output"] = await process_ping_output(parsed_result[0])
+
+                new_result["raw_only"] = not new_result["parsed_output"]
+
+            output_table["locations"].append({"name": location_name, "results": new_result})
+
+    return output_table
 
 
 @app.post("/multi/bgp", response_model=MultiBgpResult)
-async def multi_bgp(targets: MultiBgpBody, raw: bool = False) -> dict:
+async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) -> dict:
     """Get BGP output from multiple sources to multiple destinations"""
-    return await execute_multiple_commands(targets, "bgp")
+    output_table = {"locations": [], "errors": [], "raw_only": raw}
+
+    results = await execute_multiple_commands(targets, "bgp")
+
+    for result in results:
+
+        if isinstance(result, Exception):
+            output_table["errors"].append(str(result))
+        else:
+            location = result["location"]
+            location_name = LOCATIONS_CFG[location]["name"]
+
+            new_result = {
+                "parsed_output": [],
+                "raw_output": result["result"],
+                "raw_only": raw,
+                "command": "ping",
+                "location": location,
+                "location_name": location_name,
+            }
+
+            if not raw and (template_name := get_template("ping", result["type"])):
+                parsed_result = parse_txt(result["result"], template_name)
+                if isinstance(parsed_result, list) and parsed_result:
+                    httpclient = cast(AsyncClient, request.state.httpclient)
+                    new_result["parsed_output"] = await process_bgp_output(parsed_result[0], httpclient)
+
+                new_result["raw_only"] = not new_result["parsed_output"]
+
+            output_table["locations"].append({"name": location_name, "results": new_result})
+
+    return output_table

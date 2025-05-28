@@ -21,6 +21,7 @@ COMMANDS_CFG = settings.lg_config["commands"]
 
 pp = pprint.PrettyPrinter(indent=2, width=120)
 
+
 def get_ip_version(ip: str) -> str:
     """Return 'ipv4' or 'ipv6' based on the IP address or CIDR."""
     try:
@@ -66,7 +67,6 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
 
         command_list[device] = {
             "location": location,
-            "location_name": loc_cfg["name"],
             "type": device_type,
             "cmds": cli_cmds,
         }
@@ -89,19 +89,27 @@ def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
 async def execute_multiple_commands(
     targets: MultiPingBody | MultiBgpBody,
     command: str,
-) -> list:
+) -> list[dict[str, str]]:
     """Execute command on device."""
 
     locations = list(dict.fromkeys(targets.locations))
-
-    # Convert IP list to strings and remove any duplicates
     ipaddresses = list(dict.fromkeys(map(str, targets.destinations)))
 
     device_commands = get_multi_commands(locations, ipaddresses, command)
 
     try:
-        results = await gather_device_results(device_commands, command)
-        pp.pprint(results)
+        device_output = await gather_device_results(device_commands, command)
+        pp.pprint(device_output)
+
+        results = []
+        for location, result in device_output:
+            results.append(
+                {
+                    "location": location,
+                    "result": result,
+                }
+            )
+
         return results
     except Exception as err:
         raise HTTPException(
