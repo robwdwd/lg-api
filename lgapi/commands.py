@@ -14,20 +14,12 @@ from scrapli.exceptions import ScrapliException
 
 from lgapi.config import settings
 from lgapi.datamodels import MultiBgpBody, MultiPingBody
-from lgapi.device import execute_on_device, gather_device_results
+from lgapi.device import execute_on_device, gather_device_results, get_command_timeout
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 COMMANDS_CFG = settings.lg_config["commands"]
 
-DEFAULT_TIMEOUT = 60
-COMMAND_TIMEOUTS = {"traceroute": 600}
-
 pp = pprint.PrettyPrinter(indent=2, width=120)
-
-def get_command_timeout(command: str) -> int:
-    """Get timeout for a specific command."""
-    return COMMAND_TIMEOUTS.get(command, DEFAULT_TIMEOUT)
-
 
 def get_ip_version(ip: str) -> str:
     """Return 'ipv4' or 'ipv6' based on the IP address or CIDR."""

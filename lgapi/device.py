@@ -8,12 +8,13 @@
 import asyncio
 from typing import Any
 
+import pprint
 from fastapi import HTTPException
 from scrapli import AsyncScrapli
 from scrapli.exceptions import ScrapliException
 from scrapli.response import MultiResponse, Response
 
-from lgapi.commands import DEFAULT_TIMEOUT, get_command_timeout, get_multi_commands
+#from lgapi.commands import get_multi_commands
 from lgapi.config import settings
 from lgapi.datamodels import MultiBgpBody, MultiPingBody
 from lgapi.processing import (
@@ -24,6 +25,15 @@ from lgapi.processing import (
 from lgapi.ttp import get_template, parse_txt
 
 LOCATIONS_CFG = settings.lg_config["locations"]
+
+DEFAULT_TIMEOUT = 60
+COMMAND_TIMEOUTS = {"traceroute": 600}
+
+pp = pprint.PrettyPrinter(indent=2, width=120)
+
+def get_command_timeout(command: str) -> int:
+    """Get timeout for a specific command."""
+    return COMMAND_TIMEOUTS.get(command, DEFAULT_TIMEOUT)
 
 
 def get_default_args(hostname: str, device_type: str) -> dict:
