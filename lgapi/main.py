@@ -213,7 +213,7 @@ async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
                 "location_name": location_name,
             }
 
-            if not raw and (template_name := get_template("ping", result["type"])):
+            if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location]["type"])):
                 parsed_result = parse_txt(result["result"], template_name)
                 if isinstance(parsed_result, list) and parsed_result:
                     new_result["parsed_output"] = await process_ping_output(parsed_result[0])
@@ -244,12 +244,12 @@ async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) 
                 "parsed_output": [],
                 "raw_output": result["result"],
                 "raw_only": raw,
-                "command": "ping",
+                "command": "bgp",
                 "location": location,
                 "location_name": location_name,
             }
 
-            if not raw and (template_name := get_template("ping", result["type"])):
+            if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location]["type"])):
                 parsed_result = parse_txt(result["result"], template_name)
                 if isinstance(parsed_result, list) and parsed_result:
                     httpclient = cast(AsyncClient, request.state.httpclient)
