@@ -14,7 +14,7 @@ from lgapi.cache import asn_key_builder, ip_key_builder
 
 
 @cached(ttl=3600, alias="default", key_builder=ip_key_builder)
-async def cymru_ip_to_asn(ip: str) -> dict | None:
+async def cymru_ip_to_asn(ip: str) -> dict:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
     logger.debug("Cache Miss: Cymru IP to ASN lookup: %s", ip)
     try:
@@ -50,12 +50,13 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
                 result.update(asn_info)
 
         return result
-    except Exception:
-        return None
+    except Exception as e:
+        logger.debug('Unable to map IP to ASN: %s', str(e))
+        return {}
 
 
 @cached(ttl=3600, alias="default", key_builder=asn_key_builder)
-async def cymru_get_asn(asn: str) -> dict | None:
+async def cymru_get_asn(asn: str) -> dict:
     """Get ASN details from Cymru"""
     logger.debug("Cache Miss: Cymru ASN lookup: %s", asn)
     try:
@@ -72,5 +73,6 @@ async def cymru_get_asn(asn: str) -> dict | None:
                 return None
 
         return {"as_name": get_asn_part(4), "as_cc": get_asn_part(1)}
-    except Exception:
-        return None
+    except Exception as e:
+        logger.debug('Unable to get ASN details: %s', str(e))
+        return {}
