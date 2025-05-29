@@ -1,10 +1,10 @@
 # Copyright (c) 2025, Rob Woodward. All rights reserved.
 #
-# This file is part of Looking Glass Tool and is released under the
+# This file is part of Looking Glass API and is released under the
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-import pprint
+# import pprint
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient, Limits
 from pydantic import AfterValidator, IPvAnyAddress
 
+from lgapi import logger
 from lgapi.commands import execute_multiple_commands, execute_single_command
 from lgapi.config import settings
 from lgapi.database import init_community_map_db
@@ -38,9 +39,12 @@ from lgapi.processing import (
 from lgapi.ttp import get_template, parse_txt
 from lgapi.validation import IPNetOrAddress, validate_location
 
-pp = pprint.PrettyPrinter(indent=2, width=120)
+# pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.lg_config["locations"]
+
+if settings.environment == "devel":
+    logger.setLevel(settings.log_level.upper())
 
 
 class State(TypedDict):
@@ -57,16 +61,23 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     init_community_map_db()
 
     # Set up the http client
+    logger.debug("Starting HTTPX Async client")
     httpclient = AsyncClient(limits=Limits(max_connections=None, max_keepalive_connections=20))
 
-    cache = caches.get("default") 
+    logger.debug("Clearing cache")
+    cache = caches.get("default")
     await cache.clear()
 
     yield {"httpclient": httpclient}
     await httpclient.aclose()
+    logger.debug("Stopped HTTPX Async client")
 
 
-app = FastAPI(debug=settings.debug, lifespan=lifespan)
+app = FastAPI(
+    title=settings.title,
+    lifespan=lifespan,
+    debug=(settings.environment == "devel"),
+)
 
 app.add_middleware(
     CORSMiddleware,

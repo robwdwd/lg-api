@@ -1,6 +1,6 @@
 # Copyright (c) 2025, Rob Woodward. All rights reserved.
 #
-# This file is part of Filter Gen and is released under the
+# This file is part of Looking Glass API and is released under the
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
@@ -44,14 +44,15 @@ class Settings(BaseSettings):
     username: str
     password: str
     config_file: str = "config.yml"
+    title: str = 'Looking Glass API'
     ping_multi_max_source: int = 3
     ping_multi_max_ip: int = 5
     bgp_multi_max_source: int = 3
     bgp_multi_max_ip: int = 5
     resolve_traceroute_hops: Literal['off', 'all', 'missing'] = 'off'
-    log_level: str
+    log_level: Literal['critical', 'error', 'warning', 'info', 'debug', 'trace'] = 'info'
     root_path: str = "/"
-    debug: bool = False
+    environment: Literal['prod', 'devel'] = 'prod'
 
     # Redis configuration
     use_redis_cache: bool = False
@@ -62,7 +63,7 @@ class Settings(BaseSettings):
     redis_timeout: int = 5
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-    
+
     lg_config: dict[str, Any] = {}
     device_locations: list[dict[str, str]] = []
 

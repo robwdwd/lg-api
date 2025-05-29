@@ -1,6 +1,6 @@
 # Copyright (c) 2025, Rob Woodward. All rights reserved.
 #
-# This file is part of Filter Gen and is released under the
+# This file is part of Looking Glass API and is released under the
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
@@ -9,12 +9,14 @@ import ipaddress
 import dns.asyncresolver
 from aiocache import cached
 
+from lgapi import logger
 from lgapi.cache import asn_key_builder, ip_key_builder
 
 
 @cached(ttl=3600, alias="default", key_builder=ip_key_builder)
 async def cymru_ip_to_asn(ip: str) -> dict | None:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
+    logger.debug("Cache Miss: Cymru IP to ASN lookup: %s", ip)
     try:
         ip_obj = ipaddress.ip_address(ip)
         if ip_obj.version == 4:
@@ -55,6 +57,7 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
 @cached(ttl=3600, alias="default", key_builder=asn_key_builder)
 async def cymru_get_asn(asn: str) -> dict | None:
     """Get ASN details from Cymru"""
+    logger.debug("Cache Miss: Cymru ASN lookup: %s", asn)
     try:
         resolver = dns.asyncresolver.Resolver()
 

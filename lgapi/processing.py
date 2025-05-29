@@ -1,6 +1,6 @@
 # Copyright (c) 2025, Rob Woodward. All rights reserved.
 #
-# This file is part of Filter Gen and is released under the
+# This file is part of Looking Glass API and is released under the
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
@@ -17,6 +17,7 @@ import dns.reversename
 from aiocache import cached
 from httpx import AsyncClient
 
+from lgapi import logger
 from lgapi.asrank import asn_to_name
 from lgapi.cache import ip_key_builder
 from lgapi.config import settings
@@ -85,6 +86,7 @@ async def process_ping_output(output: dict) -> list:
 @cached(ttl=3600, alias="default", key_builder=ip_key_builder)
 async def reverse_lookup(ipaddr: str) -> str | None:
     """Do a reverse lookup on an IP address asynchronously using DNS."""
+    logger.debug('Cache Miss: Reverse DNS lookup %s', ipaddr)
     try:
         resolver = dns.asyncresolver.Resolver()
         rev_name = dns.reversename.from_address(ipaddr)
