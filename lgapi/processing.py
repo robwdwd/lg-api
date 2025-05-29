@@ -215,19 +215,19 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
             unique_asns = {
                 info["asn"]
                 for info in cymru_results.values()
-                if info and "asn" in info and info["asn"] and str(info["asn"]).isdigit()
+                if info and "asn" in info and info["asn"]
             }
 
             asrank_results = {}
             if unique_asns:
-                asrank_infos = await asyncio.gather(*(asn_to_name(int(asn), httpclient) for asn in unique_asns))
+                asrank_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
                 asrank_results = dict(zip(unique_asns, asrank_infos))
 
             # Attach ASRank info to each hop if ASN is present
             for hop in hops:
                 asn = hop.get("info", {}).get("asn")
-                if asn and str(asn).isdigit():
-                    hop["asrank"] = asrank_results.get(str(asn)) or asrank_results.get(int(asn))
+                if asn:
+                    hop["info"]["asrank"] = asrank_results.get(asn)
 
         results.append({"ip_address": ip_address, "hops": hops})
 

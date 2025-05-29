@@ -38,7 +38,7 @@ async def cymru_ip_to_asn(ip: str) -> dict:
 
         asn = get_part(0)
         result = {
-            "asn": asn,
+            "asn": int(asn),
             "bgp_prefix": get_part(1),
             "registry": get_part(3),
         }

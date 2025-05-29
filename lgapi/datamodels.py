@@ -185,11 +185,11 @@ class MultiPingResult(BaseMultiResult):
 class IPAddressInfo(BaseModel):
     """Additional IP address information"""
 
-    asn: str | None = None
+    asn: int | None = None
     bgp_prefix: PrefixStr | None = None
-    asrank: ASNInfoEntry | None = None
     registry: str | None = None
     as_cc: str | None = None
+    asrank: ASNInfoEntry | None = None
 
 
 class TracerouteHop(BaseModel):

@@ -136,6 +136,7 @@ async def ping(
 
 @app.get("/traceroute/{location}/{destination}", response_model=TracerouteResult)
 async def traceroute(
+    request: Request,
     location: Annotated[str, AfterValidator(validate_location)],
     destination: IPvAnyAddress,
     raw: bool = False,
@@ -153,7 +154,8 @@ async def traceroute(
     if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location]["type"])):
         parsed_result = parse_txt(result, template_name)
         if isinstance(parsed_result, list) and parsed_result:
-            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location]["type"])
+            httpclient = cast(AsyncClient, request.state.httpclient)
+            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location]["type"], httpclient)
 
     if not parsed_output:
         raw = True
