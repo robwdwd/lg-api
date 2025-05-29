@@ -21,7 +21,7 @@ gunicorn = "^23.0.0"
 aiosqlite = "^0.21.0"
 httpx = "^0.28.1"
 dnspython = {extras = ["async"], version = "^2.7.0"}
-aiocache = "^0.12.3"
+aiocache = {extras = ["redis"], version = "^0.12.3"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

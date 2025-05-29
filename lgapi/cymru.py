@@ -7,10 +7,11 @@
 import ipaddress
 
 import dns.asyncresolver
-from aiocache import cached
+from aiocache import cached,RedisCache
+from aiocache.serializers import PickleSerializer
 
 
-@cached(ttl=3600)
+@cached(ttl=3600, alias='default')
 async def cymru_ip_to_asn(ip: str) -> dict | None:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
     try:

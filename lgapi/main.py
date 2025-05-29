@@ -42,7 +42,6 @@ pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 
-
 class State(TypedDict):
     """Stores the state variables from the lifespan"""
 
@@ -59,18 +58,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     # Set up the http client
     httpclient = AsyncClient(limits=Limits(max_connections=None, max_keepalive_connections=20))
 
-    # Configure aiocache to use Redis
-    if settings.use_redis_cache:
-        caches.set_config(
-            {
-                "default": {
-                    "cache": "aiocache.RedisCache",
-                    "endpoint": "localhost",
-                    "port": 6379,
-                    "serializer": {"class": "aiocache.serializers.PickleSerializer"},
-                }
-            }
-        )
+    cache = caches.get('default')   # This always returns the same instance
+    await cache.clear()
+
+    pp.pprint(caches.get_config())
 
     yield {"httpclient": httpclient}
     await httpclient.aclose()

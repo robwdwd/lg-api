@@ -8,6 +8,7 @@
 
 
 from typing import Any, Literal
+from aiocache import caches
 
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -16,6 +17,7 @@ try:
     from yaml import CSafeLoader as Loader
 except ImportError:
     from yaml import Loader
+
 
 
 def load_config(config_file: str) -> dict[str, Any]:
@@ -47,10 +49,18 @@ class Settings(BaseSettings):
     bgp_multi_max_source: int = 3
     bgp_multi_max_ip: int = 5
     resolve_traceroute_hops: Literal['off', 'all', 'missing'] = 'off'
-    use_redis_cache: bool = False
     log_level: str
     root_path: str = "/"
     debug: bool = False
+
+    # Redis configuration
+
+    use_redis_cache: bool = False
+    redis_namespace: str = 'lgapi'
+    redis_password: str | None = None
+    redis_host: str = "127.0.0.1"
+    redis_port: int = 6379
+    redis_timeout: int = 5
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
     lg_config: dict[str, Any] = {}
@@ -62,3 +72,21 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+print(settings)
+
+if settings.use_redis_cache:
+    caches.set_config(
+        {
+            "default": {
+                "cache": "aiocache.RedisCache",
+                "endpoint": settings.redis_host,
+                "namespace": settings.redis_namespace,
+                "port": settings.redis_port,
+                "password": settings.redis_password,
+                "timeout": settings.redis_timeout,
+                "serializer": {"class": "aiocache.serializers.PickleSerializer"},
+            }
+        }
+    )
+
