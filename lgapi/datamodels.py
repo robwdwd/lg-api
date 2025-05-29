@@ -188,7 +188,6 @@ class IPAddressInfo(BaseModel):
     asn: int | None = None
     bgp_prefix: PrefixStr | None = None
     registry: str | None = None
-    as_cc: str | None = None
     asrank: ASNInfoEntry | None = None
 
 

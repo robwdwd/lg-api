@@ -10,7 +10,7 @@ import dns.asyncresolver
 from aiocache import cached
 
 from lgapi import logger
-from lgapi.cache import asn_key_builder, ip_key_builder
+from lgapi.cache import ip_key_builder
 
 
 @cached(ttl=3600, alias="default", key_builder=ip_key_builder)
@@ -26,6 +26,7 @@ async def cymru_ip_to_asn(ip: str) -> dict:
             nibbles = ip_obj.exploded.replace(":", "")
             reversed_nibbles = ".".join(reversed(nibbles))
             query = f"{reversed_nibbles}.origin6.asn.cymru.com"
+
         resolver = dns.asyncresolver.Resolver()
         answer = await resolver.resolve(query, "TXT")
         parts = [p.strip() for p in answer[0].to_text().strip('"').split("|")]
@@ -33,12 +34,12 @@ async def cymru_ip_to_asn(ip: str) -> dict:
         def get_part(idx):
             try:
                 return parts[idx]
-            except ValueError:
+            except IndexError:
                 return None
 
         asn = get_part(0)
         result = {
-            "asn": int(asn),
+            "asn": int(asn) if asn and asn.isdigit() else None,
             "bgp_prefix": get_part(1),
             "registry": get_part(3),
         }
