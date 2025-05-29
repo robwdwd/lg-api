@@ -7,11 +7,10 @@
 import ipaddress
 
 import dns.asyncresolver
-from aiocache import cached,RedisCache
-from aiocache.serializers import PickleSerializer
+from aiocache import cached
 
 
-@cached(ttl=3600, alias='default')
+@cached(ttl=3600, alias="default")
 async def cymru_ip_to_asn(ip: str) -> dict | None:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
     try:
@@ -25,8 +24,7 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
             query = f"{reversed_nibbles}.origin6.asn.cymru.com"
         resolver = dns.asyncresolver.Resolver()
         answer = await resolver.resolve(query, "TXT")
-        txt = answer[0].to_text().strip('"')
-        parts = [p.strip() for p in txt.split("|")]
+        parts = [p.strip() for p in answer[0].to_text().strip('"').split("|")]
 
         def get_part(idx):
             try:
@@ -43,23 +41,31 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
 
         # If ASN is present, get more info from ASN DNS interface
         if asn and asn.isdigit():
-            asn_query = f"AS{asn}.asn.cymru.com"
-            asn_answer = await resolver.resolve(asn_query, "TXT")
-            asn_txt = asn_answer[0].to_text().strip('"')
-            asn_parts = [p.strip() for p in asn_txt.split("|")]
-
-            def get_asn_part(idx):
-                try:
-                    return asn_parts[idx]
-                except ValueError:
-                    return None
-
-            result["as_name"] = get_asn_part(4)
-            result["as_cc"] = get_asn_part(1)
-        else:
-            result["as_name"] = None
-            result["as_cc"] = None
+            asn_info = await cymru_get_asn(asn)
+            if asn_info:
+                result.update(asn_info)
 
         return result
+    except Exception:
+        return None
+
+
+@cached(ttl=3600, alias="default")
+async def cymru_get_asn(asn: str) -> dict | None:
+    """Get ASN details from Cymru"""
+    try:
+        resolver = dns.asyncresolver.Resolver()
+
+        asn_query = f"AS{asn}.asn.cymru.com"
+        asn_answer = await resolver.resolve(asn_query, "TXT")
+        asn_parts = [p.strip() for p in asn_answer[0].to_text().strip('"').split("|")]
+
+        def get_asn_part(idx):
+            try:
+                return asn_parts[idx]
+            except ValueError:
+                return None
+
+        return {"as_name": get_asn_part(4), "as_cc": get_asn_part(1)}
     except Exception:
         return None

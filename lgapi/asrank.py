@@ -5,6 +5,7 @@
 # have been included as part of this distribution.
 #
 """Caida AS Rank API client."""
+from aiocache import cached
 from httpx import AsyncClient, HTTPError
 
 
@@ -27,6 +28,7 @@ def get_graphql_query(asn: int):
     )
 
 
+@cached(ttl=3600, alias="default")
 async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
     """Map the ASN to a name."""
 

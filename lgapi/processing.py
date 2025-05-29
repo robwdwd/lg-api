@@ -10,9 +10,11 @@
 import asyncio
 import collections
 import re
-import socket
 
 import aiosqlite
+import dns.asyncresolver
+import dns.reversename
+from aiocache import cached
 from httpx import AsyncClient
 
 from lgapi.asrank import asn_to_name
@@ -79,13 +81,15 @@ async def process_ping_output(output: dict) -> list:
     return [{**destination, "ip_address": ip_address} for ip_address, destination in output.items()]
 
 
+@cached(ttl=3600, alias="default")
 async def reverse_lookup(ipaddr: str) -> str | None:
-    """Do a reverse lookup on an IP address asynchronously."""
-    loop = asyncio.get_running_loop()
+    """Do a reverse lookup on an IP address asynchronously using DNS."""
     try:
-        fqdn, _, _ = await loop.run_in_executor(None, socket.gethostbyaddr, ipaddr)
-        return fqdn
-    except socket.herror:
+        resolver = dns.asyncresolver.Resolver()
+        rev_name = dns.reversename.from_address(ipaddr)
+        answer = await resolver.resolve(rev_name, "PTR")
+        return str(answer[0]).rstrip(".")
+    except Exception:
         return None
 
 
