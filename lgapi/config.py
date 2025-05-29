@@ -8,9 +8,9 @@
 
 
 from typing import Any, Literal
-from aiocache import caches
 
 import yaml
+from aiocache import caches
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 try:
@@ -54,7 +54,6 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Redis configuration
-
     use_redis_cache: bool = False
     redis_namespace: str = 'lgapi'
     redis_password: str | None = None
@@ -63,6 +62,7 @@ class Settings(BaseSettings):
     redis_timeout: int = 5
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    
     lg_config: dict[str, Any] = {}
     device_locations: list[dict[str, str]] = []
 
@@ -73,8 +73,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-print(settings)
-
+# Set up the redis cache here otherwise it won't work with the decorators
 if settings.use_redis_cache:
     caches.set_config(
         {

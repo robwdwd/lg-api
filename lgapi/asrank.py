@@ -9,23 +9,21 @@ from aiocache import cached
 from httpx import AsyncClient, HTTPError
 
 
-def get_graphql_query(asn: int):
-    """Format the GraphQL query for retriving the ASN data."""
-    return """{
-        asn(asn:"%i") {
+def get_graphql_query(asn: int) -> str:
+    """Format the GraphQL query for retrieving the ASN data."""
+    return f"""{{
+        asn(asn:"{asn}") {{
             asnName
             rank
-            organization {
+            organization {{
                 orgName
-            }
-            country {
+            }}
+            country {{
                 iso
                 name
-            }
-        }
-    }""" % (
-        asn
-    )
+            }}
+        }}
+    }}"""
 
 
 @cached(ttl=3600, alias="default")
@@ -34,10 +32,14 @@ async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
 
     try:
         query = get_graphql_query(asn)
-        response = await httpclient.post("https://api.asrank.caida.org/v2/graphql", json={"query": query})
+        response = await httpclient.post(
+            "https://api.asrank.caida.org/v2/graphql",
+            json={"query": query},
+            timeout=10,
+        )
         response.raise_for_status()
         result = response.json()
+        asn_data = result.get("data", {}).get("asn")
+        return asn_data if asn_data else {}
     except HTTPError:
         return {}
-
-    return {} if "error" in result or "data" not in result or "asn" not in result["data"] else result["data"]["asn"]
