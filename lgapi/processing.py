@@ -86,7 +86,7 @@ async def process_ping_output(output: dict) -> list:
 @cached(ttl=3600, alias="default", key_builder=ip_key_builder)
 async def reverse_lookup(ipaddr: str) -> str | None:
     """Do a reverse lookup on an IP address asynchronously using DNS."""
-    logger.debug('Cache Miss: Reverse DNS lookup %s', ipaddr)
+    logger.debug("Cache Miss: Reverse DNS lookup %s", ipaddr)
     try:
         resolver = dns.asyncresolver.Resolver()
         rev_name = dns.reversename.from_address(ipaddr)
@@ -169,7 +169,7 @@ async def process_junos_hops(hops: list):
     return combined
 
 
-async def process_traceroute_output(output: dict, device_type: str) -> list[dict]:
+async def process_traceroute_output(output: dict, device_type: str, httpclient: AsyncClient) -> list[dict]:
     """Process the output of the traceroute command."""
     resolve_mode = settings.resolve_traceroute_hops
     results = []
@@ -210,6 +210,24 @@ async def process_traceroute_output(output: dict, device_type: str) -> list[dict
                 ip = hop.get("ip_address")
                 if ip:
                     hop["info"] = cymru_results.get(ip)
+
+            # --- ASRank info for all unique ASNs found in cymru_results ---
+            unique_asns = {
+                info["asn"]
+                for info in cymru_results.values()
+                if info and "asn" in info and info["asn"] and str(info["asn"]).isdigit()
+            }
+
+            asrank_results = {}
+            if unique_asns:
+                asrank_infos = await asyncio.gather(*(asn_to_name(int(asn), httpclient) for asn in unique_asns))
+                asrank_results = dict(zip(unique_asns, asrank_infos))
+
+            # Attach ASRank info to each hop if ASN is present
+            for hop in hops:
+                asn = hop.get("info", {}).get("asn")
+                if asn and str(asn).isdigit():
+                    hop["asrank"] = asrank_results.get(str(asn)) or asrank_results.get(int(asn))
 
         results.append({"ip_address": ip_address, "hops": hops})
 
