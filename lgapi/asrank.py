@@ -8,6 +8,8 @@
 from aiocache import cached
 from httpx import AsyncClient, HTTPError
 
+from lgapi.cache import asn_key_builder
+
 
 def get_graphql_query(asn: int) -> str:
     """Format the GraphQL query for retrieving the ASN data."""
@@ -26,7 +28,7 @@ def get_graphql_query(asn: int) -> str:
     }}"""
 
 
-@cached(ttl=3600, alias="default")
+@cached(ttl=3600, alias="default", key_builder=asn_key_builder)
 async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
     """Map the ASN to a name."""
 

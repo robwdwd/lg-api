@@ -9,8 +9,10 @@ import ipaddress
 import dns.asyncresolver
 from aiocache import cached
 
+from lgapi.cache import asn_key_builder, ip_key_builder
 
-@cached(ttl=3600, alias="default")
+
+@cached(ttl=3600, alias="default", key_builder=ip_key_builder)
 async def cymru_ip_to_asn(ip: str) -> dict | None:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
     try:
@@ -50,7 +52,7 @@ async def cymru_ip_to_asn(ip: str) -> dict | None:
         return None
 
 
-@cached(ttl=3600, alias="default")
+@cached(ttl=3600, alias="default", key_builder=asn_key_builder)
 async def cymru_get_asn(asn: str) -> dict | None:
     """Get ASN details from Cymru"""
     try:
