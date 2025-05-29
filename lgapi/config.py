@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     bgp_multi_max_source: int = 3
     bgp_multi_max_ip: int = 5
     resolve_traceroute_hops: Literal['off', 'all', 'missing'] = 'off'
+    use_redis_cache: bool = False
     log_level: str
     root_path: str = "/"
     debug: bool = False

@@ -9,6 +9,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
 
+from aiocache import caches
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient, Limits
@@ -57,6 +58,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
 
     # Set up the http client
     httpclient = AsyncClient(limits=Limits(max_connections=None, max_keepalive_connections=20))
+
+    # Configure aiocache to use Redis
+    if settings.use_redis_cache:
+        caches.set_config(
+            {
+                "default": {
+                    "cache": "aiocache.RedisCache",
+                    "endpoint": "localhost",
+                    "port": 6379,
+                    "serializer": {"class": "aiocache.serializers.PickleSerializer"},
+                }
+            }
+        )
+
     yield {"httpclient": httpclient}
     await httpclient.aclose()
 
