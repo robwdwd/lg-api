@@ -30,34 +30,35 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
 
     async with aiosqlite.connect("mapsdb/maps.db") as db_con:
         async with db_con.cursor() as db_cursor:
-            # Collect all communities to batch-fetch their descriptions
-            # Fetch community descriptions in one query
-            if all_communities := {
+            # Collect all unique communities
+            all_communities = {
                 community
-                for prefix in output
-                for path in output[prefix]["paths"]
+                for prefix in output.values()
+                for path in prefix["paths"]
                 for community in path.get("communities", [])
-            }:
+            }
+            community_map = {}
+            if all_communities:
                 placeholders = ",".join("?" for _ in all_communities)
                 sql = f"SELECT community, name FROM communities WHERE community IN ({placeholders})"
                 res = await db_cursor.execute(sql, tuple(all_communities))
                 community_map = {row[0]: row[1] for row in await res.fetchall()}
-            else:
-                community_map = {}
 
-            for prefix in output:
+            for prefix, prefix_data in output.items():
                 new_prefix = {"prefix": prefix, "paths": [], "as_paths": []}
-                as_path_list = []
+                as_path_set = set()
 
-                for path in output[prefix]["paths"]:
+                for path in prefix_data["paths"]:
                     # Parse AS path
-                    if aspath := path.get("as_path"):
+                    aspath = path.get("as_path")
+                    if aspath:
                         parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
                         path["as_path"] = parsed_aspath
-                        as_path_list.append(parsed_aspath)
+                        as_path_set.add(tuple(parsed_aspath))
 
                     # Map communities
-                    if communities := path.get("communities"):
+                    communities = path.get("communities")
+                    if communities:
                         path["communities"] = [
                             {"community": community, "description": community_map.get(community)}
                             for community in communities
@@ -66,11 +67,11 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
                     new_prefix["paths"].append(path)
 
                 # Deduplicate and sort AS paths
-                new_prefix["as_paths"] = [list(path) for path in {tuple(path) for path in as_path_list if path}]
-                unique_asns = list({asn for path in new_prefix["as_paths"] for asn in path})
-                new_prefix["asn_info"] = {}
-                for asn in unique_asns:
-                    new_prefix["asn_info"][asn] = await asn_to_name(asn, httpclient)
+                new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
+                unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
+                # Use asyncio.gather for ASN lookups
+                asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
+                new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
 
                 result.append(new_prefix)
 
@@ -192,13 +193,9 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
             # Run all reverse lookups concurrently (unique IPs only)
             if ip_to_indices:
                 lookup_results = await asyncio.gather(*(reverse_lookup(ip) for ip in ip_to_indices))
-                resolved_fqdns = dict(zip(ip_to_indices, lookup_results))
-
-                # Assign resolved FQDNs back to hops
-                for ip, indices in ip_to_indices.items():
-                    fqdn = resolved_fqdns.get(ip)
+                for ip, fqdn in zip(ip_to_indices, lookup_results):
                     if fqdn:
-                        for idx in indices:
+                        for idx in ip_to_indices[ip]:
                             hops[idx]["fqdn"] = fqdn
 
         # --- ASN info for all hops with IPs ---
@@ -212,22 +209,14 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
                     hop["info"] = cymru_results.get(ip)
 
             # --- ASRank info for all unique ASNs found in cymru_results ---
-            unique_asns = {
-                info["asn"]
-                for info in cymru_results.values()
-                if info and "asn" in info and info["asn"]
-            }
-
-            asrank_results = {}
+            unique_asns = {info["asn"] for info in cymru_results.values() if info and "asn" in info and info["asn"]}
             if unique_asns:
                 asrank_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
                 asrank_results = dict(zip(unique_asns, asrank_infos))
-
-            # Attach ASRank info to each hop if ASN is present
-            for hop in hops:
-                asn = hop.get("info", {}).get("asn")
-                if asn:
-                    hop["info"]["asrank"] = asrank_results.get(asn)
+                for hop in hops:
+                    asn = hop.get("info", {}).get("asn")
+                    if asn:
+                        hop["info"]["asrank"] = asrank_results.get(asn)
 
         results.append({"ip_address": ip_address, "hops": hops})
 

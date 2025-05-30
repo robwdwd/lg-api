@@ -7,7 +7,6 @@
 """Get commands to run on devices."""
 
 import ipaddress
-import pprint
 
 from fastapi import HTTPException
 from scrapli.exceptions import ScrapliException
@@ -18,8 +17,6 @@ from lgapi.device import execute_on_device, gather_device_results, get_command_t
 
 LOCATIONS_CFG = settings.lg_config["locations"]
 COMMANDS_CFG = settings.lg_config["commands"]
-
-pp = pprint.PrettyPrinter(indent=2, width=120)
 
 
 def get_ip_version(ip: str) -> str:
@@ -35,8 +32,7 @@ def build_cli_cmd(command: str, device_type: str, ip_address: str, source: str |
     """Build the CLI command string."""
     ip_version = get_ip_version(ip_address)
 
-    cli_cmd_template = COMMANDS_CFG[command][device_type][ip_version]
-    cli_cmd = cli_cmd_template.replace("IPADDRESS", ip_address)
+    cli_cmd = COMMANDS_CFG[command][device_type][ip_version].replace("IPADDRESS", ip_address)
 
     if command != "bgp" and source:
         cli_cmd = cli_cmd.replace("SOURCE", source)
@@ -45,16 +41,7 @@ def build_cli_cmd(command: str, device_type: str, ip_address: str, source: str |
 
 
 def get_multi_commands(locations: list[str], ip_addresses: list[str], command: str) -> dict[str, dict]:
-    """Get commands and devices types to run based on location and ip addresses.
-
-    Args:
-        locations (list): List of locations to run from
-        ip_addresses (list): List of destination IP addresses or networks
-        command (str): Command to run (e.g., 'bgp', 'ping', 'traceroute')
-
-    Returns:
-        dict[str, dict]: Devices and commands table
-    """
+    """Get commands and devices types to run based on location and ip addresses."""
     command_list: dict[str, dict] = {}
 
     for location in locations:
@@ -77,13 +64,11 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
 def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
     """Get command to run on device."""
     loc_cfg = LOCATIONS_CFG[location]
-    device = loc_cfg["device"]
-    device_type = loc_cfg["type"]
-    source = loc_cfg.get("source")
-
-    cli_cmd = build_cli_cmd(command, device_type, ip_address, source)
-
-    return {"device": device, "type": device_type, "cmd": cli_cmd}
+    return {
+        "device": loc_cfg["device"],
+        "type": loc_cfg["type"],
+        "cmd": build_cli_cmd(command, loc_cfg["type"], ip_address, loc_cfg.get("source")),
+    }
 
 
 async def execute_multiple_commands(
@@ -92,25 +77,14 @@ async def execute_multiple_commands(
 ) -> list[dict[str, str]]:
     """Execute command on device."""
 
-    locations = list(dict.fromkeys(targets.locations))
-    ipaddresses = list(dict.fromkeys(map(str, targets.destinations)))
-
+    locations = list(set(targets.locations))
+    ipaddresses = list(set(map(str, targets.destinations)))
     device_commands = get_multi_commands(locations, ipaddresses, command)
 
     try:
         device_output = await gather_device_results(device_commands, command)
-        pp.pprint(device_output)
-
-        results = []
-        for location, result in device_output:
-            results.append(
-                {
-                    "location": location,
-                    "result": result,
-                }
-            )
-
-        return results
+        
+        return [{"location": location, "result": result} for location, result in device_output]
     except Exception as err:
         raise HTTPException(
             status_code=500,
