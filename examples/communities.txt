@@ -71,7 +71,7 @@
 8220:65004  South America
 8220:65005  Oceania
 
-# Peer, Customer Type
+# Peer Customer Type
 #
 8220:65400  Transit
 8220:65401  Public Peer
@@ -262,6 +262,8 @@
 8220:3356  Lumen
 8220:1299  Twelve99
 8220:2914  NTT
+8220:6453  TATA
+8220:3491  PCCW
 
 # Level3
 #
@@ -678,3 +680,909 @@
 2914:3475  Asia regional customer
 2914:3600  South America
 2914:3675  South America regional customer
+
+# TATA
+#
+6453:70 Local Pref 70
+6453:80 Local Pref 80
+6453:90 Local Pref 90
+6453:110 Local Pref 110
+
+6453:86 TATA Peer
+6453:50 TATA Customer
+
+6453:1000 North America
+6453:1100 North America East Coast
+6453:1102 Newark 165 Halsey
+6453:1103 Ashburn Equinix
+6453:1106 Montreal Bonaventure
+6453:1107 Laurentides
+6453:1110 Miami NAP of Americas
+6453:1111 New York Switch and Data
+6453:1112 New York 32 AOA
+6453:1113 New York 60 Hudson
+6453:1114 New York 111 8th Avenue
+6453:1115 ManassasEvoSwitch
+6453:1116 New Jersey Wall
+6453:1117 New Jersey Secaucus
+6453:1118 New Jersey FX
+6453:1200 North America Central North
+6453:1202 Chicago Equinix
+6453:1203 Toronto
+6453:1204 Toronto Equinix
+6453:1205 Toronto ORANO
+6453:1206 Toronto Neutral Data
+6453:1207 Toronto Cologix
+6453:1300 North AmericaWest Coast
+6453:1301 Palo Alto Equinix
+6453:1302 Los Angeles Equinix
+6453:1303 Los Angeles 1Wilshire
+6453:1304 HillsboroTelx
+6453:1305 San Jose Equinix
+6453:1306 Seattle
+6453:1307 VancouverWest Hastings
+6453:1308 Lake Cowichan
+6453:1309 Santa Clara
+6453:1310 Phoenix
+6453:1311 Las Vegas
+6453:1312 San Francisco
+6453:1400 North America Central South
+6453:1402 Atlanta Telx
+6453:1403 Dallas Equinix
+6453:1404 Denver Confluent
+6453:1405 Mcallen
+6453:1406 Laredo
+6453:1407 Dallas Bryan St
+6453:2000 Europe
+6453:2100 United Kingdom
+6453:2101 Londond Telehouse North
+6453:2102 London Harbour Exchange
+6453:2103 London Redbus Interhouse
+6453:2104 London Stratford
+6453:2105 London Telecity Redbus
+6453:2106 London Telehouse East
+6453:2107 London HighWycombe Cressex
+6453:2108 Somerset Highbridge Cable Station
+6453:2109 London Slough Equinix
+6453:2200 France
+6453:2201 Courbevoie LDCom Co-location
+6453:2202 Paris Telehouse 1
+6453:2203 Saint Denis Equinix
+6453:2204 Marseille Netcenter
+6453:2205 Vitry-sur-Seine Iliad DC3
+6453:2300 Austria Germany and Switzerland
+6453:2302 Frankfurt InterXion
+6453:2304 Frankfurt Ancotel
+6453:2305 Frankfurt Itenos
+6453:2306 Zurich
+6453:2400 Benelux
+6453:2401 Amsterdam SARA
+6453:2402 Brussels Interxion
+6453:2403 Amsterdam Telecity 2
+6453:2404 Amsterdam Equinix-AM2
+6453:2405 Luxembourg
+6453:2500 Portugal and Spain
+6453:2502 Madrid ESPANIX Co-location
+6453:2503 Barcelona Telvent
+6453:2504 Derio Cable Station
+6453:2505 Madrid InterXion
+6453:2506 Madrid Carrier House
+6453:2511 Lisbon Prior Velho
+6453:2512 Seixal
+6453:2700 Norway and Sweden
+6453:2701 Oslo Digiplex Co-location
+6453:2702 Stockholm TeleCity
+6453:2800 Italy
+6453:2801 Milan INET
+6453:2802 Rome Caspur
+6453:2900 Far East Europe
+6453:2901 Warsaw Energis Polska
+6453:2902 Warsaw Netia
+6453:2903 MoscowMSK-IX
+6453:2904 Istanbul
+6453:2905 Ankara
+6453:2906 Bucharest
+6453:2907 Budapest
+6453:2908 Sofia
+6453:3000 Asia Pacific
+6453:3100 Hong-Kong
+6453:3101 Hong-Kong Kowloon
+6453:3102 Hong-KongMega-I
+6453:3103 Hong-Kong Equinix HK1
+6453:3104 Hong Kong Billion Center
+6453:3200 The Philippines and Guam
+6453:3201 Manila Quezon City
+6453:3203 Guam
+6453:3300 Australia
+6453:3301 SydneyMascot Equinix
+6453:3302 SydneyMascot Equinix
+6453:3303 SydneyGlobal switch
+6453:3400 Malaysia Singapore and Thailand
+6453:3401 Kuala Lumpur AIMS
+6453:3402 Singapore Equinix
+6453:3403 Singapore Global Switch
+6453:3404 Bangkok
+6453:3405 Singapore TCX
+6453:3406 Singapore DRT
+6453:3407 Singapore Equinix SG2
+6453:3500 Indonesia
+6453:3501 Djakarta
+6453:3600 Japan
+6453:3601 Tokyo Equinix
+6453:3602 Tokyo Otemachi
+6453:3603 Osaka Equinix
+6453:3604 Chiba EMI
+6453:3700 Taiwan
+6453:3701 Taipei
+6453:4000 Middle East and Africa
+6453:4100 Egypt
+6453:4101 Cairo
+6453:4200 Saudi Arabia
+6453:4201 Riyadh
+6453:4202 Jeddah
+6453:4203 Riyadh
+6453:4204 Fujairah
+6453:4300 South Africa
+6453:4301 Johannesburg
+6453:4302 Cape Town
+6453:4400 Kenya
+6453:4401 Nairobi
+6453:4500 Tanzania
+6453:4501 Dar es Salaam
+6453:4502 Dar es Salaam
+6453:6000 India
+6453:6100 Maharashtra
+6453:6101 Mumbai LVSB
+6453:6102 Mumbai LVSB
+6453:6200 Tamil Nadu
+6453:6201 Chennai VSB
+6453:6202 Chennai VSB
+6453:6300 Kerala
+6453:6301 Cochin
+
+# DTAG
+#
+3320:9010 DTAG Customer
+3320:9020 DTAG Peer
+
+3320:2010 DTAG Europe
+3320:2020 DTAG North America
+3320:2030 DTAG Pacific Rim
+
+3320:1040 Austria
+3320:1056 Belgium
+3320:1124 Canada
+3320:1203 Czech Republic
+3320:1208 Denmark
+3320:1246 Finland
+3320:1250 France
+3320:1276 Germany
+3320:1344 Hong Kong
+3320:1348 Hungary
+3320:1380 Italy
+3320:1392 Japan
+3320:1528 Netherlands
+3320:1616 Poland
+3320:1702 Singapore
+3320:1724 Spain
+3320:1752 Sweden
+3320:1756 Switzerland
+3320:1826 United Kingdom
+3320:1840 United States
+
+# AAPT
+#
+2764:4 AAPT Internet Backup
+2764:5 AAPT Backup
+2764:8 AAPT Internal Only
+
+# PCCW
+#
+
+# Route Types
+3491:9001  Customer Route
+3491:9002  Peer Route
+3491:9003  Self Originated
+
+# Regions
+3491:100   North America (East Coast) Customer
+3491:1000  North America (East Coast) Peer
+3491:200   North America (West Coast) Customer
+3491:2000  North America (West Coast) Peer
+3491:300   Europe Customer
+3491:3000  Europe Peer
+3491:400   Asia Customer
+3491:4000  Asia Peer
+3491:500   Africa Customer
+3491:5000  Africa Peer
+3491:700   Australia Customer
+3491:7000  Australia Peer
+
+#
+# Cities
+#
+# North America
+3491:101   Ashburn Customer
+3491:1001  Ashburn Peer
+3491:112   Ashburn Customer
+3491:1012  Ashburn Peer
+3491:108   Atlanta Customer
+3491:1008  Atlanta Peer
+3491:115   Atlanta Customer
+3491:1015  Atlanta Peer
+3491:104   Baltimore Customer
+3491:1004  Baltimore Peer
+3491:202   Chicago Customer
+3491:2002  Chicago Peer
+3491:201   Dallas Customer
+3491:2001  Dallas Peer
+3491:117   Jacksonville Customer
+3491:1017  Jacksonville Peer
+3491:212   Laredo Customer
+3491:2012  Laredo Peer
+3491:208   Laredo Customer
+3491:2008  Laredo Peer
+3491:205   Los Angeles Customer
+3491:2005  Los Angeles Peer
+3491:207   Los Angeles Customer
+3491:2007  Los Angeles Peer
+3491:209   Los Angeles Customer
+3491:2009  Los Angeles Peer
+3491:211   McAllen Customer
+3491:2011  McAllen Peer
+3491:206   McAllen Customer
+3491:2006  McAllen Peer
+3491:210   Mexico City Customer
+3491:2010  Mexico City Peer
+3491:107   Miami Customer
+3491:1007  Miami Peer
+3491:118   Newark Customer
+3491:1018  Newark Peer
+3491:106   New York Customer
+3491:1006  New York Peer
+3491:110   New York Customer
+3491:1010  New York Peer
+3491:113   New York Customer
+3491:1013  New York Peer
+3491:114   New York Customer
+3491:1014  New York Peer
+3491:105   Philadelphia Customer
+3491:1005  Philadelphia Peer
+3491:116   Reston Customer
+3491:1016  Reston Peer
+3491:203   Seattle Customer
+3491:2003  Seattle Peer
+3491:204   San Jose Customer
+3491:2004  San Jose Peer
+3491:213   Toronto Customer
+3491:2013  Toronto Peer
+3491:111   Washington DC Customer
+3491:1011  Washington DC Peer
+
+# Europe
+3491:304   Amsterdam Customer
+3491:3004  Amsterdam Peer
+3491:322   Amsterdam Customer
+3491:3022  Amsterdam Peer
+3491:306   Athens Customer
+3491:3006  Athens Peer
+3491:314   Brussels Customer
+3491:3014  Brussels Peer
+3491:302   Frankfurt Customer
+3491:3002  Frankfurt Peer
+3491:310   Frankfurt Customer
+3491:3010  Frankfurt Peer
+3491:311   Frankfurt Customer
+3491:3011  Frankfurt Peer
+3491:316   Frankfurt Customer
+3491:3016  Frankfurt Peer
+3491:315   Gosselies Customer
+3491:3015  Gosselies Peer
+3491:301   London Customer
+3491:3001  London Peer
+3491:319   London Customer
+3491:3019  London Peer
+3491:312   London Customer
+3491:3012  London Peer
+3491:313   London Customer
+3491:3013  London Peer
+3491:317   London Customer
+3491:3017  London Peer
+3491:307   Marseille Customer
+3491:3007  Marseille Peer
+3491:320   Munich Customer
+3491:3020  Munich Peer
+3491:303   Milan Customer
+3491:3003  Milan Peer
+3491:318   Milan Customer
+3491:3018  Milan Peer
+3491:308   Paris Customer
+3491:3008  Paris Peer
+3491:309   Paris Customer
+3491:3009  Paris Peer
+3491:323   Praha Customer
+3491:3023  Praha Peer
+3491:305   Stockholm Customer
+3491:3005  Stockholm Peer
+3491:321   Zurich Customer
+3491:3021  Zurich Peer
+
+# Asia
+3491:442   Aqaba Customer
+3491:4042  Aqaba Peer
+3491:414   Bangkok Customer
+3491:4014  Bangkok Peer
+3491:422   Bangkok Customer
+3491:4022  Bangkok Peer
+3491:428   Cairo Customer
+3491:4028  Cairo Peer
+3491:434   Doha Customer
+3491:4034  Doha Peer
+3491:427   Dubai Customer
+3491:4027  Dubai Peer
+3491:426   Dubai Customer
+3491:4026  Dubai Peer
+3491:431   Dubai Customer
+3491:4031  Dubai Peer
+3491:435   Fujairah Customer
+3491:4035  Fujairah Peer
+3491:424   Hanoi Customer
+3491:4024  Hanoi Peer
+3491:425   Ho Chi Min City Customer
+3491:4025  Ho Chi Min City Peer
+3491:441   Hong Kong Customer
+3491:4041  Hong Kong Peer
+3491:401   Hong Kong Customer
+3491:4001  Hong Kong Peer
+3491:407   Hong Kong Customer
+3491:4007  Hong Kong Peer
+3491:404   Hong Kong Customer
+3491:4004  Hong Kong Peer
+3491:415   Hong Kong Customer
+3491:4015  Hong Kong Peer
+3491:440   Hong Kong Customer
+3491:4040  Hong Kong Peer
+3491:406   Hong Kong Customer
+3491:4006  Hong Kong Peer
+3491:420   Hong Kong Customer
+3491:4020  Hong Kong Peer
+3491:436   Hong Kong Customer
+3491:4036  Hong Kong Peer
+3491:429   Hong Kong Customer
+3491:4029  Hong Kong Peer
+3491:416   Jakarta Customer
+3491:4016  Jakarta Peer
+3491:437   Jakarta Customer
+3491:4037  Jakarta Peer
+3491:438   Jakarta Customer
+3491:4038  Jakarta Peer
+3491:446   Jakarta Customer
+3491:4046  Jakarta Peer
+3491:413   Kuala Lumpur Customer
+3491:4013  Kuala Lumpur Peer
+3491:418   Manila Customer
+3491:4018  Manila Peer
+3491:423   Manila Customer
+3491:4023  Manila Peer
+3491:444   Manila Customer
+3491:4044  Manila Peer
+3491:417   Osaka Customer
+3491:4017  Osaka Peer
+3491:443   Osaka Customer
+3491:4043  Osaka Peer
+3491:409   Seoul Customer
+3491:4009  Seoul Peer
+3491:439   Seoul Customer
+3491:4039  Seoul Peer
+3491:410   Seoul Customer
+3491:4010  Seoul Peer
+3491:411   Singapore Customer
+3491:4011  Singapore Peer
+3491:412   Singapore Customer
+3491:4012  Singapore Peer
+3491:403   Singapore Customer
+3491:4003  Singapore Peer
+3491:405   Taipei Customer
+3491:4005  Taipei Peer
+3491:402   Taipei Customer
+3491:4002  Taipei Peer
+3491:421   Taipei Customer
+3491:4021  Taipei Peer
+3491:445   Taipei Customer
+3491:4045  Taipei Peer
+3491:408   Tokyo Customer
+3491:4008  Tokyo Peer
+3491:419   Tokyo Customer
+3491:4019  Tokyo Peer
+3491:432   Tokyo Customer
+3491:4032  Tokyo Peer
+
+# Africa
+3491:525   Abidjan Customer
+3491:5025  Abidjan Peer
+3491:521   Accra Customer
+3491:5021  Accra Peer
+3491:502   Blantyre Customer
+3491:5002  Blantyre Peer
+3491:503   Blantyre Customer
+3491:5003  Blantyre Peer
+3491:531   Casablanca Customer
+3491:5031  Casablanca Peer
+3491:516   Capetown Customer
+3491:5016  Capetown Peer
+3491:504   Dar es Salaam Customer
+3491:5004  Dar es Salaam Peer
+3491:505   Dar es Salaam Customer
+3491:5005  Dar es Salaam Peer
+3491:529   Dar es Salaam Customer
+3491:5029  Dar es Salaam Peer
+3491:528   Dakar Customer
+3491:5028  Dakar Peer
+3491:531   Douala Customer
+3491:5031  Douala Peer
+3491:506   Gaborone Customer
+3491:5006  Gaborone Peer
+3491:507   Gaborone Customer
+3491:5007  Gaborone Peer
+3491:508   Goma Customer
+3491:5008  Goma Peer
+3491:509   Gisenyi Customer
+3491:5009  Gisenyi Peer
+3491:527   Djibouti Customer
+3491:5027  Djibouti Peer
+3491:517   Johannesburg Customer
+3491:5017  Johannesburg Peer
+3491:510   Johannesburg Customer
+3491:5010  Johannesburg Peer
+3491:523   Kampala Customer
+3491:5023  Kampala Peer
+3491:501   Lagos Customer
+3491:5001  Lagos Peer
+3491:530   Lagos Customer
+3491:5030  Lagos Peer
+3491:518   Lusaka Customer
+3491:5018  Lusaka Peer
+3491:511   Mauritius Customer
+3491:5011  Mauritius Peer
+3491:512   Mombasa Customer
+3491:5012  Mombasa Peer
+3491:524   Mombasa Customer
+3491:5024  Mombasa Peer
+3491:513   Maputo Customer
+3491:5013  Maputo Peer
+3491:514   Maputo Customer
+3491:5014  Maputo Peer
+3491:515   Maputo Customer
+3491:5015  Maputo Peer
+3491:519   Nairobi Customer
+3491:5019  Nairobi Peer
+3491:522   Nairobi Customer
+3491:5022  Nairobi Peer
+3491:520   Limbe Customer
+3491:5020  Limbe Peer
+
+# Australia
+3491:701   Perth Customer
+3491:7001  Perth Peer
+3491:702   Sydney Customer
+3491:7002  Sydney Peer
+3491:703   Sydney Customer
+3491:7003  Sydney Peer
+
+# Local Preference
+
+
+# Local Preference - Global
+3491:51001  LP 190 (All Regions)
+3491:51002  LP 180 (All Regions)
+3491:51010  LP 150 (Peer) (All Regions)
+3491:51011  LP 70 (All Regions)
+3491:51012  LP 60 (All Regions)
+
+# Local Preference - All other regions
+3491:51901  LP 190 (all other regions)
+3491:51902  LP 180 (all other regions)
+3491:51910  LP 150 (Peer) (all other regions)
+3491:51911  LP 70 (all other regions)
+3491:51912  LP 60 (all other regions)
+
+# Local Preference - North America
+3491:51101  LP 190 (North America)
+3491:51102  LP 180 (North America)
+3491:51110  LP 150 (Peer) (North America)
+3491:51111  LP 70 (North America)
+3491:51112  LP 60 (North America)
+3491:51201  LP 190 (North America)
+3491:51202  LP 180 (North America)
+3491:51210  LP 150 (Peer) (North America)
+3491:51211  LP 70 (North America)
+3491:51212  LP 60 (North America)
+
+# Local Preference - Europe
+3491:51301  LP 190 (Europe)
+3491:51302  LP 180 (Europe)
+3491:51310  LP 150 (Peer) (Europe)
+3491:51311  LP 70 (Europe)
+3491:51312  LP 60 (Europe)
+
+# Local Preference - Asia
+3491:51401  LP 190 (Asia)
+3491:51402  LP 180 (Asia)
+3491:51410  LP 150 (Peer) (Asia)
+3491:51411  LP 70 (Asia)
+3491:51412  LP 60 (Asia)
+
+# Local Preference - Africa
+3491:51501  LP 190 (Africa)
+3491:51502  LP 180 (Africa)
+3491:51510  LP 150 (Peer) (Africa)
+3491:51511  LP 70 (Africa)
+3491:51512  LP 60 (Africa)
+
+# Local Preference - Australia
+3491:51701  LP 190 (Australia)
+3491:51702  LP 180 (Australia)
+3491:51710  LP 150 (Peer) (Australia)
+3491:51711  LP 70 (Australia)
+3491:51712  LP 60 (Australia)
+
+# Advertisement Control - Global
+3491:50000  No Advertise All Regions
+3491:50001  Prependx1 All Regions
+3491:50002  Prependx2 All Regions
+3491:50003  Prependx3 All Regions
+
+# Advertisement Control - North America
+3491:50100  No Advertise North America
+3491:50101  Prependx1 North America
+3491:50102  Prependx2 North America
+3491:50103  Prependx3 North America
+3491:50200  No Advertise North America
+3491:50201  Prependx1 North America
+3491:50202  Prependx2 North America
+3491:50203  Prependx3 North America
+
+# Advertisement Control - Europe
+3491:50300  No Advertise Europe
+3491:50301  Prependx1 Europe
+3491:50302  Prependx2 Europe
+3491:50303  Prependx3 Europe
+
+# Advertisement Control - Asia
+3491:50400  No Advertise Asia
+3491:50401  Prependx1 Asia
+3491:50402  Prependx2 Asia
+3491:50403  Prependx3 Asia
+
+# Advertisement Control - Africa
+3491:50500  No Advertise Africa
+3491:50501  Prependx1 Africa
+3491:50502  Prependx2 Africa
+3491:50503  Prependx3 Africa
+
+# Advertisement Control - Australia
+3491:50700  No Advertise Australia
+3491:50701  Prependx1 Australia
+3491:50702  Prependx2 Australia
+3491:50703  Prependx3 Australia
+
+# Blackhole
+3491:999    Blackhole (global)
+3491:52900  Blackhole all other regions
+3491:52100  Blackhole North America
+3491:52200  Blackhole North America
+3491:52300  Blackhole Europe
+3491:52400  Blackhole Asia
+3491:52500  Blackhole Africa
+3491:52700  Blackhole Australia
+
+# No Export region
+3491:53900  No Export other regions
+3491:53100  No Export North America
+3491:53200  No Export North America
+3491:53300  No Export Europe
+3491:53400  No Export Asia
+3491:53500  No Export Africa
+3491:53700  No Export Australia
+
+# PCCW Peer-Specific Advertisement Control
+
+# AS174 (Cogent)
+3491:60040  No Advertise AS174
+3491:60041  Prependx1 AS174
+3491:60042  Prependx2 AS174
+3491:60043  Prependx3 AS174
+
+# AS286 (KPN)
+3491:61010  No Advertise AS286
+3491:61011  Prependx1 AS286
+3491:61012  Prependx2 AS286
+3491:61013  Prependx3 AS286
+
+# AS577 (Bell Canada)
+3491:60030  No Advertise AS577
+3491:60031  Prependx1 AS577
+3491:60032  Prependx2 AS577
+3491:60033  Prependx3 AS577
+
+# AS701 (Verizon)
+3491:60080  No Advertise AS701
+3491:60081  Prependx1 AS701
+3491:60082  Prependx2 AS701
+3491:60083  Prependx3 AS701
+
+# AS702 (UUNET EMEA)
+3491:61100  No Advertise AS702
+3491:61101  Prependx1 AS702
+3491:61102  Prependx2 AS702
+3491:61103  Prependx3 AS702
+
+# AS703 (Vodafone Australia)
+3491:62000  No Advertise AS703
+3491:62001  Prependx1 AS703
+3491:62002  Prependx2 AS703
+3491:62003  Prependx3 AS703
+
+# AS812 (Rogers)
+3491:60090  No Advertise AS812
+3491:60091  Prependx1 AS812
+3491:60092  Prependx2 AS812
+3491:60093  Prependx3 AS812
+
+# AS852 (TELUS)
+3491:60070  No Advertise AS852
+3491:60071  Prependx1 AS852
+3491:60072  Prependx2 AS852
+3491:60073  Prependx3 AS852
+
+# AS1239 (Sprint)
+3491:60180  No Advertise AS1239
+3491:60181  Prependx1 AS1239
+3491:60182  Prependx2 AS1239
+3491:60183  Prependx3 AS1239
+
+# AS1273 (Vodafone)
+3491:61000  No Advertise AS1273
+3491:61001  Prependx1 AS1273
+3491:61002  Prependx2 AS1273
+3491:61003  Prependx3 AS1273
+
+# AS1299 (Telia)
+3491:61110  No Advertise AS1299
+3491:61111  Prependx1 AS1299
+3491:61112  Prependx2 AS1299
+3491:61113  Prependx3 AS1299
+
+# AS2497 (IIJ)
+3491:62100  No Advertise AS2497
+3491:62101  Prependx1 AS2497
+3491:62102  Prependx2 AS2497
+3491:62103  Prependx3 AS2497
+
+# AS2516 (KDDI)
+3491:62090  No Advertise AS2516
+3491:62091  Prependx1 AS2516
+3491:62092  Prependx2 AS2516
+3491:62093  Prependx3 AS2516
+
+# AS2686 (AT&T EMEA)
+3491:61060  No Advertise AS2686
+3491:61061  Prependx1 AS2686
+3491:61062  Prependx2 AS2686
+3491:61063  Prependx3 AS2686
+
+# AS2828 (XO)
+3491:60100  No Advertise AS2828
+3491:60101  Prependx1 AS2828
+3491:60102  Prependx2 AS2828
+3491:60103  Prependx3 AS2828
+
+# AS2914 (NTT)
+3491:60110  No Advertise AS2914
+3491:60111  Prependx1 AS2914
+3491:60112  Prependx2 AS2914
+3491:60113  Prependx3 AS2914
+
+# AS3257 (GTT)
+3491:61140  No Advertise AS3257
+3491:61141  Prependx1 AS3257
+3491:61142  Prependx2 AS3257
+3491:61143  Prependx3 AS3257
+
+# AS3303 (Swisscom)
+3491:61080  No Advertise AS3303
+3491:61081  Prependx1 AS3303
+3491:61082  Prependx2 AS3303
+3491:61083  Prependx3 AS3303
+
+# AS3320 (DTAG)
+3491:61120  No Advertise AS3320
+3491:61121  Prependx1 AS3320
+3491:61122  Prependx2 AS3320
+3491:61123  Prependx3 AS3320
+
+# AS3356 (Lumen)
+3491:60150  No Advertise AS3356
+3491:60151  Prependx1 AS3356
+3491:60152  Prependx2 AS3356
+3491:60153  Prependx3 AS3356
+
+# AS3462 (HINET)
+3491:62080  No Advertise AS3462
+3491:62081  Prependx1 AS3462
+3491:62082  Prependx2 AS3462
+3491:62083  Prependx3 AS3462
+
+# AS3741 (Internet Solutions)
+3491:62240  No Advertise AS3741
+3491:62241  Prependx1 AS3741
+3491:62242  Prependx2 AS3741
+3491:62243  Prependx3 AS3741
+
+# AS3786 (DACOM)
+3491:62120  No Advertise AS3786
+3491:62121  Prependx1 AS3786
+3491:62122  Prependx2 AS3786
+3491:62123  Prependx3 AS3786
+
+# AS4637 (Telstra)
+3491:62070  No Advertise AS4637
+3491:62071  Prependx1 AS4637
+3491:62072  Prependx2 AS4637
+3491:62073  Prependx3 AS4637
+
+# AS4648 (Asia Pacific Online)
+3491:62130  No Advertise AS4648
+3491:62131  Prependx1 AS4648
+3491:62132  Prependx2 AS4648
+3491:62133  Prependx3 AS4648
+
+# AS4766 (Korea Telecom)
+3491:62010  No Advertise AS4766
+3491:62011  Prependx1 AS4766
+3491:62012  Prependx2 AS4766
+3491:62013  Prependx3 AS4766
+
+# AS4788 (TM Net)
+3491:62040  No Advertise AS4788
+3491:62041  Prependx1 AS4788
+3491:62042  Prependx2 AS4788
+3491:62043  Prependx3 AS4788
+
+# AS5400 (BT)
+3491:61020  No Advertise AS5400
+3491:61021  Prependx1 AS5400
+3491:61022  Prependx2 AS5400
+3491:61023  Prependx3 AS5400
+
+# AS5511 (Orange)
+3491:61130  No Advertise AS5511
+3491:61131  Prependx1 AS5511
+3491:61132  Prependx2 AS5511
+3491:61133  Prependx3 AS5511
+
+# AS6453 (TATA)
+3491:62160  No Advertise AS6453
+3491:62161  Prependx1 AS6453
+3491:62162  Prependx2 AS6453
+3491:62163  Prependx3 AS6453
+
+# AS6461 (Zayo)
+3491:60020  No Advertise AS6461
+3491:60021  Prependx1 AS6461
+3491:60022  Prependx2 AS6461
+3491:60023  Prependx3 AS6461
+
+# AS6762 (Telecom Italia Sparkle)
+3491:61050  No Advertise AS6762
+3491:61051  Prependx1 AS6762
+3491:61052  Prependx2 AS6762
+3491:61053  Prependx3 AS6762
+
+# AS6774 (Tinet)
+3491:61090  No Advertise AS6774
+3491:61091  Prependx1 AS6774
+3491:61092  Prependx2 AS6774
+3491:61093  Prependx3 AS6774
+
+# AS6939 (Hurricane Electric)
+3491:60050  No Advertise AS6939
+3491:60051  Prependx1 AS6939
+3491:60052  Prependx2 AS6939
+3491:60053  Prependx3 AS6939
+
+# AS7018 (AT&T)
+3491:60130  No Advertise AS7018
+3491:60131  Prependx1 AS7018
+3491:60132  Prependx2 AS7018
+3491:60133  Prependx3 AS7018
+
+# AS7473 (SingTel)
+3491:62030  No Advertise AS7473
+3491:62031  Prependx1 AS7473
+3491:62032  Prependx2 AS7473
+3491:62033  Prependx3 AS7473
+
+# AS7843 (Hibernia)
+3491:60170  No Advertise AS7843
+3491:60171  Prependx1 AS7843
+3491:60172  Prependx2 AS7843
+3491:60173  Prependx3 AS7843
+
+# AS7922 (Comcast)
+3491:60120  No Advertise AS7922
+3491:60121  Prependx1 AS7922
+3491:60122  Prependx2 AS7922
+3491:60123  Prependx3 AS7922
+
+# AS8220 (Colt)
+3491:61030  No Advertise AS8220
+3491:61031  Prependx1 AS8220
+3491:61032  Prependx2 AS8220
+3491:61033  Prependx3 AS8220
+
+# AS9505 (RackCentral)
+3491:62060  No Advertise AS9505
+3491:62061  Prependx1 AS9505
+3491:62062  Prependx2 AS9505
+3491:62063  Prependx3 AS9505
+
+# AS9680 (HGC)
+3491:60190  No Advertise AS9680
+3491:60191  Prependx1 AS9680
+3491:60192  Prependx2 AS9680
+3491:60193  Prependx3 AS9680
+
+# AS12956 (Telefonica)
+3491:61040  No Advertise AS12956
+3491:61041  Prependx1 AS12956
+3491:61042  Prependx2 AS12956
+3491:61043  Prependx3 AS12956
+
+# AS15169 (Google)
+3491:62020  No Advertise AS15169
+3491:62021  Prependx1 AS15169
+3491:62022  Prependx2 AS15169
+3491:62023  Prependx3 AS15169
+
+# AS15412 (Forthnet)
+3491:62200  No Advertise AS15412
+3491:62201  Prependx1 AS15412
+3491:62202  Prependx2 AS15412
+3491:62203  Prependx3 AS15412
+
+# AS16509 (Amazon)
+3491:61150  No Advertise AS16509
+3491:61151  Prependx1 AS16509
+3491:61152  Prependx2 AS16509
+3491:61153  Prependx3 AS16509
+
+# AS17676 (Softbank)
+3491:62110  No Advertise AS17676
+3491:62111  Prependx1 AS17676
+3491:62112  Prependx2 AS17676
+3491:62113  Prependx3 AS17676
+
+# AS20940 (Akamai)
+3491:60160  No Advertise AS20940
+3491:60161  Prependx1 AS20940
+3491:60162  Prependx2 AS20940
+3491:60163  Prependx3 AS20940
+
+# AS22773 (ASN22773)
+3491:60060  No Advertise AS22773
+3491:60061  Prependx1 AS22773
+3491:60062  Prependx2 AS22773
+3491:60063  Prependx3 AS22773
+
+# AS37100 (SEACOM)
+3491:60140  No Advertise AS37100
+3491:60141  Prependx1 AS37100
+3491:60142  Prependx2 AS37100
+3491:60143  Prependx3 AS37100
+
+# AS58453 (China Mobile)
+3491:62230  No Advertise AS58453
+3491:62231  Prependx1 AS58453
+3491:62232  Prependx2 AS58453
+3491:62233  Prependx3 AS58453
