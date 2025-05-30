@@ -58,6 +58,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     """Lifespan for setup etc with fastAPI"""
 
     # Populate the community mapping database
+    logger.debug("Building BGP community database")
     init_community_map_db()
 
     # Set up the http client

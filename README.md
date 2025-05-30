@@ -33,9 +33,8 @@ Copy `examples/env.example` to `.env` in the project root (not the package folde
 | `ROOT_PATH`                | Root path for the app (e.g., `/` or `/lg`).                                                  |
 | `USERNAME`                 | Username for authentication.                                                                 |
 | `PASSWORD`                 | Password for authentication.                                                                 |
-| `ENVIRONMENT`              | Environment type (`development` or `production`).                                            |
-| `DEBUG`                    | Enables debug mode if `True`.                                                                |
-| `LOG_LEVEL`                | Logging level (`debug`, `info`, `warning`).                                                  |
+| `ENVIRONMENT`              | Environment type (`prod` or `dev`).                                                          |
+| `LOG_LEVEL`                | Logging level (`debug`, `info`, `warning`, `error`, etc).                                    |
 | `LOG_DIR`                  | Directory for log files (default: `/var/log/lg/`).                                           |
 | `CONFIG_FILE`              | Path to main config file (default: `config.yml`).                                            |
 | `PING_MULTI_MAX_SOURCE`    | Max source locations for multi-ping (default: 3).                                            |
@@ -43,8 +42,22 @@ Copy `examples/env.example` to `.env` in the project root (not the package folde
 | `BGP_MULTI_MAX_SOURCE`     | Max source locations for multi-BGP (default: 3).                                             |
 | `BGP_MULTI_MAX_IP`         | Max IPs for multi-BGP (default: 5).                                                          |
 | `RESOLVE_TRACEROUTE_HOPS`  | Traceroute hop resolution: `off`, `missing`, or `all` (default: `off`).                      |
+| `USE_REDIS_CACHE`           | Set to `True` to use Redis as a cache, or `False` for in-memory cache.                      |
+| `REDIS_HOST`                | Redis server hostname or IP address (default: `127.0.0.1`).                                 |
+| `REDIS_PORT`                | Redis server port (default: `6379`).                                                        |
+| `REDIS_TIMEOUT`             | Redis connection timeout in seconds (default: `5`).                                         |
+| `REDIS_PASSWORD`            | (Optional) Password for Redis server.                                                       |
+| `REDIS_NAMESPACE`           | Namespace prefix for Redis keys (default: `lgapi`).                                         |
 
 ---
+
+### Caching
+
+The API caches results from external services such as the Cymru IP to ASN service, Caida AS rank API, and reverse DNS lookups to improve performance and reduce external requests.
+
+By default, caching is done in memory.  
+
+To use Redis for caching set `USE_REDIS_CACHE=True` in your `.env` file and customise the Redis connection variables if required.
 
 ### Location and Command Configuration
 
@@ -106,7 +119,7 @@ Set `RESOLVE_TRACEROUTE_HOPS` in `.env`:
 - `all`: Resolve all hops, ignoring router resolution.
 
 **Tip:**  
-Disable reverse DNS lookup on routers to speed up traceroute. Example config:
+Disable reverse DNS lookup on the routers to speed up the traceroutes. Example config:
 
 ```yaml
 traceroute:
@@ -181,6 +194,6 @@ fastapi dev lgapi/main.py
 ## Nginx Configuration
 
 A reverse proxy via Nginx is recommended.  
-If serving under a subpath, set `ROOT_PATH` in `.env` (e.g., `ROOT_PATH=/lg`).
+If serving under a subpath, set `ROOT_PATH` in `.env` (e.g., `ROOT_PATH=/lgapi`).
 
 See [examples/nginx.conf](examples/nginx.conf) and [examples/nginx-subpath.conf](examples/nginx-subpath.conf) for sample configs.
