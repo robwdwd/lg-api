@@ -264,6 +264,7 @@
 8220:2914  NTT
 8220:6453  TATA
 8220:3491  PCCW
+8220:7545  TPG
 
 # Level3
 #
@@ -322,7 +323,6 @@
 3356:5  Latin America
 
 # Lumen Cities
-
 3356:2001  Chicago
 3356:2002  San Diego
 3356:2003  Los Angeles
@@ -362,23 +362,23 @@
 3356:2039  Newark
 3356:2040  Pittsburgh
 3356:2041  Kansas City
-3356:2042  Chicago 2
-3356:2043  New York City 2
+3356:2042  Chicago
+3356:2043  New York City
 3356:2044  Louisville
 3356:2045  Nashville
 3356:2046  Buffalo
-3356:2047  Toronto 2
-3356:2048  Montreal 2
-3356:2049  Syracuse 2
-3356:2050  Washington DC 12
-3356:2051  San Jose 5
-3356:2052  Toronto 1
+3356:2047  Toronto
+3356:2048  Montreal
+3356:2049  Syracuse
+3356:2050  Washington DC
+3356:2051  San Jose
+3356:2052  Toronto
 3356:2053  Portland
 3356:2054  Memphis
-3356:2055  Tulsa 2
-3356:2056  New York City 6
-3356:2057  Washington DC 111
-3356:2058  Charlottesville 1
+3356:2055  Tulsa
+3356:2056  New York City
+3356:2057  Washington DC
+3356:2058  Charlottesville Virginia
 3356:2064  London
 3356:2065  Frankfurt
 3356:2066  Paris
@@ -388,11 +388,11 @@
 3356:2070  Hamburg
 3356:2071  Berlin
 3356:2072  Munich
-3356:2073  London 2
+3356:2073  London
 3356:2074  Milan
 3356:2075  Zurich
 3356:2076  Stockholm
-3356:2077  Madrid 2
+3356:2077  Madrid
 3356:2078  Geneva
 3356:2079  Manchester
 3356:2080  Dublin
@@ -400,59 +400,59 @@
 3356:2082  Vienna
 3356:2083  Prague
 3356:2084  Warsaw
-3356:2085  Valencia 3
+3356:2085  Valencia
 3356:2086  Barcelona
 3356:2087  Sofia
 3356:2088  Bucharest
 3356:2089  Budapest
 3356:2090  Marseille
-3356:2091  Copenhagen 2
+3356:2091  Copenhagen
 3356:2092  Oslo
 3356:2093  Bratislava
 3356:2094  Helsinki
-3356:2095  Dublin 3
-3356:2096  Warsaw 3
-3356:2097  Luxembourg 1
-3356:2098  Toulouse 1
-3356:2099  Lyon 1
-3356:2100  Jeddah 1
-3356:2101  Zagreb 1
-3356:2102  Ljubljana 1
-3356:2103  Madrid 1
-3356:2104  Djibouti 1
-3356:2105  London 16
-3356:2106  London 15
-3356:2107  CapeTown2
-3356:2108  Johannesburg2
-3356:2109  Kenya3
+3356:2095  Dublin
+3356:2096  Warsaw
+3356:2097  Luxembourg
+3356:2098  Toulouse
+3356:2099  Lyon
+3356:2100  Jeddah
+3356:2101  Zagreb
+3356:2102  Ljubljana
+3356:2103  Madrid
+3356:2104  Djibouti
+3356:2105  London
+3356:2106  London
+3356:2107  Cape Town
+3356:2108  Johannesburg
+3356:2109  Kenya
 3356:2110  United Arab Emirates
-3356:2111  Stockholm2
-3356:2112  Marseille2
-3356:2113  Estonia2
-3356:2114  Paris10
-3356:2115  Sofia2
-3356:2116  Russia2
-3356:2117  Italy2
-3356:2118  RepublicOfSerbia2
-3356:2119  Oslo2
-3356:2120  Manchester2
-3356:2121  Milan2
-3356:2122  UnitedArabEmirates2
-3356:2123  Iceland2
-3356:2124  Paris7
-3356:2125  London4
-3356:2126  Iceland4
-3356:2127  Istanbul2
-3356:2128  Leeds1
-3356:2129  Birmingham1
-3356:2130  TelAviv1
-3356:2131  Zurich3
-3356:2132  London14
-3356:2133  Ankara1
-3356:2171  Hong Kong3
-3356:2172  Singapore3
-3356:2173  Sydney1
-3356:2174  Tokyo4
+3356:2111  Stockholm
+3356:2112  Marseille
+3356:2113  Estonia
+3356:2114  Paris
+3356:2115  Sofia
+3356:2116  Russia
+3356:2117  Italy
+3356:2118  Republic of Serbia
+3356:2119  Oslo
+3356:2120  Manchester
+3356:2121  Milan
+3356:2122  United Arab Emirates
+3356:2123  Iceland
+3356:2124  Paris
+3356:2125  London
+3356:2126  Iceland
+3356:2127  Istanbul
+3356:2128  Leeds
+3356:2129  Birmingham
+3356:2130  Tel Aviv
+3356:2131  Zurich
+3356:2132  London
+3356:2133  Ankara
+3356:2171  Hong Kong
+3356:2172  Singapore
+3356:2173  Sydney
+3356:2174  Tokyo
 3356:2190  Sao Paulo
 
 3356:70  Lumen LP70
@@ -1172,21 +1172,21 @@
 # Local Preference
 
 
-# Local Preference - Global
+# Local Preference  Global
 3491:51001  LP 190 (All Regions)
 3491:51002  LP 180 (All Regions)
 3491:51010  LP 150 (Peer) (All Regions)
 3491:51011  LP 70 (All Regions)
 3491:51012  LP 60 (All Regions)
 
-# Local Preference - All other regions
+# Local Preference  All other regions
 3491:51901  LP 190 (all other regions)
 3491:51902  LP 180 (all other regions)
 3491:51910  LP 150 (Peer) (all other regions)
 3491:51911  LP 70 (all other regions)
 3491:51912  LP 60 (all other regions)
 
-# Local Preference - North America
+# Local Preference  North America
 3491:51101  LP 190 (North America)
 3491:51102  LP 180 (North America)
 3491:51110  LP 150 (Peer) (North America)
@@ -1198,41 +1198,41 @@
 3491:51211  LP 70 (North America)
 3491:51212  LP 60 (North America)
 
-# Local Preference - Europe
+# Local Preference  Europe
 3491:51301  LP 190 (Europe)
 3491:51302  LP 180 (Europe)
 3491:51310  LP 150 (Peer) (Europe)
 3491:51311  LP 70 (Europe)
 3491:51312  LP 60 (Europe)
 
-# Local Preference - Asia
+# Local Preference  Asia
 3491:51401  LP 190 (Asia)
 3491:51402  LP 180 (Asia)
 3491:51410  LP 150 (Peer) (Asia)
 3491:51411  LP 70 (Asia)
 3491:51412  LP 60 (Asia)
 
-# Local Preference - Africa
+# Local Preference  Africa
 3491:51501  LP 190 (Africa)
 3491:51502  LP 180 (Africa)
 3491:51510  LP 150 (Peer) (Africa)
 3491:51511  LP 70 (Africa)
 3491:51512  LP 60 (Africa)
 
-# Local Preference - Australia
+# Local Preference  Australia
 3491:51701  LP 190 (Australia)
 3491:51702  LP 180 (Australia)
 3491:51710  LP 150 (Peer) (Australia)
 3491:51711  LP 70 (Australia)
 3491:51712  LP 60 (Australia)
 
-# Advertisement Control - Global
+# Advertisement Control  Global
 3491:50000  No Advertise All Regions
 3491:50001  Prependx1 All Regions
 3491:50002  Prependx2 All Regions
 3491:50003  Prependx3 All Regions
 
-# Advertisement Control - North America
+# Advertisement Control  North America
 3491:50100  No Advertise North America
 3491:50101  Prependx1 North America
 3491:50102  Prependx2 North America
@@ -1242,25 +1242,25 @@
 3491:50202  Prependx2 North America
 3491:50203  Prependx3 North America
 
-# Advertisement Control - Europe
+# Advertisement Control  Europe
 3491:50300  No Advertise Europe
 3491:50301  Prependx1 Europe
 3491:50302  Prependx2 Europe
 3491:50303  Prependx3 Europe
 
-# Advertisement Control - Asia
+# Advertisement Control  Asia
 3491:50400  No Advertise Asia
 3491:50401  Prependx1 Asia
 3491:50402  Prependx2 Asia
 3491:50403  Prependx3 Asia
 
-# Advertisement Control - Africa
+# Advertisement Control  Africa
 3491:50500  No Advertise Africa
 3491:50501  Prependx1 Africa
 3491:50502  Prependx2 Africa
 3491:50503  Prependx3 Africa
 
-# Advertisement Control - Australia
+# Advertisement Control  Australia
 3491:50700  No Advertise Australia
 3491:50701  Prependx1 Australia
 3491:50702  Prependx2 Australia
@@ -1639,7 +1639,7 @@
 3257:4000  GTT Customer
 3257:5000  GTT Origin
 
-# GTT AS3257 - Route Source Communities (full names, no codes)
+# GTT AS3257  Route Source Communities (full names, no codes)
 
 3257:50001  Europe
 3257:50002  United States and Canada
@@ -1804,3 +1804,51 @@
 # Turkey
 3257:59000  Turkey
 3257:59001  Istanbul
+
+# RETN
+#
+9002:0         RETN Customer
+9002:9002      RETN Peer
+
+9002:64803  United Arab Emirates
+9002:64605  Austria
+9002:64607  Belgium
+9002:64608  Bulgaria
+9002:64609  Belarus
+9002:64611  Switzerland
+9002:64613  Czech Republic
+9002:64615  Germany
+9002:64617  Denmark
+9002:64619  Estonia
+9002:64621  Spain
+9002:64623  Finland
+9002:64627  France
+9002:64631  Croatia
+9002:64633  Hungary
+9002:64635  Ireland
+9002:64641  Italy
+9002:64645  Lithuania
+9002:64649  Latvia
+9002:64653  Moldova
+9002:64657  Netherlands
+9002:64661  Poland
+9002:64663  Romania
+9002:64665  Serbia
+9002:64667  Russia
+9002:64669  Sweden
+9002:64673  Slovakia
+9002:64677  Ukraine
+9002:64679  United Kingdom
+9002:64789  United States
+9002:64805  Armenia
+9002:64819  China
+9002:64821  Georgia
+9002:64825  Indonesia
+9002:64829  Japan
+9002:64831  Kyrgyzstan
+9002:64837  South Korea
+9002:64839  Kazakhstan
+9002:64861  Philippines
+9002:64867  Singapore
+9002:64881  Turkey
+9002:64885  Taiwan
