@@ -11,7 +11,6 @@ from scrapli import AsyncScrapli
 from scrapli.exceptions import ScrapliException
 from scrapli.response import MultiResponse, Response
 
-# from lgapi.commands import get_multi_commands
 from lgapi.config import settings
 from lgapi.types.returntypes import MultiCmdResult
 
@@ -73,12 +72,11 @@ async def execute_on_devices(hostname: str, device: MultiCmdResult, command: str
             timeout=get_command_timeout(command),
         )
 
+        raw_output = "\n".join(resp.result for resp in response.data)
+        return (location, raw_output)
+
     except (ScrapliException, OSError) as err:
-        raise Exception(f"Error getting output for {device['location']}") from err
-
-    raw_output = "\n".join(resp.result for resp in response.data)
-
-    return (location, raw_output)
+        return (location, err)
 
 
 async def gather_device_results(devices: dict[str, MultiCmdResult], command: str) -> list:

@@ -74,11 +74,11 @@ if settings.cache.redis.enabled:
         {
             "default": {
                 "cache": "aiocache.RedisCache",
-                "endpoint": settings.cache.redis.host,
-                "db": settings.cache.redis.path,
+                "endpoint": settings.cache.redis.dsn.host,
+                "db": int(settings.cache.redis.dsn.path.lstrip("/")),
                 "namespace": settings.cache.redis.namespace,
-                "port": settings.cache.redis.port,
-                "password": settings.cache.redis.password,
+                "port": settings.cache.redis.dsn.port,
+                "password": settings.cache.redis.dsn.password,
                 "timeout": settings.cache.redis.timeout,
                 "serializer": {"class": "aiocache.serializers.PickleSerializer"},
             }

@@ -15,6 +15,7 @@ from lgapi.config import settings
 from lgapi.device import execute_on_device, gather_device_results, get_command_timeout
 from lgapi.types.models import MultiBgpBody, MultiPingBody
 from lgapi.types.returntypes import CmdResult, MultiCmdResult
+from lgapi import logger
 
 LOCATIONS_CFG = settings.locations
 COMMANDS_CFG = settings.commands
@@ -83,11 +84,26 @@ async def execute_multiple_commands(
     try:
         device_output = await gather_device_results(device_commands, command)
 
-        return [{"location": location, "result": result} for location, result in device_output]
+        results = []
+        for location, result in device_output:
+            if isinstance(result, Exception):
+                logger.warning("Error getting device output from %s: %s", location, result)
+                results.append({
+                    "location": location,
+                    "error": f"Error getting output from network device",
+                })
+            else:
+                results.append({
+                    "location": location,
+                    "result": result,
+                })
+        return results
+
     except Exception as err:
+        logger.warning("Error executing multi-%s at %s: %s", command, location, err)
         raise HTTPException(
             status_code=500,
-            detail=f"Error executing multiple {command} commands: {err}",
+            detail=f"Error executing multi-{command} command",
         ) from err
 
 
@@ -107,6 +123,8 @@ async def execute_single_command(location: str, command: str, destination: str) 
         )
         return response.result
     except (ScrapliException, OSError) as err:
+        logger.warning("Error getting device output from '%s' for command '%s': %s", location, command, err)
+
         raise HTTPException(
             status_code=500,
             detail=f"Error executing command '{command}' at location '{location}'",

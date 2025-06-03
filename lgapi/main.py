@@ -217,8 +217,8 @@ async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
 
     for result in results:
 
-        if isinstance(result, Exception):
-            output_table["errors"].append(str(result))
+        if "error" in result:
+            output_table["errors"].append(f"{result['location']}: {result['error']}")
         else:
             location = result["location"]
             location_name = LOCATIONS_CFG[location].name
@@ -253,8 +253,8 @@ async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) 
 
     for result in results:
 
-        if isinstance(result, Exception):
-            output_table["errors"].append(str(result))
+        if "error" in result:
+            output_table["errors"].append(f"{result['location']}: {result['error']}")
         else:
             location = result["location"]
             location_name = LOCATIONS_CFG[location].name
