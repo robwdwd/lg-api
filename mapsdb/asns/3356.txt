@@ -1,0 +1,192 @@
+# Level3/Lumen
+#
+3356:123  Lumen Customer
+3356:666  Lumen Peer
+
+# Lumen Country Communities
+#
+3356:500  UK
+3356:501  Germany
+3356:502  France
+3356:503  Netherlands
+3356:504  Belgium
+3356:505  Italy
+3356:506  Switzerland
+3356:507  Sweden
+3356:508  Spain
+3356:509  Ireland
+3356:510  Denmark
+3356:511  Austria
+3356:512  Czech Republic
+3356:513  Poland
+3356:514  Bulgaria
+3356:515  Romania
+3356:516  Hungary
+3356:517  Norway
+3356:518  Slovakia
+3356:519  Finland
+3356:520  Luxembourg
+3356:521  Croatia
+3356:522  Slovenia
+3356:523  Estonia
+3356:524  Serbia
+3356:525  Iceland
+3356:550  Saudi Arabia
+3356:551  Djibouti
+3356:552  South Africa
+3356:553  United Arab Emirates
+3356:554  Russia
+3356:555  Kenya
+3356:556  Turkey
+3356:557  Israel
+3356:575  USA
+3356:576  Canada
+3356:577  Mexico
+3356:701  China
+3356:702  Australia
+3356:703  Singapore
+3356:704  Japan
+3356:800  Brazil
+3356:801  Argentina
+
+3356:2  Europe
+3356:3  North America
+3356:4  APAC
+3356:5  Latin America
+
+# Lumen Cities
+3356:2001  Chicago
+3356:2002  San Diego
+3356:2003  Los Angeles
+3356:2004  Denver
+3356:2005  Philadelphia
+3356:2006  Washington DC
+3356:2007  Detroit
+3356:2008  Dallas
+3356:2009  San Francisco
+3356:2010  New York City
+3356:2011  San Jose
+3356:2012  Seattle
+3356:2013  Atlanta
+3356:2014  Houston
+3356:2015  Boston
+3356:2016  Minneapolis
+3356:2017  Honolulu
+3356:2018  Weehawken
+3356:2019  Baltimore
+3356:2020  Cincinnati
+3356:2021  Stamford
+3356:2022  Miami
+3356:2023  Tampa
+3356:2024  Orlando
+3356:2025  St Louis
+3356:2026  Phoenix
+3356:2027  Richmond
+3356:2029  Salt Lake City
+3356:2030  Sacramento
+3356:2031  Raleigh
+3356:2032  San Antonio
+3356:2033  Las Vegas
+3356:2034  Charlotte
+3356:2035  Cleveland
+3356:2036  Oakland
+3356:2038  Tustin
+3356:2039  Newark
+3356:2040  Pittsburgh
+3356:2041  Kansas City
+3356:2042  Chicago
+3356:2043  New York City
+3356:2044  Louisville
+3356:2045  Nashville
+3356:2046  Buffalo
+3356:2047  Toronto
+3356:2048  Montreal
+3356:2049  Syracuse
+3356:2050  Washington DC
+3356:2051  San Jose
+3356:2052  Toronto
+3356:2053  Portland
+3356:2054  Memphis
+3356:2055  Tulsa
+3356:2056  New York City
+3356:2057  Washington DC
+3356:2058  Charlottesville Virginia
+3356:2064  London
+3356:2065  Frankfurt
+3356:2066  Paris
+3356:2067  Amsterdam
+3356:2068  Brussels
+3356:2069  Dusseldorf
+3356:2070  Hamburg
+3356:2071  Berlin
+3356:2072  Munich
+3356:2073  London
+3356:2074  Milan
+3356:2075  Zurich
+3356:2076  Stockholm
+3356:2077  Madrid
+3356:2078  Geneva
+3356:2079  Manchester
+3356:2080  Dublin
+3356:2081  Copenhagen
+3356:2082  Vienna
+3356:2083  Prague
+3356:2084  Warsaw
+3356:2085  Valencia
+3356:2086  Barcelona
+3356:2087  Sofia
+3356:2088  Bucharest
+3356:2089  Budapest
+3356:2090  Marseille
+3356:2091  Copenhagen
+3356:2092  Oslo
+3356:2093  Bratislava
+3356:2094  Helsinki
+3356:2095  Dublin
+3356:2096  Warsaw
+3356:2097  Luxembourg
+3356:2098  Toulouse
+3356:2099  Lyon
+3356:2100  Jeddah
+3356:2101  Zagreb
+3356:2102  Ljubljana
+3356:2103  Madrid
+3356:2104  Djibouti
+3356:2105  London
+3356:2106  London
+3356:2107  Cape Town
+3356:2108  Johannesburg
+3356:2109  Kenya
+3356:2110  United Arab Emirates
+3356:2111  Stockholm
+3356:2112  Marseille
+3356:2113  Estonia
+3356:2114  Paris
+3356:2115  Sofia
+3356:2116  Russia
+3356:2117  Italy
+3356:2118  Republic of Serbia
+3356:2119  Oslo
+3356:2120  Manchester
+3356:2121  Milan
+3356:2122  United Arab Emirates
+3356:2123  Iceland
+3356:2124  Paris
+3356:2125  London
+3356:2126  Iceland
+3356:2127  Istanbul
+3356:2128  Leeds
+3356:2129  Birmingham
+3356:2130  Tel Aviv
+3356:2131  Zurich
+3356:2132  London
+3356:2133  Ankara
+3356:2171  Hong Kong
+3356:2172  Singapore
+3356:2173  Sydney
+3356:2174  Tokyo
+3356:2190  Sao Paulo
+
+3356:70  Lumen LP70
+3356:80  Lumen LP80
+3356:90  Lumen LP90

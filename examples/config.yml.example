@@ -1,20 +1,59 @@
+title: "Looking Glass API"
+
+resolve_traceroute_hops: all
+
+environment: devel
+log_level: debug
+root_path: "/"
+
+limits:
+  max_sources:
+    ping: 3
+    bgp: 3
+  max_destinations:
+    ping: 5
+    bgp: 5
+
+authentication:
+  groups:
+    core:
+      username: user1
+      password: password234
+    access:
+      username: user2
+      password: password12
+    fallback:
+        username: user3
+        password: pass9876
+
+# Redis configuration
+cache:
+  redis:
+    enabled: false
+    dsn: redis://localhost:6379/
+    namespace: lgapi
+    timeout: 5
+
 locations:
   AMS:
     name: Amsterdam
     region: Western Europe
     device: router.ams.example.net
+    authentication: core
     type: cisco_iosxr
     source: loopback999
   BCN:
     name: Barcelona
     region: Western Europe
     device: router.bcn.example.net
+    authentication: access
     type: cisco_iosxr
     source: loopback999
   PAR:
     name: Paris
     region: Western Europe
     device: router.par.example.net
+    authentication: core
     type: juniper_junos
     source: 10.1.1.2
 

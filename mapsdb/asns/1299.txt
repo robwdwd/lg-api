@@ -1,0 +1,114 @@
+# 1299
+#
+1299:20000  EU Peers
+1299:25000  North American Peers
+1299:27000  Asia & Pacific Peers
+1299:30000  EU Customers
+1299:35000  North American Customers
+1299:37000  APAC Customers
+
+1299:30000  Europe
+1299:35000  North America
+1299:37000  APAC
+
+1299:30100  Copenhagen
+1299:30110  Gothenburg
+1299:30200  Stockholm
+1299:30210  Kaunas/Vilnius
+1299:30220  Oslo
+1299:30230  Helsinki
+1299:30240  Tallinn
+1299:30250  Moscow
+1299:30260  St Petersburg
+1299:30270  Riga
+1299:30300  Hamburg
+1299:30310  Berlin
+1299:30320  Warsaw/Poznan
+1299:30330  Kiev
+1299:30340  Kristiansand
+1299:30400  Paris
+1299:30410  Marseille
+1299:30420  Lyon
+1299:30430  Madrid
+1299:30440  Barcelona
+1299:30450  Valencia
+1299:30500  Amsterdam
+1299:30510  Rotterdam
+1299:30520  Brussels
+1299:30600  London/Slough
+1299:30620  Dublin
+1299:30700  Frankfurt/Nurnberg
+1299:30710  Dusseldorf
+1299:30720  Munich
+1299:30730  Milan
+1299:30740  Zurich
+1299:30750  Stuttgart
+1299:30760  Cologne
+1299:30770  Rome
+1299:30780  Geneva
+1299:30800  Vienna
+1299:30810  Belgrade
+1299:30820  Budapest
+1299:30830  Sofia
+1299:30840  Bucharest
+1299:30850  Prague
+1299:30860  Bratislava
+1299:30870  Zagreb
+
+1299:35100  New York City
+1299:35110  Buffalo
+1299:35120  Toronto
+1299:35130  Boston
+1299:35140  Philadelphia
+1299:35150  Montreal
+1299:35200  San Jose/Palo Alto/Santa Clara
+1299:35210  Seattle
+1299:35220  Vancouver
+1299:35230  Portland
+1299:35240  Salt Lake City
+1299:35250  Sacramento
+1299:35300  Chicago
+1299:35310  Cleveland
+1299:35320  Denver
+1299:35330  Kansas City
+1299:35340  St Louis
+1299:35350  Omaha
+1299:35360  Indianapolis
+1299:35370  Detroit
+1299:35380  Minneapolis
+1299:35390  Des Moines
+1299:35400  Los Angeles
+1299:35410  Phoenix
+1299:35420  San Diego
+1299:35430  Las Vegas
+1299:35500  Dallas
+1299:35510  McAllen
+1299:35520  San Antonio
+1299:35530  Austin
+1299:35540  Houston
+1299:35550  Queretaro
+1299:35560  Monterrey
+1299:35570  El Paso
+1299:35580  Laredo
+1299:35590  Mexico City
+1299:35600  Ashburn/Reston/Manassas
+1299:35610  Pittsburgh
+1299:35620  Richmond
+1299:35700  Atlanta
+1299:35710  Charlotte
+1299:35720  Nashville
+1299:35730  Chattanooga
+1299:35740  Memphis
+1299:35750  Raleigh
+1299:35800  Miami
+1299:35810  Boca Raton
+1299:35820  Jacksonville
+
+1299:37100  Hong Kong
+1299:37200  Singapore
+1299:37300  Tokyo
+1299:37310  Osaka
+
+
+1299:50  Arelion LP50
+1299:150  Arelion LP150

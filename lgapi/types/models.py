@@ -34,12 +34,12 @@ class MultiPingBody(BaseModel):
 
     locations: Annotated[
         list[LocationStr],
-        Len(min_length=1, max_length=settings.ping_multi_max_source),
+        Len(min_length=1, max_length=settings.limits.max_sources.ping),
     ]
 
     destinations: Annotated[
         list[DestIP],
-        Len(min_length=1, max_length=settings.ping_multi_max_ip),
+        Len(min_length=1, max_length=settings.limits.max_destinations.ping),
     ]
 
 
@@ -48,12 +48,12 @@ class MultiBgpBody(BaseModel):
 
     locations: Annotated[
         list[LocationStr],
-        Len(min_length=1, max_length=settings.bgp_multi_max_source),
+        Len(min_length=1, max_length=settings.limits.max_sources.bgp),
     ]
 
     destinations: Annotated[
         list[DestIPNet],
-        Len(min_length=1, max_length=settings.bgp_multi_max_ip),
+        Len(min_length=1, max_length=settings.limits.max_destinations.bgp),
     ]
 
 

@@ -19,7 +19,14 @@ from lgapi import logger
 from lgapi.commands import execute_multiple_commands, execute_single_command
 from lgapi.config import settings
 from lgapi.database import init_community_map_db
-from lgapi.datamodels import (
+from lgapi.locations import get_locations, get_locations_by_region
+from lgapi.processing import (
+    process_bgp_output,
+    process_ping_output,
+    process_traceroute_output,
+)
+from lgapi.ttp import get_template, parse_txt
+from lgapi.types.models import (
     BgpResult,
     LocationRegionResponse,
     LocationResponse,
@@ -30,18 +37,11 @@ from lgapi.datamodels import (
     PingResult,
     TracerouteResult,
 )
-from lgapi.processing import (
-    process_bgp_output,
-    process_location_output_by_region,
-    process_ping_output,
-    process_traceroute_output,
-)
-from lgapi.ttp import get_template, parse_txt
 from lgapi.validation import IPNetOrAddress, validate_location
 
 # pp = pprint.PrettyPrinter(indent=2, width=120)
 
-LOCATIONS_CFG = settings.lg_config["locations"]
+LOCATIONS_CFG = settings.locations
 
 if settings.environment == "devel":
     logger.setLevel(settings.log_level.upper())
@@ -92,13 +92,13 @@ app.add_middleware(
 @app.get("/locations", response_model=list[LocationResponse])
 async def locations() -> list:
     """Get list of available locations."""
-    return settings.device_locations
+    return get_locations(settings.locations)
 
 
 @app.get("/locations/regional", response_model=list[LocationRegionResponse])
 async def locations_region() -> list:
     """Get list of available locations, grouped by region."""
-    return await process_location_output_by_region(settings.device_locations)
+    return await get_locations_by_region(settings.locations)
 
 
 @app.get("/ping/{location}/{destination}", response_model=PingResult)
@@ -117,7 +117,7 @@ async def ping(
 
     # Parse output if raw_only is False and a template exists
     parsed_output = []
-    if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location]["type"])):
+    if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location].type)):
         parsed_result = parse_txt(result, template_name)
         if isinstance(parsed_result, list) and parsed_result:
             parsed_output = await process_ping_output(parsed_result[0])
@@ -131,7 +131,7 @@ async def ping(
         "raw_only": raw,
         "command": "bgp",
         "location": location,
-        "location_name": LOCATIONS_CFG[location]["name"],
+        "location_name": LOCATIONS_CFG[location].name,
     }
 
 
@@ -152,11 +152,11 @@ async def traceroute(
 
     # Parse output if raw_only is False and a template exists
     parsed_output = []
-    if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location]["type"])):
+    if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location].type)):
         parsed_result = parse_txt(result, template_name)
         if isinstance(parsed_result, list) and parsed_result:
             httpclient = cast(AsyncClient, request.state.httpclient)
-            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location]["type"], httpclient)
+            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location].type, httpclient)
 
     if not parsed_output:
         raw = True
@@ -167,7 +167,7 @@ async def traceroute(
         "raw_only": raw,
         "command": "bgp",
         "location": location,
-        "location_name": LOCATIONS_CFG[location]["name"],
+        "location_name": LOCATIONS_CFG[location].name,
     }
 
 
@@ -188,7 +188,7 @@ async def bgp(
 
     # Parse output if raw_only is False and a template exists
     parsed_output = []
-    if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location]["type"])):
+    if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location].type)):
         parsed_result = parse_txt(result, template_name)
         if isinstance(parsed_result, list) and parsed_result:
             httpclient = cast(AsyncClient, request.state.httpclient)
@@ -203,7 +203,7 @@ async def bgp(
         "raw_only": raw,
         "command": "bgp",
         "location": location,
-        "location_name": LOCATIONS_CFG[location]["name"],
+        "location_name": LOCATIONS_CFG[location].name,
     }
 
 
@@ -221,7 +221,7 @@ async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
             output_table["errors"].append(str(result))
         else:
             location = result["location"]
-            location_name = LOCATIONS_CFG[location]["name"]
+            location_name = LOCATIONS_CFG[location].name
 
             new_result = {
                 "parsed_output": [],
@@ -232,7 +232,7 @@ async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
                 "location_name": location_name,
             }
 
-            if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location]["type"])):
+            if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location].type)):
                 parsed_result = parse_txt(result["result"], template_name)
                 if isinstance(parsed_result, list) and parsed_result:
                     new_result["parsed_output"] = await process_ping_output(parsed_result[0])
@@ -257,7 +257,7 @@ async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) 
             output_table["errors"].append(str(result))
         else:
             location = result["location"]
-            location_name = LOCATIONS_CFG[location]["name"]
+            location_name = LOCATIONS_CFG[location].name
 
             new_result = {
                 "parsed_output": [],
@@ -268,7 +268,7 @@ async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) 
                 "location_name": location_name,
             }
 
-            if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location]["type"])):
+            if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location].type)):
                 parsed_result = parse_txt(result["result"], template_name)
                 if isinstance(parsed_result, list) and parsed_result:
                     httpclient = cast(AsyncClient, request.state.httpclient)

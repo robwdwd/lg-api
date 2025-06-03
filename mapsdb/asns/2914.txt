@@ -1,0 +1,105 @@
+# NTT
+#
+2914:410  NTT Customer
+2914:420  NTT Peer
+
+2914:2000  United States
+2914:2001  Canada
+
+2914:2601  Brazil
+
+2914:2201  United Kingdom
+2914:2202  Germany
+2914:2203  Netherlands
+2914:2204  France
+2914:2205  Spain
+2914:2206  Switzerland
+2914:2207  Poland
+2914:2208  Bulgaria
+2914:2209  Hungary
+2914:2210  Romania
+2914:2211  Belgium
+2914:2212  Italy
+2914:2213  Sweden
+2914:2214  Austria
+2914:2215  Luxembourg
+2914:2216  Ireland
+
+2914:2401  Japan
+2914:2402  Australia
+2914:2403  Hong Kong
+2914:2404  Taiwan
+2914:2405  Korea
+2914:2406  Singapore
+2914:2407  Malaysia
+2914:2408  Indonesia
+2914:2409  Brunei
+2914:2410  Thailand
+
+2914:1001  Ashburn
+2914:1002  Atlanta
+2914:1003  Chicago
+2914:1004  Dallas
+2914:1004  Houston
+2914:1005  Los Angeles
+2914:1006  Miami
+2914:1007  Seattle
+2914:1008  Milpitas
+2914:1008  Mountain View
+2914:1008  Palo Alto
+2914:1008  San Jose
+2914:1008  Santa Clara
+2914:1008  San Francisco
+2914:1009  New York
+2914:1009  Newark
+2914:1010  Sacramento
+2914:1011  Boston
+2914:1012  Toronto
+
+2914:1201  Dusseldorf
+2914:1201  Frankfurt
+2914:1202  Geneva
+2914:1203  London
+2914:1204  Madrid
+2914:1205  Paris
+2914:1206  Amsterdam
+2914:1207  Warsaw
+2914:1208  Sofia
+2914:1209  Budapest
+2914:1210  Bucharest
+2914:1211  Brussels
+2914:1212  Milan
+2914:1213  Munich
+2914:1214  Stockholm
+2914:1215  Vienna
+2914:1216  Barcelona
+2914:1217  Valencia
+2914:1218  Luxembourg City
+2914:1219  Marseilles
+2914:1220  Berlin
+2914:1221  Manchester
+2914:1222  Dublin
+
+2914:1401  Kuala Lumpur
+2914:1402  New Territories
+2914:1403  Osaka
+2914:1404  Seoul
+2914:1405  Singapore
+2914:1406  Sydney
+2914:1407  Taipei
+2914:1408  Tokyo
+2914:1409  Tseung Kwan O
+2914:1410  Jakarta
+2914:1411  Bandar Seri Begawan
+2914:1412  Bangkok
+
+2914:1601  Brazil
+
+2914:3000  North America
+2914:3075  North America regional customer
+2914:3200  Europe
+2914:3275  Europe regional customer
+2914:3400  Asia
+2914:3475  Asia regional customer
+2914:3600  South America
+2914:3675  South America regional customer

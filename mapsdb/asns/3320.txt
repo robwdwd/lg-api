@@ -1,0 +1,29 @@
+# DTAG
+#
+3320:9010 DTAG Customer
+3320:9020 DTAG Peer
+
+3320:2010 DTAG Europe
+3320:2020 DTAG North America
+3320:2030 DTAG Pacific Rim
+
+3320:1040 Austria
+3320:1056 Belgium
+3320:1124 Canada
+3320:1203 Czech Republic
+3320:1208 Denmark
+3320:1246 Finland
+3320:1250 France
+3320:1276 Germany
+3320:1344 Hong Kong
+3320:1348 Hungary
+3320:1380 Italy
+3320:1392 Japan
+3320:1528 Netherlands
+3320:1616 Poland
+3320:1702 Singapore
+3320:1724 Spain
+3320:1752 Sweden
+3320:1756 Switzerland
+3320:1826 United Kingdom
+3320:1840 United States

@@ -1,0 +1,267 @@
+#
+# Colt AS8220
+#
+
+# Cities
+8220:65010  London
+8220:65011  Birmingham
+8220:65020  Paris
+8220:65022  Lyon
+8220:65023  Toulouse
+8220:65024  Marseille
+8220:65025  Bordeaux
+8220:65030  Frankfurt
+8220:65031  Cologne
+8220:65032  Duesseldorf
+8220:65033  Hamburg
+8220:65034  Hannover
+8220:65035  Berlin
+8220:65036  Stuttgart
+8220:65037  Munich
+8220:65040  Amsterdam
+8220:65050  Madrid
+8220:65051  Valencia
+8220:65060  Milan
+8220:65061  Turin
+8220:65062  Rome
+8220:65070  Barcelona
+8220:65080  Brussels
+8220:65085  Luxembourg
+8220:65090  Vienna
+8220:65100  Warsaw
+8220:65101  Prague
+8220:65102  Bratislava
+8220:65103  Budapest
+8220:65104  Bucharest
+8220:65105  Sofia
+8220:65110  Zurich
+8220:65111  Basel
+8220:65120  Geneva
+8220:65130  Stockholm
+8220:65131  Helsinki
+8220:65140  Dublin
+8220:65151  Rouen
+8220:65152  Nantes
+8220:65160  Copenhagen
+8220:65170  Dubai
+8220:65171  Istanbul
+8220:65180  Lisbon
+8220:65201  New York
+8220:65201  Newark
+8220:65250  Chicago
+8220:65251  Seattle
+8220:65252  San Jose
+8220:65253  Los Angeles
+8220:65254  Phoenix
+8220:65255  Dallas
+8220:65256  Atlanta
+8220:65257  Washington
+8220:65300  Hong Kong
+8220:65301  Osaka
+8220:65302  Singapore
+8220:65303  Tokyo
+8220:65304  Sydney
+
+# Regions
+#
+8220:65000  Europe
+8220:65001  North America
+8220:65002  Asia Pacific
+8220:65003  Africa
+8220:65004  South America
+8220:65005  Oceania
+
+# Peer Customer Type
+#
+8220:65400  Transit
+8220:65401  Public Peer
+8220:65402  Private Peer
+8220:65403  Customer
+8220:65404  Customer No Export
+8220:65405  Customer Local
+
+# Route types
+#
+8220:64002  Keep in Country
+8220:64006  Keep in Region
+
+# Local Pref
+#
+8220:63600 LP100
+8220:63700 LP120
+8220:63900 LP40
+
+# Blackhole
+#
+8220:63999  Blackhole
+
+# Prepends and no-advertise
+#
+8220:63800  No_Colt_Export
+
+8220:63092  Suppress Upstream
+8220:63192  Prepend Upstream x1
+8220:63292  Prepend Upstream x2
+8220:63392  Prepend Upstream x3
+
+8220:63099  No_Adv_Peers
+8220:63199  Prepend Peers x1
+8220:63299  Prepend Peers x2
+8220:63399  Prepend Peers x3
+
+# City Specific Prepends and no advertise
+#
+8220:63001  London Suppress
+8220:63101  London Prepend x1
+8220:63201  London Prepend x2
+8220:63301  London Prepend x3
+
+8220:63002  Frankfurt Suppress
+8220:63102  Frankfurt Prepend x1
+8220:63202  Frankfurt Prepend x2
+8220:63302  Frankfurt Prepend x3
+
+8220:63003  Paris Suppress
+8220:63103  Paris Prepend x1
+8220:63203  Paris Prepend x2
+8220:63303  Paris Prepend x3
+
+8220:63004  Berlin Suppress
+8220:63104  Berlin Prepend x1
+8220:63204  Berlin Prepend x2
+8220:63304  Berlin Prepend x3
+
+8220:63005  Milan Suppress
+8220:63105  Milan Prepend x1
+8220:63205  Milan Prepend x2
+8220:63305  Milan Prepend x3
+
+8220:63006  Madrid Suppress
+8220:63106  Madrid Prepend x1
+8220:63206  Madrid Prepend x2
+8220:63306  Madrid Prepend x3
+
+8220:63007  Barcelona Suppress
+8220:63107  Barcelona Prepend x1
+8220:63207  Barcelona Prepend x2
+8220:63307  Barcelona Prepend x3
+
+8220:63008  Amstedam Suppress
+8220:63108  Amstedam Prepend x1
+8220:63208  Amstedam Prepend x2
+8220:63308  Amstedam Prepend x3
+
+8220:63009  Brussels Suppress
+8220:63109  Brussels Prepend x1
+8220:63209  Brussels Prepend x2
+8220:63309  Brussels Prepend x3
+
+8220:63010  Zurich Suppress
+8220:63110  Zurich Prepend x1
+8220:63210  Zurich Prepend x2
+8220:63310  Zurich Prepend x3
+
+8220:63012  Vienna Suppress
+8220:63112  Vienna Prepend x1
+8220:63212  Vienna Prepend x2
+8220:63312  Vienna Prepend x3
+
+8220:63014  Stockholm Suppress
+8220:63114  Stockholm Prepend x1
+8220:63214  Stockholm Prepend x2
+8220:63314  Stockholm Prepend x3
+
+8220:63015  Prague Suppress
+8220:63115  Prague Prepend x1
+8220:63215  Prague Prepend x2
+8220:63315  Prague Prepend x3
+
+8220:63017  Copenhagen Suppress
+8220:63117  Copenhagen Prepend x1
+8220:63217  Copenhagen Prepend x2
+8220:63317  Copenhagen Prepend x3
+
+8220:63018  Dublin Suppress
+8220:63118  Dublin Prepend x1
+8220:63218  Dublin Prepend x2
+8220:63318  Dublin Prepend x3
+
+8220:63021  Lisbon Suppress
+8220:63121  Lisbon Prepend x1
+8220:63221  Lisbon Prepend x2
+8220:63321  Lisbon Prepend x3
+
+8220:63023  Rome Suppress
+8220:63123  Rome Prepend x1
+8220:63223  Rome Prepend x2
+8220:63323  Rome Prepend x3
+
+8220:63024  Turin Suppress
+8220:63124  Turin Prepend x1
+8220:63224  Turin Prepend x2
+8220:63324  Turin Prepend x3
+
+8220:63025  Tokyo Suppress
+8220:63125  Tokyo Prepend x1
+8220:63225  Tokyo Prepend x2
+8220:63325  Tokyo Prepend x3
+
+8220:63026  Osaka Suppress
+8220:63126  Osaka Prepend x1
+8220:63226  Osaka Prepend x2
+8220:63326  Osaka Prepend x3
+
+8220:63027  HongKong Suppress
+8220:63127  HongKong Prepend x1
+8220:63227  HongKong Prepend x2
+8220:63327  HongKong Prepend x3
+
+8220:63028  Singapore Suppress
+8220:63128  Singapore Prepend x1
+8220:63228  Singapore Prepend x2
+8220:63328  Singapore Prepend x3
+
+8220:63039  Ashburn Suppress
+8220:63139  Ashburn Prepend x1
+8220:63239  Ashburn Prepend x2
+8220:63339  Ashburn Prepend x3
+
+8220:63040  San Jose Suppress
+8220:63140  San Jose Prepend x1
+8220:63240  San Jose Prepend x2
+8220:63340  San Jose Prepend x3
+
+8220:63041  Hamburg Suppress
+8220:63141  Hamburg Prepend x1
+8220:63241  Hamburg Prepend x2
+8220:63341  Hamburg Prepend x3
+
+8220:63042  Bucharest Suppress
+8220:63142  Bucharest Prepend x1
+8220:63242  Bucharest Prepend x2
+8220:63342  Bucharest Prepend x3
+
+8220:63043  Wawsaw Suppress
+8220:63143  Wawsaw Prepend x1
+8220:63243  Wawsaw Prepend x2
+8220:63343  Wawsaw Prepend x3
+
+8220:63044  Sydney Suppress
+8220:63144  Sydney Prepend x1
+8220:63244  Sydney Prepend x2
+8220:63344  Sydney Prepend x3
+
+8220:63045  Marseille Suppress
+8220:63145  Marseille Prepend x1
+8220:63245  Marseille Prepend x2
+8220:63345  Marseille Prepend x3
+
+
+# Peers
+#
+8220:3356  Lumen
+8220:1299  Twelve99
+8220:2914  NTT
+8220:6453  TATA
+8220:3491  PCCW
+8220:7545  TPG

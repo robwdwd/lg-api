@@ -69,9 +69,11 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
                 # Deduplicate and sort AS paths
                 new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
                 unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
-                # Use asyncio.gather for ASN lookups
-                asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
-                new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
+                if unique_asns:
+                    asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
+                    new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
+                else:
+                    new_prefix["asn_info"] = {}
 
                 result.append(new_prefix)
 
@@ -221,15 +223,3 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
         results.append({"ip_address": ip_address, "hops": hops})
 
     return results
-
-
-async def process_location_output_by_region(locations: list[dict]) -> list[dict]:
-    """Process the output for location by region API call."""
-    result = {}
-    for location in locations:
-        region = location.get("region", "No Region")
-        if region not in result:
-            result[region] = {"name": region, "locations": []}
-        result[region]["locations"].append(location)
-
-    return list(result.values())

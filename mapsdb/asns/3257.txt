@@ -1,0 +1,175 @@
+#
+# GTT AS3257
+#
+
+# Basic Route Types
+3257:1000  GTT Customer
+3257:2000  GTT Peer
+3257:4000  GTT Customer
+3257:5000  GTT Origin
+
+# GTT AS3257  Route Source Communities (full names, no codes)
+
+3257:50001  Europe
+3257:50002  United States and Canada
+3257:50003  Asia
+3257:50110  Central Europe
+3257:50111  Outer Europe
+3257:50120  United States East Coast
+3257:50121  United States West Coast
+3257:50122  United States and Canada Outer Regions
+3257:50130  Asia
+
+# US East Coast Cities
+3257:51100  United States East Coast
+3257:51101  New York City
+3257:51102  Washington DC
+3257:51103  Miami
+3257:51104  Atlanta
+3257:51105  Boston
+3257:51106  Philadelphia
+3257:51107  Charlotte
+3257:51108  Orlando
+
+# US West Coast Cities
+3257:51200  United States West Coast
+3257:51201  San Jose
+3257:51202  Los Angeles
+3257:51203  Palo Alto
+3257:51204  Seattle
+3257:51205  Phoenix
+3257:51206  Las Vegas
+3257:51207  Salt Lake City
+
+# US Central Cities
+3257:51300  United States Central
+3257:51301  Chicago
+3257:51302  Dallas
+3257:51303  Denver
+3257:51304  St Louis
+3257:51305  Minneapolis
+3257:51306  Houston
+
+# Canada
+3257:51400  Canada
+3257:51401  Toronto
+3257:51402  Montreal
+3257:51403  Vancouver
+
+# Greece
+3257:53000  Greece
+3257:53001  Athens
+
+# Netherlands
+3257:53100  Netherlands
+3257:53101  Amsterdam
+
+# Belgium
+3257:53200  Belgium
+3257:53201  Brussels
+3257:53202  Antwerp
+
+# France
+3257:53300  France
+3257:53301  Paris
+3257:53302  Marseille
+
+# Spain
+3257:53400  Spain
+3257:53401  Madrid
+3257:53402  Barcelona
+
+# Luxembourg
+3257:53520  Luxembourg
+
+# Ireland
+3257:53530  Ireland
+3257:53531  Dublin
+
+# Bulgaria
+3257:53590  Bulgaria
+3257:53591  Sofia
+
+# Lithuania
+3257:53700  Lithuania
+3257:53701  Vilnius
+
+# Italy
+3257:53900  Italy
+3257:53901  Turin
+3257:53902  Milan
+3257:53903  Bologna
+3257:53904  Rome
+3257:53905  Cagliari
+3257:53906  Pescara
+3257:53907  Florence
+3257:53908  Genoa
+3257:53909  Naples
+3257:53910  Palermo
+3257:53911  Parma
+
+# Romania
+3257:54000  Romania
+3257:54001  Bucharest
+
+# Switzerland
+3257:54100  Switzerland
+3257:54101  Zurich
+3257:54102  Basel
+
+# Czech Republic
+3257:54200  Czech Republic
+3257:54201  Prague
+
+# Slovakia
+3257:54210  Slovakia
+3257:54211  Bratislava
+
+# Austria
+3257:54300  Austria
+3257:54301  Vienna
+
+# United Kingdom
+3257:54400  United Kingdom
+3257:54401  London
+3257:54402  Manchester
+
+# Denmark
+3257:54500  Denmark
+3257:54501  Copenhagen
+
+# Sweden
+3257:54600  Sweden
+3257:54601  Stockholm
+
+# Norway
+3257:54700  Norway
+3257:54701  Oslo
+
+# Poland
+3257:54800  Poland
+3257:54801  Warsaw
+
+# Germany
+3257:54900  Germany
+3257:54901  Frankfurt
+3257:54902  Dusseldorf
+3257:54903  Hamburg
+3257:54904  Munich
+3257:54905  Berlin
+
+# Singapore
+3257:56500  Singapore
+3257:56501  Singapore
+
+# Japan
+3257:56600  Japan
+3257:56601  Tokyo
+
+# Hong Kong
+3257:58520  Hong Kong
+3257:58521  Hong Kong
+
+# Turkey
+3257:59000  Turkey
+3257:59001  Istanbul

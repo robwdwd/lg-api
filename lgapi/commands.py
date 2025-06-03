@@ -12,11 +12,12 @@ from fastapi import HTTPException
 from scrapli.exceptions import ScrapliException
 
 from lgapi.config import settings
-from lgapi.datamodels import MultiBgpBody, MultiPingBody
 from lgapi.device import execute_on_device, gather_device_results, get_command_timeout
+from lgapi.types.models import MultiBgpBody, MultiPingBody
+from lgapi.types.returntypes import CmdResult, MultiCmdResult
 
-LOCATIONS_CFG = settings.lg_config["locations"]
-COMMANDS_CFG = settings.lg_config["commands"]
+LOCATIONS_CFG = settings.locations
+COMMANDS_CFG = settings.commands
 
 
 def get_ip_version(ip: str) -> str:
@@ -32,7 +33,9 @@ def build_cli_cmd(command: str, device_type: str, ip_address: str, source: str |
     """Build the CLI command string."""
     ip_version = get_ip_version(ip_address)
 
-    cli_cmd = COMMANDS_CFG[command][device_type][ip_version].replace("IPADDRESS", ip_address)
+    command_cfg = getattr(COMMANDS_CFG, command)
+    device_cfg = command_cfg[device_type]
+    cli_cmd = getattr(device_cfg, ip_version).replace("IPADDRESS", ip_address)
 
     if command != "bgp" and source:
         cli_cmd = cli_cmd.replace("SOURCE", source)
@@ -40,34 +43,30 @@ def build_cli_cmd(command: str, device_type: str, ip_address: str, source: str |
     return cli_cmd
 
 
-def get_multi_commands(locations: list[str], ip_addresses: list[str], command: str) -> dict[str, dict]:
+def get_multi_commands(locations: list[str], ip_addresses: list[str], command: str) -> dict[str, MultiCmdResult]:
     """Get commands and devices types to run based on location and ip addresses."""
-    command_list: dict[str, dict] = {}
+    command_list: dict[str, MultiCmdResult] = {}
 
     for location in locations:
         loc_cfg = LOCATIONS_CFG[location]
-        device = loc_cfg["device"]
-        device_type = loc_cfg["type"]
-        source = loc_cfg.get("source")
+        cli_cmds = [build_cli_cmd(command, loc_cfg.type, ip_address, loc_cfg.source) for ip_address in ip_addresses]
 
-        cli_cmds = [build_cli_cmd(command, device_type, ip_address, source) for ip_address in ip_addresses]
-
-        command_list[device] = {
+        command_list[loc_cfg.device] = {
             "location": location,
-            "type": device_type,
+            "device_type": loc_cfg.type,
             "cmds": cli_cmds,
         }
 
     return command_list
 
 
-def get_cmd(location: str, command: str, ip_address: str) -> dict[str, str]:
+def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
     """Get command to run on device."""
     loc_cfg = LOCATIONS_CFG[location]
     return {
-        "device": loc_cfg["device"],
-        "type": loc_cfg["type"],
-        "cmd": build_cli_cmd(command, loc_cfg["type"], ip_address, loc_cfg.get("source")),
+        "location": location,
+        "device_type": loc_cfg.type,
+        "cmd": build_cli_cmd(command, loc_cfg.type, ip_address, loc_cfg.source),
     }
 
 
@@ -83,7 +82,7 @@ async def execute_multiple_commands(
 
     try:
         device_output = await gather_device_results(device_commands, command)
-        
+
         return [{"location": location, "result": result} for location, result in device_output]
     except Exception as err:
         raise HTTPException(
@@ -96,12 +95,14 @@ async def execute_single_command(location: str, command: str, destination: str) 
     """Execute command on device."""
 
     device_commands = get_cmd(location, command, destination)
+    loc_config = LOCATIONS_CFG[location]
 
     try:
         response = await execute_on_device(
-            hostname=device_commands["device"],
-            device_type=device_commands["type"],
+            hostname=loc_config.device,
+            device_type=device_commands["device_type"],
             cli_cmds=device_commands["cmd"],
+            auth_group=loc_config.authentication,
             timeout=get_command_timeout(command),
         )
         return response.result

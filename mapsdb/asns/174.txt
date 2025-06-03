@@ -1,0 +1,41 @@
+#
+# Cogent AS174
+#
+
+# Basic Route Types
+174:10  Cogent Customer
+174:20  Cogent Peer
+174:30  Cogent Transit
+
+# Blackhole
+174:666  Blackhole
+
+# Do not announce to specific regions
+174:1000  No Announce North America
+174:2000  No Announce Europe
+174:3000  No Announce Asia
+
+# Prepend to Cogent peers (global)
+174:1100  Prependx1 peers
+174:1200  Prependx2 peers
+174:1300  Prependx3 peers
+
+# Prepend to Cogent peers (North America)
+174:1110  Prependx1 Peers North America
+174:1210  Prependx2 Peers North America
+174:1310  Prependx3 Peers North America
+
+# Prepend to Cogent peers (Europe)
+174:1120  Prependx1 Peers Europe
+174:1220  Prependx2 Peers Europe
+174:1320  Prependx3 Peers Europe
+
+# Prepend to Cogent peers (Asia)
+174:1130  Prependx1 Peers Asia
+174:1230  Prependx2 Peers Asia
+174:1330  Prependx3 Peers Asia
+
+# Local Preference
+174:70   Cogent LP70
+174:100  Cogent LP100
+174:200  Cogent LP200

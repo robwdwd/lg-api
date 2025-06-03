@@ -4,8 +4,16 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
+from typing import TypedDict
 
-from typing_extensions import TypeAlias
 
-IPvAnyNetworkOrIPType: TypeAlias = "IPv4Network | IPv6Network | IPv4Address | IPv6Address"
+class CmdResult(TypedDict):
+    location: str
+    device_type: str
+    cmd: str
+
+
+class MultiCmdResult(TypedDict):
+    location: str
+    device_type: str
+    cmds: list[str]

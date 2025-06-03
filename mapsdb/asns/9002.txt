@@ -1,0 +1,48 @@
+
+# RETN
+#
+9002:0         RETN Customer
+9002:9002      RETN Peer
+
+9002:64803  United Arab Emirates
+9002:64605  Austria
+9002:64607  Belgium
+9002:64608  Bulgaria
+9002:64609  Belarus
+9002:64611  Switzerland
+9002:64613  Czech Republic
+9002:64615  Germany
+9002:64617  Denmark
+9002:64619  Estonia
+9002:64621  Spain
+9002:64623  Finland
+9002:64627  France
+9002:64631  Croatia
+9002:64633  Hungary
+9002:64635  Ireland
+9002:64641  Italy
+9002:64645  Lithuania
+9002:64649  Latvia
+9002:64653  Moldova
+9002:64657  Netherlands
+9002:64661  Poland
+9002:64663  Romania
+9002:64665  Serbia
+9002:64667  Russia
+9002:64669  Sweden
+9002:64673  Slovakia
+9002:64677  Ukraine
+9002:64679  United Kingdom
+9002:64789  United States
+9002:64805  Armenia
+9002:64819  China
+9002:64821  Georgia
+9002:64825  Indonesia
+9002:64829  Japan
+9002:64831  Kyrgyzstan
+9002:64837  South Korea
+9002:64839  Kazakhstan
+9002:64861  Philippines
+9002:64867  Singapore
+9002:64881  Turkey
+9002:64885  Taiwan

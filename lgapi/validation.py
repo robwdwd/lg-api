@@ -11,11 +11,14 @@ from pydantic import GetJsonSchemaHandler
 from pydantic.annotated_handlers import GetCoreSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import CoreSchema, PydanticCustomError, core_schema
+from typing_extensions import TypeAlias
 
 from lgapi.config import settings
-from lgapi.types import IPvAnyNetworkOrIPType
 
-LOCATIONS_CFG = settings.lg_config["locations"]
+IPvAnyNetworkOrIPType: TypeAlias = "IPv4Network | IPv6Network | IPv4Address | IPv6Address"
+
+
+LOCATIONS_CFG = settings.locations
 
 
 class IPNetOrAddress:
