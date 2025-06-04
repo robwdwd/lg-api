@@ -13,4 +13,4 @@ def ip_key_builder(func, *args, **kwargs):
 
 def command_key_builder(func, *args, **kwargs):
     """Builds the cache key from function name plus the ASN"""
-    return f"{func.__module__}.{func.__name__}:{args[0]}_{args[1]}_{args[2]}}"
+    return f"{func.__module__}.{func.__name__}:{args[0]}_{args[1]}_{args[2]}"

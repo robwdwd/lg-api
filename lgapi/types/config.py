@@ -45,13 +45,19 @@ class CommandsConfig(BaseModel):
 
 
 class RedisConfig(BaseModel):
-    enabled: bool = Field(default=False)
     namespace: str = Field(default="lgapi")
     timeout: int = Field(default=5)
     dsn: RedisDsn = Field(default="redis://localhost:6379/")
 
 
+class CommandCacheConfig(BaseModel):
+    enabled: bool = Field(default=False)
+    ttl: int = 60
+
+
 class CacheConfig(BaseModel):
+    enabled: bool = Field(default=False)
+    command_cache: CommandCacheConfig
     redis: RedisConfig
 
 

@@ -87,13 +87,17 @@ async def execute_multiple_commands(
         device_output = await gather_device_results(device_commands, command)
 
         results = [
-            {
-                "location": location,
-                "error": "Error getting output from network device",
-            } if isinstance(result, Exception) else {
-                "location": location,
-                "result": result,
-            }
+            (
+                {
+                    "location": location,
+                    "error": "Error getting output from network device",
+                }
+                if isinstance(result, Exception)
+                else {
+                    "location": location,
+                    "result": result,
+                }
+            )
             for location, result in device_output
         ]
         return results
@@ -105,7 +109,8 @@ async def execute_multiple_commands(
             detail=f"Error executing multi-{command} command",
         ) from err
 
-@cached(ttl=60, alias="default", key_builder=command_key_builder)
+
+@cached(alias="command", key_builder=command_key_builder)
 async def execute_single_command(location: str, command: str, destination: str) -> str:
     """Execute command on device."""
 

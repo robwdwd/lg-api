@@ -68,30 +68,46 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-def configure_redis_cache() -> None:
+def configure_cache() -> None:
     """Configure aiocache Redis cache if enabled."""
-    redis_cfg = settings.cache.redis
-    if not redis_cfg.enabled:
+    cache_cfg = settings.cache
+
+    if not cache_cfg.enabled:
+        caches.set_config({
+            "default": {"cache": "aiocache.backends.NullCache"},
+            "command": {"cache": "aiocache.backends.NullCache"},
+        })
         return
 
+    redis_cfg = cache_cfg.redis
     dsn = redis_cfg.dsn
     db = int(dsn.path.lstrip("/")) if dsn.path else 0
 
-    caches.set_config(
-        {
-            "default": {
-                "cache": "aiocache.RedisCache",
-                "endpoint": dsn.host,
-                "db": db,
-                "namespace": redis_cfg.namespace,
-                "port": dsn.port,
-                "password": dsn.password,
-                "timeout": redis_cfg.timeout,
-                "serializer": {"class": "aiocache.serializers.PickleSerializer"},
-            }
+    default_cache_config = {
+        "cache": "aiocache.RedisCache",
+        "endpoint": dsn.host,
+        "db": db,
+        "namespace": redis_cfg.namespace,
+        "port": dsn.port,
+        "password": dsn.password,
+        "timeout": redis_cfg.timeout,
+        "serializer": {"class": "aiocache.serializers.PickleSerializer"},
+    }
+
+    if not cache_cfg.command_cache.enabled:
+        command_cache_config = {"cache": "aiocache.backends.NullCache"}
+    else:
+        command_cache_config = {
+            **default_cache_config,
+            "namespace": f"{redis_cfg.namespace}:cmd",
+            "ttl": cache_cfg.command_cache.ttl,
         }
-    )
+
+    caches.set_config({
+        "default": default_cache_config,
+        "command": command_cache_config,
+    })
 
 
 # Set up the redis cache here otherwise it won't work with the decorators
-configure_redis_cache()
+configure_cache()
