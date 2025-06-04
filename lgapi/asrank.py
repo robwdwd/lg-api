@@ -5,11 +5,11 @@
 # have been included as part of this distribution.
 #
 """Caida AS Rank API client."""
-from aiocache import cached
 from httpx import AsyncClient, HTTPError
 
 from lgapi import logger
 from lgapi.cache import asn_key_builder
+from lgapi.decorators import request_cache
 
 
 def get_graphql_query(asn: int) -> str:
@@ -29,7 +29,7 @@ def get_graphql_query(asn: int) -> str:
     }}"""
 
 
-@cached(ttl=3600, alias="default", key_builder=asn_key_builder)
+@request_cache(ttl=3600, alias="default", key_builder=asn_key_builder)
 async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
     """Map the ASN to a name."""
     logger.debug('Cache Miss: AS Rank ASN lookup %s', asn)

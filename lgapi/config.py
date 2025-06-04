@@ -7,6 +7,7 @@
 """Convert .env settings into fastapi config."""
 
 
+from functools import lru_cache
 from typing import Literal
 
 from aiocache import caches
@@ -65,7 +66,13 @@ class Settings(BaseSettings):
         )
 
 
-settings = Settings()
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    """Get cached settings instance."""
+    return Settings()
+
+
+settings = get_settings()
 
 
 def configure_cache() -> None:
@@ -73,40 +80,27 @@ def configure_cache() -> None:
     cache_cfg = settings.cache
 
     if not cache_cfg.enabled:
-        caches.set_config({
-            "default": {"cache": "aiocache.backends.NullCache"},
-            "command": {"cache": "aiocache.backends.NullCache"},
-        })
         return
 
     redis_cfg = cache_cfg.redis
     dsn = redis_cfg.dsn
-    db = int(dsn.path.lstrip("/")) if dsn.path else 0
+    db = int(dsn.path.lstrip("/")) if dsn.path and dsn.path != "/" else 0
 
     default_cache_config = {
         "cache": "aiocache.RedisCache",
         "endpoint": dsn.host,
+        "port": dsn.port,
         "db": db,
         "namespace": redis_cfg.namespace,
-        "port": dsn.port,
-        "password": dsn.password,
         "timeout": redis_cfg.timeout,
         "serializer": {"class": "aiocache.serializers.PickleSerializer"},
     }
 
-    if not cache_cfg.command_cache.enabled:
-        command_cache_config = {"cache": "aiocache.backends.NullCache"}
-    else:
-        command_cache_config = {
-            **default_cache_config,
-            "namespace": f"{redis_cfg.namespace}:cmd",
-            "ttl": cache_cfg.command_cache.ttl,
-        }
+    # Only add password if it exists
+    if dsn.password:
+        default_cache_config["password"] = dsn.password
 
-    caches.set_config({
-        "default": default_cache_config,
-        "command": command_cache_config,
-    })
+    caches.set_config({"default": default_cache_config})
 
 
 # Set up the redis cache here otherwise it won't work with the decorators

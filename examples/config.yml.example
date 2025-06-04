@@ -26,13 +26,17 @@ authentication:
         username: user3
         password: pass9876
 
-# Redis configuration
+# Cache configuration
 cache:
+  enabled: true
+  command_cache:
+    enabled: true
+    ttl: 60
   redis:
-    enabled: false
     dsn: redis://localhost:6379/
     namespace: lgapi
     timeout: 5
+
 
 locations:
   AMS:

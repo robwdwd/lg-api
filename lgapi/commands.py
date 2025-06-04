@@ -8,13 +8,13 @@
 
 import ipaddress
 
-from aiocache import cached
 from fastapi import HTTPException
 from scrapli.exceptions import ScrapliException
 
 from lgapi import logger
 from lgapi.cache import command_key_builder
 from lgapi.config import settings
+from lgapi.decorators import command_cache
 from lgapi.device import execute_on_device, gather_device_results, get_command_timeout
 from lgapi.types.models import MultiBgpBody, MultiPingBody
 from lgapi.types.returntypes import CmdResult, MultiCmdResult
@@ -110,7 +110,7 @@ async def execute_multiple_commands(
         ) from err
 
 
-@cached(alias="command", key_builder=command_key_builder)
+@command_cache(alias='default', key_builder=command_key_builder)
 async def execute_single_command(location: str, command: str, destination: str) -> str:
     """Execute command on device."""
 

@@ -14,7 +14,6 @@ import re
 import aiosqlite
 import dns.asyncresolver
 import dns.reversename
-from aiocache import cached
 from httpx import AsyncClient
 
 from lgapi import logger
@@ -22,6 +21,7 @@ from lgapi.asrank import asn_to_name
 from lgapi.cache import ip_key_builder
 from lgapi.config import settings
 from lgapi.cymru import cymru_ip_to_asn
+from lgapi.decorators import request_cache
 
 
 async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
@@ -86,7 +86,7 @@ async def process_ping_output(output: dict) -> list:
     return [{**destination, "ip_address": ip_address} for ip_address, destination in output.items()]
 
 
-@cached(ttl=3600, alias="default", key_builder=ip_key_builder)
+@request_cache(ttl=3600, alias="default", key_builder=ip_key_builder)
 async def reverse_lookup(ipaddr: str) -> str | None:
     """Do a reverse lookup on an IP address asynchronously using DNS."""
     logger.debug("Cache Miss: Reverse DNS lookup %s", ipaddr)
