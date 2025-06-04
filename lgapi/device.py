@@ -59,7 +59,7 @@ async def execute_on_device(
         return await net_connect.send_commands(commands=cli_cmds, timeout_ops=timeout)
 
 
-async def execute_on_devices(hostname: str, device: MultiCmdResult, command: str) -> tuple[str, str]:
+async def execute_on_devices(hostname: str, device: MultiCmdResult, command: str) -> tuple[str, str | Exception]:
     """Run multiple commands on the device and return (location, output)."""
     location = device["location"]
 

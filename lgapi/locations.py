@@ -4,10 +4,10 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-from lgapi.config import Location
+from lgapi.config import LocationConfig
 
 
-def get_locations(locations: dict[str, Location]) -> list[dict[str, str]]:
+def get_locations(locations: dict[str, LocationConfig]) -> list[dict[str, str]]:
     """Get a list of locations from config file."""
     return [
         {
@@ -19,7 +19,7 @@ def get_locations(locations: dict[str, Location]) -> list[dict[str, str]]:
     ]
 
 
-async def get_locations_by_region(locations: dict[str, Location]) -> list[dict]:
+async def get_locations_by_region(locations: dict[str, LocationConfig]) -> list[dict]:
     """Process the output for location by region API call using the Location model."""
     result = {}
     for code, location in locations.items():

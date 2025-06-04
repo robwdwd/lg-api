@@ -44,7 +44,7 @@ from lgapi.validation import IPNetOrAddress, validate_location
 LOCATIONS_CFG = settings.locations
 
 if settings.environment == "devel":
-    logger.setLevel(settings.log_level.upper())
+    logger.setLevel(str(settings.log_level).upper())
 
 
 class State(TypedDict):

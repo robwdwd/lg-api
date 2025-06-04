@@ -19,14 +19,12 @@ class AuthenticationConfig(BaseModel):
     @classmethod
     def ensure_fallback_in_groups(cls, data: dict):
         """Make sure the fallback authentication group exists"""
-        groups = data.get("groups", {})
-        fallback = groups.get("fallback")
-        if not fallback:
+        if "groups" not in data or "fallback" not in data["groups"]:
             raise ValueError("The 'fallback' group must exist under 'authentication.groups'.")
         return data
 
 
-class Location(BaseModel):
+class LocationConfig(BaseModel):
     name: str
     region: str
     device: str
@@ -40,7 +38,7 @@ class CommandVariants(BaseModel):
     ipv6: str
 
 
-class Commands(BaseModel):
+class CommandsConfig(BaseModel):
     ping: dict[str, CommandVariants]
     bgp: dict[str, CommandVariants]
     traceroute: dict[str, CommandVariants]
@@ -67,6 +65,6 @@ class MaxDestinations(BaseModel):
     ping: int = Field(default=3)
 
 
-class Limits(BaseModel):
+class LimitsConfig(BaseModel):
     max_sources: MaxSources
     max_destinations: MaxDestinations

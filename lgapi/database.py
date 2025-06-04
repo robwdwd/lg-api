@@ -16,6 +16,7 @@ def insert_communities_from_dir(db_cursor, directory):
             continue
 
         filepath = os.path.join(directory, filename)
+
         logger.debug("Building BGP community data from %s", filepath)
 
         with open(filepath, "r") as communities_file:
@@ -31,7 +32,8 @@ def insert_communities_from_dir(db_cursor, directory):
 
             if records:
                 db_cursor.executemany(
-                    "INSERT INTO communities(community, name) VALUES (?, ?) ON CONFLICT(community) DO UPDATE SET name=excluded.name;",
+                    "INSERT INTO communities(community, name) VALUES (?, ?) "
+                    "ON CONFLICT(community) DO UPDATE SET name=excluded.name;",
                     records,
                 )
 
@@ -39,13 +41,12 @@ def insert_communities_from_dir(db_cursor, directory):
 def init_community_map_db():
     """Initialise the community mappings database."""
 
-    db_con = sqlite3.connect("mapsdb/maps.db")
-    db_cursor = db_con.cursor()
-    db_cursor.execute("DROP TABLE IF EXISTS communities")
-    db_cursor.execute("CREATE TABLE communities(community TEXT PRIMARY KEY, name TEXT)")
+    with sqlite3.connect("mapsdb/maps.db") as db_con:
+        db_cursor = db_con.cursor()
+        db_cursor.execute("DROP TABLE IF EXISTS communities")
+        db_cursor.execute("CREATE TABLE communities(community TEXT PRIMARY KEY, name TEXT)")
 
-    insert_communities_from_dir(db_cursor, "mapsdb/asns")
-    insert_communities_from_dir(db_cursor, "mapsdb/override")
+        insert_communities_from_dir(db_cursor, "mapsdb/asns")
+        insert_communities_from_dir(db_cursor, "mapsdb/override")
 
-    db_con.commit()
-    db_con.close()
+        db_con.commit()

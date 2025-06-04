@@ -21,9 +21,9 @@ from pydantic_settings import (
 from lgapi.types.config import (
     AuthenticationConfig,
     CacheConfig,
-    Commands,
-    Limits,
-    Location,
+    CommandsConfig,
+    LimitsConfig,
+    LocationConfig,
 )
 
 
@@ -38,12 +38,12 @@ class Settings(BaseSettings):
 
     cache: CacheConfig
 
-    limits: Limits
+    limits: LimitsConfig
 
     authentication: AuthenticationConfig
 
-    locations: dict[str, Location]
-    commands: Commands
+    locations: dict[str, LocationConfig]
+    commands: CommandsConfig
 
     model_config = SettingsConfigDict(yaml_file="config.yml")
 
@@ -68,19 +68,30 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-# Set up the redis cache here otherwise it won't work with the decorators
-if settings.cache.redis.enabled:
+def configure_redis_cache() -> None:
+    """Configure aiocache Redis cache if enabled."""
+    redis_cfg = settings.cache.redis
+    if not redis_cfg.enabled:
+        return
+
+    dsn = redis_cfg.dsn
+    db = int(dsn.path.lstrip("/")) if dsn.path else 0
+
     caches.set_config(
         {
             "default": {
                 "cache": "aiocache.RedisCache",
-                "endpoint": settings.cache.redis.dsn.host,
-                "db": int(settings.cache.redis.dsn.path.lstrip("/")),
-                "namespace": settings.cache.redis.namespace,
-                "port": settings.cache.redis.dsn.port,
-                "password": settings.cache.redis.dsn.password,
-                "timeout": settings.cache.redis.timeout,
+                "endpoint": dsn.host,
+                "db": db,
+                "namespace": redis_cfg.namespace,
+                "port": dsn.port,
+                "password": dsn.password,
+                "timeout": redis_cfg.timeout,
                 "serializer": {"class": "aiocache.serializers.PickleSerializer"},
             }
         }
     )
+
+
+# Set up the redis cache here otherwise it won't work with the decorators
+configure_redis_cache()
