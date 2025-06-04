@@ -5,12 +5,27 @@
 # have been included as part of this distribution.
 import os
 import re
-import sqlite3
+
+import aiosqlite
+import aiosqlite.cursor
 
 from lgapi import logger
 
 
-def insert_communities_from_dir(db_cursor, directory):
+async def get_community_map(communities: set) -> dict:
+    """Get community descriptions from the database."""
+    if not communities:
+        return {}
+
+    async with aiosqlite.connect("mapsdb/maps.db") as db_con:
+        async with db_con.cursor() as db_cursor:
+            placeholders = ",".join("?" for _ in communities)
+            sql = f"SELECT community, name FROM communities WHERE community IN ({placeholders})"
+            res = await db_cursor.execute(sql, tuple(communities))
+            return {row[0]: row[1] for row in await res.fetchall()}
+
+
+async def insert_communities_from_dir(db_cursor: aiosqlite.cursor.Cursor, directory: str):
     for filename in os.listdir(directory):
         if not filename.endswith(".txt"):
             continue
@@ -31,22 +46,22 @@ def insert_communities_from_dir(db_cursor, directory):
                     records.append(data)
 
             if records:
-                db_cursor.executemany(
+                await db_cursor.executemany(
                     "INSERT INTO communities(community, name) VALUES (?, ?) "
                     "ON CONFLICT(community) DO UPDATE SET name=excluded.name;",
                     records,
                 )
 
 
-def init_community_map_db():
+async def init_community_map_db():
     """Initialise the community mappings database."""
 
-    with sqlite3.connect("mapsdb/maps.db") as db_con:
-        db_cursor = db_con.cursor()
-        db_cursor.execute("DROP TABLE IF EXISTS communities")
-        db_cursor.execute("CREATE TABLE communities(community TEXT PRIMARY KEY, name TEXT)")
+    async with aiosqlite.connect("mapsdb/maps.db") as db_con:
+        async with db_con.cursor() as db_cursor:
+            await db_cursor.execute("DROP TABLE IF EXISTS communities")
+            await db_cursor.execute("CREATE TABLE communities(community TEXT PRIMARY KEY, name TEXT)")
 
-        insert_communities_from_dir(db_cursor, "mapsdb/asns")
-        insert_communities_from_dir(db_cursor, "mapsdb/override")
+            await insert_communities_from_dir(db_cursor, "mapsdb/asns")
+            await insert_communities_from_dir(db_cursor, "mapsdb/override")
 
-        db_con.commit()
+            await db_con.commit()

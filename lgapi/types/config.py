@@ -7,13 +7,13 @@
 from pydantic import BaseModel, Field, RedisDsn, model_validator
 
 
-class AuthCredentials(BaseModel):
+class AuthCredentialsConfig(BaseModel):
     username: str = Field(default="netuser")
     password: str = Field(default="password123")
 
 
 class AuthenticationConfig(BaseModel):
-    groups: dict[str, AuthCredentials]
+    groups: dict[str, AuthCredentialsConfig]
 
     @model_validator(mode="before")
     @classmethod
@@ -33,15 +33,15 @@ class LocationConfig(BaseModel):
     source: str
 
 
-class CommandVariants(BaseModel):
+class CommandVariantsConfig(BaseModel):
     ipv4: str
     ipv6: str
 
 
 class CommandsConfig(BaseModel):
-    ping: dict[str, CommandVariants]
-    bgp: dict[str, CommandVariants]
-    traceroute: dict[str, CommandVariants]
+    ping: dict[str, CommandVariantsConfig]
+    bgp: dict[str, CommandVariantsConfig]
+    traceroute: dict[str, CommandVariantsConfig]
 
 
 class RedisConfig(BaseModel):
@@ -61,16 +61,16 @@ class CacheConfig(BaseModel):
     redis: RedisConfig
 
 
-class MaxSources(BaseModel):
+class MaxSourcesConfig(BaseModel):
     bgp: int = Field(default=3)
     ping: int = Field(default=3)
 
 
-class MaxDestinations(BaseModel):
+class MaxDestinationsConfig(BaseModel):
     bgp: int = Field(default=3)
     ping: int = Field(default=3)
 
 
 class LimitsConfig(BaseModel):
-    max_sources: MaxSources
-    max_destinations: MaxDestinations
+    max_sources: MaxSourcesConfig
+    max_destinations: MaxDestinationsConfig

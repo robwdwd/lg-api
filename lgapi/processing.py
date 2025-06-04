@@ -21,6 +21,7 @@ from lgapi.asrank import asn_to_name
 from lgapi.cache import ip_key_builder
 from lgapi.config import settings
 from lgapi.cymru import cymru_ip_to_asn
+from lgapi.database import get_community_map
 from lgapi.decorators import request_cache
 
 
@@ -28,54 +29,43 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
     """Process the output of the BGP command."""
     result = []
 
-    async with aiosqlite.connect("mapsdb/maps.db") as db_con:
-        async with db_con.cursor() as db_cursor:
-            # Collect all unique communities
-            all_communities = {
-                community
-                for prefix in output.values()
-                for path in prefix["paths"]
-                for community in path.get("communities", [])
-            }
-            community_map = {}
-            if all_communities:
-                placeholders = ",".join("?" for _ in all_communities)
-                sql = f"SELECT community, name FROM communities WHERE community IN ({placeholders})"
-                res = await db_cursor.execute(sql, tuple(all_communities))
-                community_map = {row[0]: row[1] for row in await res.fetchall()}
+    # Collect all unique communities
+    all_communities = {
+        community for prefix in output.values() for path in prefix["paths"] for community in path.get("communities", [])
+    }
+    community_map = await get_community_map(all_communities)
 
-            for prefix, prefix_data in output.items():
-                new_prefix = {"prefix": prefix, "paths": [], "as_paths": []}
-                as_path_set = set()
+    for prefix, prefix_data in output.items():
+        new_prefix = {"prefix": prefix, "paths": [], "as_paths": []}
+        as_path_set = set()
 
-                for path in prefix_data["paths"]:
-                    # Parse AS path
-                    aspath = path.get("as_path")
-                    if aspath:
-                        parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
-                        path["as_path"] = parsed_aspath
-                        as_path_set.add(tuple(parsed_aspath))
+        for path in prefix_data["paths"]:
+            # Parse AS path
+            aspath = path.get("as_path")
+            if aspath:
+                parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
+                path["as_path"] = parsed_aspath
+                as_path_set.add(tuple(parsed_aspath))
 
-                    # Map communities
-                    communities = path.get("communities")
-                    if communities:
-                        path["communities"] = [
-                            {"community": community, "description": community_map.get(community)}
-                            for community in communities
-                        ]
+            # Map communities
+            communities = path.get("communities")
+            if communities:
+                path["communities"] = [
+                    {"community": community, "description": community_map.get(community)} for community in communities
+                ]
 
-                    new_prefix["paths"].append(path)
+            new_prefix["paths"].append(path)
 
-                # Deduplicate and sort AS paths
-                new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
-                unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
-                if unique_asns:
-                    asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
-                    new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
-                else:
-                    new_prefix["asn_info"] = {}
+        # Deduplicate and sort AS paths
+        new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
+        unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
+        if unique_asns:
+            asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
+            new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
+        else:
+            new_prefix["asn_info"] = {}
 
-                result.append(new_prefix)
+        result.append(new_prefix)
 
     return result
 
