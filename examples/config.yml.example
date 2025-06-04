@@ -23,20 +23,19 @@ authentication:
       username: user2
       password: password12
     fallback:
-        username: user3
-        password: pass9876
+      username: user3
+      password: pass9876
 
 # Cache configuration
 cache:
-  enabled: true
-  command_cache:
-    enabled: true
+  enabled: false
+  commands:
+    enabled: false
     ttl: 60
   redis:
     dsn: redis://localhost:6379/
     namespace: lgapi
     timeout: 5
-
 
 locations:
   AMS:

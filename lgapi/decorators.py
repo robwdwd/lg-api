@@ -17,8 +17,8 @@ def command_cache(alias: str, key_builder: Callable) -> Callable:
 
     def decorator(func: Callable) -> Callable:
         # Check if cache is enabled and command cache is enabled
-        if settings.cache.enabled and settings.cache.command_cache.enabled:
-            return cached(alias=alias, key_builder=key_builder, ttl=settings.cache.command_cache.ttl)(func)
+        if settings.cache.enabled and settings.cache.commands.enabled:
+            return cached(alias=alias, key_builder=key_builder, ttl=settings.cache.commands.ttl)(func)
         else:
             # Return the function unchanged (no caching)
             @wraps(func)
@@ -31,7 +31,7 @@ def command_cache(alias: str, key_builder: Callable) -> Callable:
 
 
 def request_cache(alias: str, ttl: int, key_builder: Callable) -> Callable:
-    """Conditionally apply external API request  caching based on settings."""
+    """Conditionally apply external API request caching based on settings."""
 
     def decorator(func: Callable) -> Callable:
         if settings.cache.enabled:

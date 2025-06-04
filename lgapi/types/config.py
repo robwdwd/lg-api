@@ -57,7 +57,7 @@ class CommandCacheConfig(BaseModel):
 
 class CacheConfig(BaseModel):
     enabled: bool = Field(default=False)
-    command_cache: CommandCacheConfig
+    commands: CommandCacheConfig
     redis: RedisConfig
 
 

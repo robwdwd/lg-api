@@ -41,7 +41,9 @@ The `config.yml` file controls the main application settings. Below are the prim
 | `limits.max_sources.ping`     | integer   | Max source locations for ping queries                                  | `3`                              |
 | `limits.max_destinations.bgp` | integer   | Max destination addresses for BGP queries                              | `3`                              |
 | `limits.max_destinations.ping`| integer   | Max destination addresses for ping queries                             | `3`                              |
-| `cache.redis.enabled`         | boolean   | Enable Redis caching                                                   | `true` or `false`                |
+| `cache.enabled`               | boolean   | Enable caching (Using redis backed)                                    | `true` or `false`                |
+| `cache.commands.enabled`      | boolean   | Enable command caching                                                 | `true` or `false`                |
+| `cache.commands.ttl`          | int       | Time to live for command cache                                         | 60                               |
 | `cache.redis.dsn`             | string    | Redis DSN connection string                                            | `redis://localhost:6379/0`       |
 | `cache.redis.namespace`       | string    | Namespace for Redis keys                                               | `lgapi`                          |
 | `cache.redis.timeout`         | integer   | Redis connection timeout (seconds)                                     | `5`                              |
@@ -152,27 +154,34 @@ traceroute:
 
 ### Caching
 
-The API caches results from external services such as the Cymru IP to ASN service, Caida AS rank API, and reverse DNS lookups to improve performance and reduce external requests.
+The API provides Redis-based caching to improve performance and reduce load on external services and network devices. Caching is disabled by default.
 
-By default, caching is done in memory.
+#### Cache Types
 
-**To use Redis for caching,** set the following in your `config.yml` file:
+- **Command Cache**: Network device command outputs (ping, traceroute, BGP lookups)
+- **External API Cache**: Results from Cymru IP-to-ASN, CAIDA AS rank, and reverse DNS lookups
+
+#### Configuration
+
+Enable caching in your `config.yml`:
 
 ```yaml
 cache:
+  enabled: true                    # Turn all caching on or off
+  commands:
+    enabled: true                  # Enable command result caching
+    ttl: 60                        # Cache duration in seconds
   redis:
-    enabled: true
-    dsn: redis://localhost:6379/
-    namespace: lgapi
-    timeout: 5
+    dsn: redis://localhost:6379/0  # Redis connection string
+    namespace: lgapi               # Key namespace prefix
+    timeout: 5                     # Connection timeout (seconds)
 ```
 
 You can customise the Redis connection variables as needed in `config.yml`.  
 
-#### Redis DSN
+#### Redis DSN Format
 
-The `dsn` field under `cache.redis` uses a **Redis DSN** (Data Source Name) to specify how to connect to your Redis server.  
-The general format is:
+The `dsn` field uses a Redis Data Source Name with this format:
 
 ```
 redis://[:password]@host:port/db
@@ -180,39 +189,20 @@ redis://[:password]@host:port/db
 
 **Examples:**
 
-- Connect to Redis on localhost, default port, default database:
+| Scenario | DSN |
+|----------|-----|
+| Local Redis, default settings | `redis://localhost:6379` |
+| With password | `redis://:mypassword@localhost:6379` |
+| Remote server, database 2 | `redis://redis.example.com:6379/2` |
+| Custom port with auth | `redis://:secretpass@redis.example.com:6380/1` |
 
-  ```
-  redis://localhost:6379
-  ```
+**Components:**
 
-- Connect to Redis with a password:
-
-  ```
-  redis://:mypassword@localhost:6379
-  ```
-
-- Connect to a remote Redis server, database 2:
-
-  ```
-  redis://redis.example.com:6379/2
-  ```
-
-- Connect to Redis with a password and custom port:
-
-  ```
-  redis://:secretpass@redis.example.com:6380/1
-  ```
-
-**Parts:**
-
-- `redis://` — protocol
-- `:password@` — optional password (leave out if not needed)
-- `host` — Redis server hostname or IP
-- `:port` — Redis port (default is 6379)
-- `/db` — Redis database number (default is 0)
-
-Use this DSN string in your `config.yml` under `cache.redis.dsn`.
+- `redis://` — Protocol
+- `:password@` — Optional password (omit if none)
+- `host` — Redis hostname/IP
+- `:port` — Port number (default: 6379)
+- `/db` — Database number (default: 0)
 
 ---
 
