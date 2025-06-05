@@ -86,5 +86,5 @@ commands:
       ipv4: traceroute IPADDRESS source SOURCE timeout 2
       ipv6: traceroute IPADDRESS source SOURCE timeout 2
     juniper_junos:
-      ipv4: traceroute IPADDRESS source SOURCE
-      ipv6: traceroute IPADDRESS source SOURCE
+      ipv4: traceroute IPADDRESS source SOURCE wait 2
+      ipv6: traceroute IPADDRESS source SOURCE wait 2
