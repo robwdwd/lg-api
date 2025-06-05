@@ -4,7 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-# import pprint
+#import pprint
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
@@ -39,7 +39,7 @@ from lgapi.types.models import (
 )
 from lgapi.validation import IPNetOrAddress, validate_location
 
-# pp = pprint.PrettyPrinter(indent=2, width=120)
+#pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.locations
 
@@ -154,7 +154,7 @@ async def traceroute(
     parsed_output = []
     if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location].type)):
         parsed_result = parse_txt(result, template_name)
-        if isinstance(parsed_result, list) and parsed_result:
+        if isinstance(parsed_result, list) and parsed_result and parsed_result[0]:
             httpclient = cast(AsyncClient, request.state.httpclient)
             parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location].type, httpclient)
 

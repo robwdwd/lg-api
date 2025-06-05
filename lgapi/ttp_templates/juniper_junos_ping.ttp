@@ -1,5 +1,7 @@
 <group name="_.{{ destination }}">
 PING {{ignore | _start_}} ({{ destination | IP | IPV6 }}): {{packet_size}} data bytes
+PING6({{packet_size}}={{ignore}} bytes) {{ignore}} --> {{ destination | IPV6 | _start_ }}
 {{ packet_count | DIGIT }} packets transmitted, {{ignore|DIGIT}} packets received, {{packet_loss}}% packet loss
 round-trip min/avg/max/stddev = {{ rtt_min | append('ms') }}/{{ rtt_avg | append('ms') }}/{{ rtt_max | append('ms') }}/{{ignore}} ms
+round-trip min/avg/max/std-dev = {{ rtt_min | append('ms') }}/{{ rtt_avg | append('ms') }}/{{ rtt_max | append('ms') }}/{{ignore}} ms
 </group>

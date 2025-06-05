@@ -1,5 +1,5 @@
 <group name="_.{{ destination }}">
-traceroute to {{ destination | IP | IPV6 | _start_}}{{ignore(r"(.+)?")}}
+traceroute{{ ignore(r"6?") }} to {{ destination | IP | IPV6 | _start_}}{{ignore(r"(.+)?")}}
 <group name="hops*" method="table">
  {{ hop_number | DIGIT }}  {{ probes | re(r".+")}}
 </group>
