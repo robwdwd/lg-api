@@ -74,6 +74,7 @@ def get_settings() -> Settings:
 
 settings = get_settings()
 
+
 def configure_cache() -> None:
     """Configure aiocache Redis cache if enabled."""
     cache_cfg = settings.cache

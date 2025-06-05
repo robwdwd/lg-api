@@ -4,7 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-#import pprint
+# import pprint
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
@@ -39,7 +39,7 @@ from lgapi.types.models import (
 )
 from lgapi.validation import IPNetOrAddress, validate_location
 
-#pp = pprint.PrettyPrinter(indent=2, width=120)
+# pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.locations
 
