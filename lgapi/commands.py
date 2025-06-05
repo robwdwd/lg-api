@@ -32,15 +32,20 @@ def get_ip_version(ip: str) -> str:
         return "ipv4"
 
 
-def build_cli_cmd(command: str, device_type: str, ip_address: str, source: str | None = None) -> str:
+def build_cli_cmd(command: str, location: str, ip_address: str) -> str:
     """Build the CLI command string."""
     ip_version = get_ip_version(ip_address)
-
+    loc_config = LOCATIONS_CFG[location]
     command_cfg = getattr(COMMANDS_CFG, command)
+
+    device_type = loc_config.type
+
     device_cfg = command_cfg[device_type]
+
     cli_cmd = getattr(device_cfg, ip_version).replace("IPADDRESS", ip_address)
 
-    if command != "bgp" and source:
+    if command != "bgp":
+        source = getattr(loc_config.source, ip_version)
         cli_cmd = cli_cmd.replace("SOURCE", source)
 
     return cli_cmd
@@ -52,7 +57,7 @@ def get_multi_commands(locations: list[str], ip_addresses: list[str], command: s
 
     for location in locations:
         loc_cfg = LOCATIONS_CFG[location]
-        cli_cmds = [build_cli_cmd(command, loc_cfg.type, ip_address, loc_cfg.source) for ip_address in ip_addresses]
+        cli_cmds = [build_cli_cmd(command, location, ip_address) for ip_address in ip_addresses]
 
         command_list[loc_cfg.device] = {
             "location": location,
@@ -69,7 +74,7 @@ def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
     return {
         "location": location,
         "device_type": loc_cfg.type,
-        "cmd": build_cli_cmd(command, loc_cfg.type, ip_address, loc_cfg.source),
+        "cmd": build_cli_cmd(command, location, ip_address),
     }
 
 
@@ -110,7 +115,7 @@ async def execute_multiple_commands(
         ) from err
 
 
-@command_cache(alias='default', key_builder=command_key_builder)
+@command_cache(alias="default", key_builder=command_key_builder)
 async def execute_single_command(location: str, command: str, destination: str) -> str:
     """Execute command on device."""
 
@@ -129,9 +134,7 @@ async def execute_single_command(location: str, command: str, destination: str) 
         )
         return response.result
     except (ScrapliException, OSError) as err:
-        logger.warning(
-            "Error getting device output from '%s' (%s) for command '%s': %s", loc_config.device, location, command, err
-        )
+        logger.warning("Error getting device output from '%s' (%s) for command '%s': %s", loc_config.device, location, command, err)
 
         raise HTTPException(
             status_code=500,

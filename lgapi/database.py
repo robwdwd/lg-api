@@ -3,6 +3,7 @@
 # This file is part of Looking Glass API and is released under the
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
+"""Database functions, mainly for Community mapping"""
 import os
 import re
 
@@ -26,6 +27,7 @@ async def get_community_map(communities: set) -> dict:
 
 
 async def insert_communities_from_dir(db_cursor: aiosqlite.cursor.Cursor, directory: str):
+    """Inserts the community mapping into the database from each ASN file"""
     for filename in os.listdir(directory):
         if not filename.endswith(".txt"):
             continue

@@ -30,7 +30,7 @@ def get_graphql_query(asn: int) -> str:
 
 
 @request_cache(ttl=3600, alias="default", key_builder=asn_key_builder)
-async def asn_to_name(asn: int, httpclient: AsyncClient) -> dict:
+async def get_asn_information(asn: int, httpclient: AsyncClient) -> dict:
     """Map the ASN to a name."""
     logger.debug('Cache Miss: AS Rank ASN lookup %s', asn)
     try:

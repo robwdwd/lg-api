@@ -4,6 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
+"""Decorator overrides for AIOCache so that caching can be disabled or enabled"""
 from functools import wraps
 from typing import Any, Callable
 
@@ -13,35 +14,38 @@ from lgapi.config import settings
 
 
 def command_cache(alias: str, key_builder: Callable) -> Callable:
-    """Conditionally apply command caching based on settings."""
+    """Apply command caching if enabled in settings, otherwise run uncached."""
 
-    def decorator(func: Callable) -> Callable:
-        # Check if cache is enabled and command cache is enabled
-        if settings.cache.enabled and settings.cache.commands.enabled:
-            return cached(alias=alias, key_builder=key_builder, ttl=settings.cache.commands.ttl)(func)
-        else:
-            # Return the function unchanged (no caching)
-            @wraps(func)
-            async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                return await func(*args, **kwargs)
+    cache_enabled = getattr(settings.cache, "enabled", False)
+    command_cache_enabled = getattr(getattr(settings.cache, "commands", {}), "enabled", False)
+    ttl = getattr(getattr(settings.cache, "commands", {}), "ttl", 60)
 
-            return wrapper
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        if cache_enabled and command_cache_enabled:
+            return cached(alias=alias, key_builder=key_builder, ttl=ttl)(func)
+
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return await func(*args, **kwargs)
+
+        return wrapper
 
     return decorator
 
 
 def request_cache(alias: str, ttl: int, key_builder: Callable) -> Callable:
-    """Conditionally apply external API request caching based on settings."""
+    """Apply request caching if enabled in settings, otherwise run uncached."""
 
-    def decorator(func: Callable) -> Callable:
-        if settings.cache.enabled:
+    cache_enabled = getattr(settings.cache, "enabled", False)
+
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        if cache_enabled:
             return cached(alias=alias, key_builder=key_builder, ttl=ttl)(func)
-        else:
 
-            @wraps(func)
-            async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                return await func(*args, **kwargs)
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            return await func(*args, **kwargs)
 
-            return wrapper
+        return wrapper
 
     return decorator

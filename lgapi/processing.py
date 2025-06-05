@@ -11,13 +11,12 @@ import asyncio
 import collections
 import re
 
-import aiosqlite
 import dns.asyncresolver
 import dns.reversename
 from httpx import AsyncClient
 
 from lgapi import logger
-from lgapi.asrank import asn_to_name
+from lgapi.asrank import get_asn_information
 from lgapi.cache import ip_key_builder
 from lgapi.config import settings
 from lgapi.cymru import cymru_ip_to_asn
@@ -29,23 +28,31 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
     """Process the output of the BGP command."""
     result = []
 
-    # Collect all unique communities
-    all_communities = {
-        community for prefix in output.values() for path in prefix["paths"] for community in path.get("communities", [])
-    }
+    all_communities = set()
+    all_asns = set()
+
+    # Collect all unique communities and assets
+    for prefix in output.values():
+        for path in prefix["paths"]:
+            aspath = path.get("as_path", "")
+            parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
+            path["as_path"] = parsed_aspath
+            all_asns.update(parsed_aspath)
+            all_communities.update(path.get("communities", []))
+
     community_map = await get_community_map(all_communities)
+    asn_info_result = await asyncio.gather(*(get_asn_information(asn, httpclient) for asn in all_asns))
+
+    asn_infos = dict(zip(all_asns, asn_info_result))
 
     for prefix, prefix_data in output.items():
         new_prefix = {"prefix": prefix, "paths": [], "as_paths": []}
         as_path_set = set()
 
         for path in prefix_data["paths"]:
-            # Parse AS path
             aspath = path.get("as_path")
             if aspath:
-                parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
-                path["as_path"] = parsed_aspath
-                as_path_set.add(tuple(parsed_aspath))
+                as_path_set.add(tuple(aspath))
 
             # Map communities
             communities = path.get("communities")
@@ -56,14 +63,10 @@ async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
 
             new_prefix["paths"].append(path)
 
-        # Deduplicate and sort AS paths
+        # Deduplicate and sort AS paths for this prefix only.
         new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
         unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
-        if unique_asns:
-            asn_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
-            new_prefix["asn_info"] = dict(zip(unique_asns, asn_infos))
-        else:
-            new_prefix["asn_info"] = {}
+        new_prefix["asn_info"] = {asn: asn_infos[asn] for asn in unique_asns if asn in asn_infos}
 
         result.append(new_prefix)
 
@@ -203,7 +206,7 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
             # --- ASRank info for all unique ASNs found in cymru_results ---
             unique_asns = {info["asn"] for info in cymru_results.values() if info and "asn" in info and info["asn"]}
             if unique_asns:
-                asrank_infos = await asyncio.gather(*(asn_to_name(asn, httpclient) for asn in unique_asns))
+                asrank_infos = await asyncio.gather(*(get_asn_information(asn, httpclient) for asn in unique_asns))
                 asrank_results = dict(zip(unique_asns, asrank_infos))
                 for hop in hops:
                     asn = hop.get("info", {}).get("asn")

@@ -4,6 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
+"""Models used for API output"""
 from typing import Annotated, Union
 
 from annotated_types import Len
@@ -12,13 +13,9 @@ from pydantic import AfterValidator, BaseModel, Field, IPvAnyAddress, IPvAnyNetw
 from lgapi.config import settings
 from lgapi.validation import validate_location
 
-LocationStr = Annotated[
-    str, Field(description="Source location", examples=["LON", "FRA", "SIN"]), AfterValidator(validate_location)
-]
+LocationStr = Annotated[str, Field(description="Source location", examples=["LON", "FRA", "SIN"]), AfterValidator(validate_location)]
 
-DestIP = Annotated[
-    IPvAnyAddress, Field(description="Destination IP address", examples=["10.2.3.1", "8.8.8.8", "1.1.1.1"])
-]
+DestIP = Annotated[IPvAnyAddress, Field(description="Destination IP address", examples=["10.2.3.1", "8.8.8.8", "1.1.1.1"])]
 
 DestIPNet = Annotated[
     Union[IPvAnyAddress, IPvAnyNetwork],
@@ -88,15 +85,21 @@ class BaseMultiResult(BaseModel):
 # BGP Output
 #
 class ASNOrganization(BaseModel):
+    """Organisation for the ASN"""
+
     orgName: str
 
 
 class ASNCountry(BaseModel):
+    """Origin country for the ASN"""
+
     iso: str
     name: str
 
 
 class ASNInfoEntry(BaseModel):
+    """ASN Information from Caida AS Rank"""
+
     asnName: str
     rank: int
     organization: ASNOrganization

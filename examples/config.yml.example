@@ -44,21 +44,27 @@ locations:
     device: router.ams.example.net
     authentication: core
     type: cisco_iosxr
-    source: loopback999
+    source:
+      ipv4: loopback999
+      ipv6: loopback999
   BCN:
     name: Barcelona
     region: Western Europe
     device: router.bcn.example.net
     authentication: access
     type: cisco_iosxr
-    source: loopback999
+    source:
+      ipv4: loopback999
+      ipv6: loopback999
   PAR:
     name: Paris
     region: Western Europe
     device: router.par.example.net
     authentication: core
     type: juniper_junos
-    source: 10.1.1.2
+    source:
+      ipv4: 10.1.2.11
+      ipv6: 62bd:9ded:9ddd:6bed:9f79:0aee:11f2:8e2e
 
 commands:
   ping:

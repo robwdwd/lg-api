@@ -4,6 +4,9 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
+"""Generate cache keys, used as key builder functions"""
+
+
 def asn_key_builder(func, *args, **kwargs):
     """Builds the cache key from function name plus the ASN"""
     return f"{func.__name__}:{args[0]}"

@@ -1,29 +1,36 @@
 # Looking Glass
 
-Python Network Looking Glass API backend
-
----
+A flexible, multi-vendor network looking glass API written in Python with FastAPI.
 
 ## Installation
 
-1. **Download**  
-   Download the source or release file and place it anywhere on your filesystem.
+### Download
 
-2. **Create a Virtual Environment**  
-   [Poetry](https://python-poetry.org/docs/#installation) is recommended, but any venv tool will work.  
-   Install dependencies:
+Download the source or release file and place it anywhere on your filesystem.
 
-   ```console
-   poetry install --nodev
-   ```
+```console
+git clone git@github.com:robwdwd/lg-api.git
+cd lg-api
+```
 
----
+### Install Dependencies
+
+[Poetry](https://python-poetry.org/docs/#installation) is recommended, but any venv tool will work.  
+
+```console
+poetry install --nodev
+```
 
 ## Configuration
 
 The configuration file lists locations, devices, and CLI commands for each device type as well as the Looking glass API settings
 
 Copy `examples/config.yml.example` to `config.yml` in the project root and edit as needed.  
+
+   ```console
+   cp examples/config.yml.example config.yml
+   cp examples/env.example .env
+   ```
 
 ### Configuration Options Reference
 
@@ -89,13 +96,17 @@ locations:
     device: router.ams.example.net  # Device hostname
     authentication: core            # Use core authentication group, optional - will use fallback otherwise
     type: cisco_iosxr               # Any scrapli supported device type
-    source: loopback999             # Source interface or IP address for ping and traceroute commands
+    source:
+      ipv4: loopback999             # Source interface or IP address for ping and traceroute commands with IPv4 Destination
+      ipv6: loopback999             # Source interface or IP address for ping and traceroute commands with IPv6 Destination
   LON:                              # Juniper devices with no authentication line, fallback auth group will be used                  
     name: London                    
     region: Western Europe         
     device: router.lon.example.net  
     type: juniper_junos
-    source: 192.168.0.1
+    source:
+      ipv4: 10.1.2.11
+      ipv6: 62bd:9ded:9ddd:6bed:9f79:0aee:11f2:8e2e
 ```
 
 ### Commands
@@ -127,8 +138,6 @@ commands:
       ipv6: traceroute IPADDRESS source SOURCE
 ```
 
----
-
 ### Traceroute Hop Resolution
 
 Set `resolve_traceroute_hops` in `config.yml`:
@@ -150,8 +159,6 @@ traceroute:
       ipv6: traceroute IPADDRESS no-resolve source SOURCE
 ```
 
----
-
 ### Caching
 
 The API provides Redis-based caching to improve performance and reduce load on external services and network devices. Caching is disabled by default.
@@ -170,7 +177,7 @@ cache:
   enabled: true                    # Turn all caching on or off
   commands:
     enabled: true                  # Enable command result caching
-    ttl: 60                        # Cache duration in seconds
+    ttl: 60                        # TTL for command cache in seconds
   redis:
     dsn: redis://localhost:6379/0  # Redis connection string
     namespace: lgapi               # Key namespace prefix
@@ -183,7 +190,7 @@ You can customise the Redis connection variables as needed in `config.yml`.
 
 The `dsn` field uses a Redis Data Source Name with this format:
 
-```
+```console
 redis://[:password]@host:port/db
 ```
 
@@ -204,8 +211,6 @@ redis://[:password]@host:port/db
 - `:port` — Port number (default: 6379)
 - `/db` — Database number (default: 0)
 
----
-
 ## Environment Variables
 
 Environment variables are used by Gunicorn for production use, they are not used by the looking glass API itself.
@@ -219,8 +224,6 @@ Copy `examples/env.example` to `.env` in the project root (not the package folde
 | `WORKERS`                  | Number of worker processes (default: 4).                                                     |
 | `ROOT_PATH`                | Root path for the app (e.g., `/` or `/lg`).                                                  |
 | `LOG_DIR`                  | Directory for log files (default: `/var/log/lg/`).                                           |
-
----
 
 ## Community Maps
 
@@ -245,8 +248,6 @@ Mappings in the `override` folder will take precedence over those in the `asns` 
 **Note:**  
 Do **not** edit files in `mapsdb/asns` directly, as these may be overwritten during upgrades or by version control.
 
----
-
 ## Permissions
 
 Set permissions for the `mapsdb` folder and `.env` file:
@@ -257,8 +258,6 @@ chmod g+s mapsdb
 setfacl -dR -m u:<web_server_user>:rwX -m u:<your_user>:rwX mapsdb
 ```
 
----
-
 ## Running the Development Server
 
 Use Poetry or another virtual environment:
@@ -267,8 +266,6 @@ Use Poetry or another virtual environment:
 poetry shell
 fastapi dev lgapi/main.py
 ```
-
----
 
 ## Systemd Service
 
@@ -294,8 +291,6 @@ fastapi dev lgapi/main.py
    systemctl enable lgapi.service
    systemctl start lgapi.service
    ```
-
----
 
 ## Nginx Configuration
 

@@ -4,6 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
+"""Cymru Network Team lookups"""
 import ipaddress
 
 import dns.asyncresolver
