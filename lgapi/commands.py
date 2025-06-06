@@ -6,7 +6,6 @@
 #
 """Get commands to run on devices."""
 import asyncio
-import collections
 import ipaddress
 import pprint
 
@@ -16,7 +15,7 @@ from lgapi.config import settings
 from lgapi.decorators import command_cache
 from lgapi.device import execute_on_device, get_command_timeout
 from lgapi.types.models import MultiBgpBody, MultiPingBody
-from lgapi.types.returntypes import CmdResult, LocationResult, MultiLocationResult
+from lgapi.types.returntypes import CmdResult, LocationResult
 
 pp = pprint.PrettyPrinter(indent=2, width=120)
 
@@ -62,44 +61,37 @@ def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
     }
 
 
+async def run_for_location(
+    location: str,
+    command: str,
+    ipaddresses: list[str],
+) -> LocationResult:
+    """Run all destinations for a location sequentially."""
+    result: LocationResult = {"location": location, "result": "", "errors": []}
+    for destination in ipaddresses:
+        try:
+            cmd_result = await execute_single_command(location, command, destination)
+            if result["result"]:
+                result["result"] += "\n"
+            result["result"] += cmd_result
+        except Exception as err:
+            logger.warning("Error executing %s at %s for %s: %s", command, location, destination, err)
+            result["errors"].append(f"{location}:{destination}: Error getting output from network device")
+    return result
+
+
 async def execute_multiple_commands(
     targets: MultiPingBody | MultiBgpBody,
     command: str,
-) -> list[MultiLocationResult]:
-    """Execute command on device."""
+) -> list[LocationResult]:
+    """Execute command on device: destinations per location sequential, locations in parallel."""
 
     locations = list(set(targets.locations))
     ipaddresses = list({str(dest) for dest in targets.destinations})
 
-    # Prepare all (location, destination) pairs
-    pairs = [(location, destination) for location in locations for destination in ipaddresses]
-
-    # Launch all tasks in parallel
-    tasks = [execute_single_command(location, command, destination) for location, destination in pairs]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    # Aggregate results by location
-    location_results: dict[str, LocationResult] = collections.defaultdict(lambda: {"result": "", "errors": []})
-
-    for (location, destination), result in zip(pairs, results):
-        if isinstance(result, Exception):
-            logger.warning("Error executing %s at %s for %s: %s", command, location, destination, result)
-            location_results[location]["errors"].append(
-                f"{location}:{destination}: Error getting output from network device"
-            )
-        elif isinstance(result, str):
-            location_results[location]["result"] += result
-        else:
-            logger.warning("Unexpected result type for %s at %s for %s: %r", command, location, destination, result)
-            location_results[location]["errors"].append(
-                f"{location}:{destination}: Unexpected result type: {type(result).__name__}"
-            )
-
-    # Format final output
-    formatted_results: list[MultiLocationResult] = []
-    for location, data in location_results.items():
-        formatted_results.append({"location": location, "result": data["result"], "errors": data["errors"]})
-
+    # Run each location in parallel, but destinations per location sequentially
+    tasks = [run_for_location(location, command, ipaddresses) for location in locations]
+    formatted_results = await asyncio.gather(*tasks, return_exceptions=False)
     return formatted_results
 
 

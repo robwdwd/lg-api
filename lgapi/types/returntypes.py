@@ -19,13 +19,6 @@ class CmdResult(TypedDict):
 class LocationResult(TypedDict):
     """Location result for multi-commands"""
 
-    result: str
-    errors: list[str]
-
-
-class MultiLocationResult(TypedDict):
-    """Location result for multi-commands"""
-
     location: str
     result: str
     errors: list[str]
