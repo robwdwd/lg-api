@@ -10,22 +10,18 @@ from contextlib import asynccontextmanager
 from typing import Annotated, TypedDict, cast
 
 from aiocache import caches
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient, Limits
 from pydantic import AfterValidator, IPvAnyAddress
+from scrapli.exceptions import ScrapliException
 
 from lgapi import logger
 from lgapi.commands import execute_multiple_commands, execute_single_command
 from lgapi.config import settings
 from lgapi.database import init_community_map_db
 from lgapi.locations import get_locations, get_locations_by_region
-from lgapi.processing import (
-    process_bgp_output,
-    process_ping_output,
-    process_traceroute_output,
-)
-from lgapi.ttp import get_template, parse_txt
+from lgapi.parsing import parse_command_output, parse_multi_command_results
 from lgapi.types.models import (
     BgpResult,
     LocationRegionResponse,
@@ -113,26 +109,25 @@ async def ping(
     - **destination**: Destination IP address to ping
     - **raw**: Return only raw output without any parsing.
     """
-    result = await execute_single_command(location, "ping", str(destination))
+    loc_config = LOCATIONS_CFG[location]
+    try:
+        result = await execute_single_command(location, "ping", str(destination))
+    except (ScrapliException, OSError) as err:
+        logger.warning(
+            "Error getting device output from '%s' (%s) for command ping: %s", loc_config.device, location, err
+        )
 
-    # Parse output if raw_only is False and a template exists
-    parsed_output = []
-    if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location].type)):
-        parsed_result = parse_txt(result, template_name)
-        if isinstance(parsed_result, list) and parsed_result:
-            parsed_output = await process_ping_output(parsed_result[0])
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing command 'ping' at location '{loc_config.name}'",
+        ) from err
 
-    if not parsed_output:
-        raw = True
-
-    return {
-        "parsed_output": parsed_output,
-        "raw_output": result,
-        "raw_only": raw,
-        "command": "bgp",
-        "location": location,
-        "location_name": LOCATIONS_CFG[location].name,
-    }
+    return await parse_command_output(
+        location=location,
+        result=result,
+        command="ping",
+        raw=raw,
+    )
 
 
 @app.get("/traceroute/{location}/{destination}", response_model=TracerouteResult)
@@ -148,27 +143,27 @@ async def traceroute(
     - **destination**: Destination IP address to traceroute to
     - **raw**: Return only raw output without any parsing.
     """
-    result = await execute_single_command(location, "traceroute", str(destination))
+    loc_config = LOCATIONS_CFG[location]
+    try:
+        result = await execute_single_command(location, "traceroute", str(destination))
+    except (ScrapliException, OSError) as err:
+        logger.warning(
+            "Error getting device output from '%s' (%s) for command traceroute: %s", loc_config.device, location, err
+        )
 
-    # Parse output if raw_only is False and a template exists
-    parsed_output = []
-    if not raw and (template_name := get_template("traceroute", LOCATIONS_CFG[location].type)):
-        parsed_result = parse_txt(result, template_name)
-        if isinstance(parsed_result, list) and parsed_result and parsed_result[0]:
-            httpclient = cast(AsyncClient, request.state.httpclient)
-            parsed_output = await process_traceroute_output(parsed_result[0], LOCATIONS_CFG[location].type, httpclient)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing command 'traceroute' at location '{loc_config.name}'",
+        ) from err
 
-    if not parsed_output:
-        raw = True
-
-    return {
-        "parsed_output": parsed_output,
-        "raw_output": result,
-        "raw_only": raw,
-        "command": "bgp",
-        "location": location,
-        "location_name": LOCATIONS_CFG[location].name,
-    }
+    httpclient = cast(AsyncClient, request.state.httpclient) if not raw else None
+    return await parse_command_output(
+        location=location,
+        result=result,
+        command="traceroute",
+        raw=raw,
+        httpclient=httpclient,
+    )
 
 
 @app.get("/bgp/{location}/{destination:path}", response_model=BgpResult)
@@ -184,98 +179,50 @@ async def bgp(
     - **destination**: Destination IP address or CIDR to view
     - **raw**: Return only raw output without any parsing.
     """
-    result = await execute_single_command(location, "bgp", str(destination))
+    loc_config = LOCATIONS_CFG[location]
+    try:
+        result = await execute_single_command(location, "bgp", str(destination))
+    except (ScrapliException, OSError) as err:
+        logger.warning(
+            "Error getting device output from '%s' (%s) for command bgp: %s", loc_config.device, location, err
+        )
 
-    # Parse output if raw_only is False and a template exists
-    parsed_output = []
-    if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location].type)):
-        parsed_result = parse_txt(result, template_name)
-        if isinstance(parsed_result, list) and parsed_result:
-            httpclient = cast(AsyncClient, request.state.httpclient)
-            parsed_output = await process_bgp_output(parsed_result[0], httpclient)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing command 'bgp' at location '{loc_config.name}'",
+        ) from err
 
-    if not parsed_output:
-        raw = True
-
-    return {
-        "parsed_output": parsed_output,
-        "raw_output": result,
-        "raw_only": raw,
-        "command": "bgp",
-        "location": location,
-        "location_name": LOCATIONS_CFG[location].name,
-    }
+    httpclient = cast(AsyncClient, request.state.httpclient) if not raw else None
+    return await parse_command_output(
+        location=location,
+        result=result,
+        command="bgp",
+        raw=raw,
+        httpclient=httpclient,
+    )
 
 
 @app.post("/multi/ping", response_model=MultiPingResult)
 async def multi_ping(targets: MultiPingBody, raw: bool = False) -> dict:
     """Ping from multiple sources to multiple destinations"""
 
-    output_table = {"locations": [], "errors": [], "raw_only": raw}
-
     results = await execute_multiple_commands(targets, "ping")
-
-    for result in results:
-
-        if "error" in result:
-            output_table["errors"].append(f"{result['location']}: {result['error']}")
-        else:
-            location = result["location"]
-            location_name = LOCATIONS_CFG[location].name
-
-            new_result = {
-                "parsed_output": [],
-                "raw_output": result["result"],
-                "raw_only": raw,
-                "command": "ping",
-                "location": location,
-                "location_name": location_name,
-            }
-
-            if not raw and (template_name := get_template("ping", LOCATIONS_CFG[location].type)):
-                parsed_result = parse_txt(result["result"], template_name)
-                if isinstance(parsed_result, list) and parsed_result:
-                    new_result["parsed_output"] = await process_ping_output(parsed_result[0])
-
-                new_result["raw_only"] = not new_result["parsed_output"]
-
-            output_table["locations"].append({"name": location_name, "results": new_result})
-
-    return output_table
+    return await parse_multi_command_results(
+        results=results,
+        command="ping",
+        raw=raw,
+    )
 
 
 @app.post("/multi/bgp", response_model=MultiBgpResult)
 async def multi_bgp(request: Request, targets: MultiBgpBody, raw: bool = False) -> dict:
     """Get BGP output from multiple sources to multiple destinations"""
-    output_table = {"locations": [], "errors": [], "raw_only": raw}
 
     results = await execute_multiple_commands(targets, "bgp")
-
-    for result in results:
-
-        if "error" in result:
-            output_table["errors"].append(f"{result['location']}: {result['error']}")
-        else:
-            location = result["location"]
-            location_name = LOCATIONS_CFG[location].name
-
-            new_result = {
-                "parsed_output": [],
-                "raw_output": result["result"],
-                "raw_only": raw,
-                "command": "bgp",
-                "location": location,
-                "location_name": location_name,
-            }
-
-            if not raw and (template_name := get_template("bgp", LOCATIONS_CFG[location].type)):
-                parsed_result = parse_txt(result["result"], template_name)
-                if isinstance(parsed_result, list) and parsed_result:
-                    httpclient = cast(AsyncClient, request.state.httpclient)
-                    new_result["parsed_output"] = await process_bgp_output(parsed_result[0], httpclient)
-
-                new_result["raw_only"] = not new_result["parsed_output"]
-
-            output_table["locations"].append({"name": location_name, "results": new_result})
-
-    return output_table
+    httpclient = cast(AsyncClient, request.state.httpclient) if not raw else None
+    return await parse_multi_command_results(
+        results=results,
+        command="bgp",
+        raw=raw,
+        httpclient=httpclient,
+    )

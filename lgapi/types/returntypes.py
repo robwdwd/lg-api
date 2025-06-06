@@ -16,9 +16,16 @@ class CmdResult(TypedDict):
     cmd: str
 
 
-class MultiCmdResult(TypedDict):
-    """Results from execute multi-command"""
+class LocationResult(TypedDict):
+    """Location result for multi-commands"""
+
+    result: str
+    errors: list[str]
+
+
+class MultiLocationResult(TypedDict):
+    """Location result for multi-commands"""
 
     location: str
-    device_type: str
-    cmds: list[str]
+    result: str
+    errors: list[str]

@@ -8,15 +8,20 @@
 
 
 def asn_key_builder(func, *args, **kwargs):
-    """Builds the cache key from function name plus the ASN"""
-    return f"{func.__name__}:{args[0]}"
+    """Builds the cache key for ASN lookup"""
+    return f"asninfo:{args[0]}"
 
 
-def ip_key_builder(func, *args, **kwargs):
+def reverse_dns_key_builder(func, *args, **kwargs):
+    """Builds the cache key for reverse DNS lookup"""
+    return f"rev_dns:{args[0]}"
+
+
+def ip_to_asn_key_builder(func, *args, **kwargs):
     """Builds the cache key from function name plus the destination IP address"""
-    return f"{func.__name__}:{args[0]}"
+    return f"ip2asn:{args[0]}"
 
 
 def command_key_builder(func, *args, **kwargs):
     """Builds the cache key from function name plus the command, location and destination IP address"""
-    return f"{func.__name__}:{args[0]}_{args[1]}_{args[2]}"
+    return f"command:{args[0]}_{args[1]}_{args[2]}"

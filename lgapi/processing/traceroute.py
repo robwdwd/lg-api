@@ -4,92 +4,19 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-"""Process output from the routers into the correct structures."""
+"""Process traceroute output from the routers into the correct structures."""
 
 
 import asyncio
 import collections
 import re
 
-import dns.asyncresolver
-import dns.reversename
 from httpx import AsyncClient
 
-from lgapi import logger
-from lgapi.asrank import get_asn_information
-from lgapi.cache import ip_key_builder
 from lgapi.config import settings
-from lgapi.cymru import cymru_ip_to_asn
-from lgapi.database import get_community_map
-from lgapi.decorators import request_cache
-
-
-async def process_bgp_output(output: dict, httpclient: AsyncClient) -> list:
-    """Process the output of the BGP command."""
-    result = []
-
-    all_communities = set()
-    all_asns = set()
-
-    # Collect all unique communities and assets
-    for prefix in output.values():
-        for path in prefix["paths"]:
-            aspath = path.get("as_path", "")
-            parsed_aspath = [int(asp) for asp in aspath.split() if asp.isnumeric()]
-            path["as_path"] = parsed_aspath
-            all_asns.update(parsed_aspath)
-            all_communities.update(path.get("communities", []))
-
-    community_map = await get_community_map(all_communities)
-    asn_info_result = await asyncio.gather(*(get_asn_information(asn, httpclient) for asn in all_asns))
-
-    asn_infos = dict(zip(all_asns, asn_info_result))
-
-    for prefix, prefix_data in output.items():
-        new_prefix = {"prefix": prefix, "paths": [], "as_paths": []}
-        as_path_set = set()
-
-        for path in prefix_data["paths"]:
-            aspath = path.get("as_path")
-            if aspath:
-                as_path_set.add(tuple(aspath))
-
-            # Map communities
-            communities = path.get("communities")
-            if communities:
-                path["communities"] = [
-                    {"community": community, "description": community_map.get(community)} for community in communities
-                ]
-
-            new_prefix["paths"].append(path)
-
-        # Deduplicate and sort AS paths for this prefix only.
-        new_prefix["as_paths"] = [list(path) for path in as_path_set if path]
-        unique_asns = {asn for path in new_prefix["as_paths"] for asn in path}
-        new_prefix["asn_info"] = {asn: asn_infos[asn] for asn in unique_asns if asn in asn_infos}
-
-        result.append(new_prefix)
-
-    return result
-
-
-async def process_ping_output(output: dict) -> list:
-    """Process the output of the ping command."""
-
-    return [{**destination, "ip_address": ip_address} for ip_address, destination in output.items()]
-
-
-@request_cache(ttl=3600, alias="default", key_builder=ip_key_builder)
-async def reverse_lookup(ipaddr: str) -> str | None:
-    """Do a reverse lookup on an IP address asynchronously using DNS."""
-    logger.debug("Cache Miss: Reverse DNS lookup %s", ipaddr)
-    try:
-        resolver = dns.asyncresolver.Resolver()
-        rev_name = dns.reversename.from_address(ipaddr)
-        answer = await resolver.resolve(rev_name, "PTR")
-        return str(answer[0]).rstrip(".")
-    except Exception:
-        return None
+from lgapi.processing.asrank import get_asn_information
+from lgapi.processing.cymru import ip_to_asn
+from lgapi.resolver import reverse_lookup
 
 
 async def process_junos_hops(hops: list):
@@ -196,7 +123,7 @@ async def process_traceroute_output(output: dict, device_type: str, httpclient: 
         # --- ASN info for all hops with IPs ---
         all_ips = {hop.get("ip_address") for hop in hops if hop.get("ip_address")}
         if all_ips:
-            cymru_infos = await asyncio.gather(*(cymru_ip_to_asn(ip) for ip in all_ips))
+            cymru_infos = await asyncio.gather(*(ip_to_asn(ip) for ip in all_ips))
             cymru_results = dict(zip(all_ips, cymru_infos))
             for hop in hops:
                 ip = hop.get("ip_address")

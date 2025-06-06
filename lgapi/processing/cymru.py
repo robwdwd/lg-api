@@ -10,12 +10,12 @@ import ipaddress
 import dns.asyncresolver
 
 from lgapi import logger
-from lgapi.cache import ip_key_builder
+from lgapi.cache import ip_to_asn_key_builder
 from lgapi.decorators import request_cache
 
 
-@request_cache(ttl=3600, alias="default", key_builder=ip_key_builder)
-async def cymru_ip_to_asn(ip: str) -> dict:
+@request_cache(ttl=3600, alias="default", key_builder=ip_to_asn_key_builder)
+async def ip_to_asn(ip: str) -> dict:
     """Query Team Cymru's IP-to-ASN DNS interface for info about an IP."""
     logger.debug("Cache Miss: Cymru IP to ASN lookup: %s", ip)
     try:

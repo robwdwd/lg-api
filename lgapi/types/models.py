@@ -13,9 +13,13 @@ from pydantic import AfterValidator, BaseModel, Field, IPvAnyAddress, IPvAnyNetw
 from lgapi.config import settings
 from lgapi.validation import validate_location
 
-LocationStr = Annotated[str, Field(description="Source location", examples=["LON", "FRA", "SIN"]), AfterValidator(validate_location)]
+LocationStr = Annotated[
+    str, Field(description="Source location", examples=["LON", "FRA", "SIN"]), AfterValidator(validate_location)
+]
 
-DestIP = Annotated[IPvAnyAddress, Field(description="Destination IP address", examples=["10.2.3.1", "8.8.8.8", "1.1.1.1"])]
+DestIP = Annotated[
+    IPvAnyAddress, Field(description="Destination IP address", examples=["10.2.3.1", "8.8.8.8", "1.1.1.1"])
+]
 
 DestIPNet = Annotated[
     Union[IPvAnyAddress, IPvAnyNetwork],

@@ -7,6 +7,6 @@ disable=broad-except,no-method-argument,locally-disabled,too-many-locals,too-man
 ignored-modules=distutils,eventlet.green.subprocess
 
 [FORMAT]
-max-line-length=140
+max-line-length=120
 max-module-lines=1000
 indent-string='    '

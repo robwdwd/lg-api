@@ -5,19 +5,20 @@
 # have been included as part of this distribution.
 #
 """Get commands to run on devices."""
-
+import asyncio
+import collections
 import ipaddress
-
-from fastapi import HTTPException
-from scrapli.exceptions import ScrapliException
+import pprint
 
 from lgapi import logger
 from lgapi.cache import command_key_builder
 from lgapi.config import settings
 from lgapi.decorators import command_cache
-from lgapi.device import execute_on_device, gather_device_results, get_command_timeout
+from lgapi.device import execute_on_device, get_command_timeout
 from lgapi.types.models import MultiBgpBody, MultiPingBody
-from lgapi.types.returntypes import CmdResult, MultiCmdResult
+from lgapi.types.returntypes import CmdResult, LocationResult, MultiLocationResult
+
+pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.locations
 COMMANDS_CFG = settings.commands
@@ -51,23 +52,6 @@ def build_cli_cmd(command: str, location: str, ip_address: str) -> str:
     return cli_cmd
 
 
-def get_multi_commands(locations: list[str], ip_addresses: list[str], command: str) -> dict[str, MultiCmdResult]:
-    """Get commands and devices types to run based on location and ip addresses."""
-    command_list: dict[str, MultiCmdResult] = {}
-
-    for location in locations:
-        loc_cfg = LOCATIONS_CFG[location]
-        cli_cmds = [build_cli_cmd(command, location, ip_address) for ip_address in ip_addresses]
-
-        command_list[loc_cfg.device] = {
-            "location": location,
-            "device_type": loc_cfg.type,
-            "cmds": cli_cmds,
-        }
-
-    return command_list
-
-
 def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
     """Get command to run on device."""
     loc_cfg = LOCATIONS_CFG[location]
@@ -81,38 +65,42 @@ def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
 async def execute_multiple_commands(
     targets: MultiPingBody | MultiBgpBody,
     command: str,
-) -> list[dict[str, str]]:
+) -> list[MultiLocationResult]:
     """Execute command on device."""
 
     locations = list(set(targets.locations))
     ipaddresses = list({str(dest) for dest in targets.destinations})
-    device_commands = get_multi_commands(locations, ipaddresses, command)
 
-    try:
-        device_output = await gather_device_results(device_commands, command)
+    # Prepare all (location, destination) pairs
+    pairs = [(location, destination) for location in locations for destination in ipaddresses]
 
-        results = [
-            (
-                {
-                    "location": location,
-                    "error": "Error getting output from network device",
-                }
-                if isinstance(result, Exception)
-                else {
-                    "location": location,
-                    "result": result,
-                }
+    # Launch all tasks in parallel
+    tasks = [execute_single_command(location, command, destination) for location, destination in pairs]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Aggregate results by location
+    location_results: dict[str, LocationResult] = collections.defaultdict(lambda: {"result": "", "errors": []})
+
+    for (location, destination), result in zip(pairs, results):
+        if isinstance(result, Exception):
+            logger.warning("Error executing %s at %s for %s: %s", command, location, destination, result)
+            location_results[location]["errors"].append(
+                f"{location}:{destination}: Error getting output from network device"
             )
-            for location, result in device_output
-        ]
-        return results
+        elif isinstance(result, str):
+            location_results[location]["result"] += result
+        else:
+            logger.warning("Unexpected result type for %s at %s for %s: %r", command, location, destination, result)
+            location_results[location]["errors"].append(
+                f"{location}:{destination}: Unexpected result type: {type(result).__name__}"
+            )
 
-    except Exception as err:
-        logger.warning("Error executing multi-%s: %s", command, err)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error executing multi-{command} command",
-        ) from err
+    # Format final output
+    formatted_results: list[MultiLocationResult] = []
+    for location, data in location_results.items():
+        formatted_results.append({"location": location, "result": data["result"], "errors": data["errors"]})
+
+    return formatted_results
 
 
 @command_cache(alias="default", key_builder=command_key_builder)
@@ -124,19 +112,11 @@ async def execute_single_command(location: str, command: str, destination: str) 
     device_commands = get_cmd(location, command, destination)
     loc_config = LOCATIONS_CFG[location]
 
-    try:
-        response = await execute_on_device(
-            hostname=loc_config.device,
-            device_type=device_commands["device_type"],
-            cli_cmds=device_commands["cmd"],
-            auth_group=loc_config.authentication,
-            timeout=get_command_timeout(command),
-        )
-        return response.result
-    except (ScrapliException, OSError) as err:
-        logger.warning("Error getting device output from '%s' (%s) for command '%s': %s", loc_config.device, location, command, err)
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error executing command '{command}' at location '{loc_config.name}'",
-        ) from err
+    response = await execute_on_device(
+        hostname=loc_config.device,
+        device_type=device_commands["device_type"],
+        cli_command=device_commands["cmd"],
+        auth_group=loc_config.authentication,
+        timeout=get_command_timeout(command),
+    )
+    return response.result
