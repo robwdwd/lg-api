@@ -15,7 +15,7 @@ from lgapi.config import settings
 from lgapi.processing.bgp import process_bgp_output
 from lgapi.processing.ping import process_ping_output
 from lgapi.processing.traceroute import process_traceroute_output
-from lgapi.types.returntypes import MultiLocationResult
+from lgapi.types.returntypes import LocationResult
 
 LOCATIONS_CFG = settings.locations
 
@@ -85,7 +85,7 @@ async def parse_command_output(
 
 
 async def parse_multi_command_results(
-    results: list[MultiLocationResult],
+    results: list[LocationResult],
     command: str,
     raw: bool = False,
     httpclient: AsyncClient | None = None,
