@@ -18,7 +18,7 @@ def command_cache(alias: str, key_builder: Callable) -> Callable:
 
     cache_enabled = getattr(settings.cache, "enabled", False)
     command_cache_enabled = getattr(getattr(settings.cache, "commands", {}), "enabled", False)
-    ttl = getattr(getattr(settings.cache, "commands", {}), "ttl", 60)
+    ttl = getattr(getattr(settings.cache, "commands", {}), "ttl", 180)
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         if cache_enabled and command_cache_enabled:

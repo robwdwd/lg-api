@@ -26,9 +26,11 @@ async def get_locations_by_region(locations: dict[str, LocationConfig]) -> list[
         region = location.region or "No Region"
         if region not in result:
             result[region] = {"name": region, "locations": []}
-        result[region]["locations"].append({
-            "code": code,
-            "name": location.name,
-            "region": location.region,
-        })
+        result[region]["locations"].append(
+            {
+                "code": code,
+                "name": location.name,
+                "region": location.region,
+            }
+        )
     return list(result.values())

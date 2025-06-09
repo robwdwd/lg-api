@@ -18,19 +18,19 @@ from lgapi.processing.asrank import get_asn_information
 from lgapi.processing.cymru import ip_to_asn
 from lgapi.resolver import reverse_lookup
 
+PROBE_REGEX = re.compile(
+    r"^(?:(?P<fqdn>[\w\.-]+) \((?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+)\)"
+    r"|(?P<ip_only>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+))?\s*(?P<rtt>\d+\.\d+)?$"
+)
+
 
 async def process_junos_hops(hops: list):
     """Process JunOS traceroute hops"""
-    probe_regex = re.compile(
-        r"^(?:(?P<fqdn>[\w\.-]+) \((?P<ip>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+)\)"
-        r"|(?P<ip_only>(?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9:]+:+)+[a-fA-F0-9]+))?\s*(?P<rtt>\d+\.\d+)?$"
-    )
 
     flat_hops = []
     for hop in hops:
         hop_number = str(hop["hop_number"])
-        probes = hop["probes"]
-        segments = [seg.strip() for seg in probes.split("ms") if seg.strip()]
+        segments = [seg.strip() for seg in hop["probes"].split("ms") if seg.strip()]
         last_fqdn = None
         last_ip = None
 
@@ -43,7 +43,7 @@ async def process_junos_hops(hops: list):
             if not seg:
                 continue
 
-            m = probe_regex.match(seg)
+            m = PROBE_REGEX.match(seg)
             if m:
                 fqdn = m.group("fqdn")
                 ip = m.group("ip") or m.group("ip_only")

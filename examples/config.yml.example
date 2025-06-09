@@ -31,7 +31,7 @@ cache:
   enabled: false
   commands:
     enabled: false
-    ttl: 60
+    ttl: 180
   redis:
     dsn: redis://localhost:6379/
     namespace: lgapi

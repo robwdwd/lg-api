@@ -7,7 +7,6 @@
 """Get commands to run on devices."""
 import asyncio
 import ipaddress
-import pprint
 
 from lgapi import logger
 from lgapi.cache import command_key_builder
@@ -16,8 +15,6 @@ from lgapi.decorators import command_cache
 from lgapi.device import execute_on_device, get_command_timeout
 from lgapi.types.models import MultiBgpBody, MultiPingBody
 from lgapi.types.returntypes import CmdResult, LocationResult
-
-pp = pprint.PrettyPrinter(indent=2, width=120)
 
 LOCATIONS_CFG = settings.locations
 COMMANDS_CFG = settings.commands
@@ -61,6 +58,25 @@ def get_cmd(location: str, command: str, ip_address: str) -> CmdResult:
     }
 
 
+@command_cache(alias="default", key_builder=command_key_builder)
+async def execute_single_command(location: str, command: str, destination: str) -> str:
+    """Execute command on device."""
+
+    logger.debug("Cache Miss: Execute %s command at %s to %s", command, location, destination)
+
+    device_commands = get_cmd(location, command, destination)
+    loc_config = LOCATIONS_CFG[location]
+
+    response = await execute_on_device(
+        hostname=loc_config.device,
+        device_type=device_commands["device_type"],
+        cli_command=device_commands["cmd"],
+        auth_group=loc_config.authentication,
+        timeout=get_command_timeout(command),
+    )
+    return response.result
+
+
 async def run_for_location(
     location: str,
     command: str,
@@ -93,22 +109,3 @@ async def execute_multiple_commands(
     tasks = [run_for_location(location, command, ipaddresses) for location in locations]
     formatted_results = await asyncio.gather(*tasks, return_exceptions=False)
     return formatted_results
-
-
-@command_cache(alias="default", key_builder=command_key_builder)
-async def execute_single_command(location: str, command: str, destination: str) -> str:
-    """Execute command on device."""
-
-    logger.debug("Cache Miss: Execute %s command at %s to %s", command, location, destination)
-
-    device_commands = get_cmd(location, command, destination)
-    loc_config = LOCATIONS_CFG[location]
-
-    response = await execute_on_device(
-        hostname=loc_config.device,
-        device_type=device_commands["device_type"],
-        cli_command=device_commands["cmd"],
-        auth_group=loc_config.authentication,
-        timeout=get_command_timeout(command),
-    )
-    return response.result

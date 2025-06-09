@@ -15,7 +15,7 @@ from lgapi.decorators import request_cache
 
 
 @request_cache(ttl=3600, alias="default", key_builder=reverse_dns_key_builder)
-async def reverse_lookup(ipaddr: str) -> str | None:
+async def reverse_lookup(ipaddr: str) -> str:
     """Do a reverse lookup on an IP address asynchronously using DNS."""
     logger.debug("Cache Miss: Reverse DNS lookup %s", ipaddr)
     try:
@@ -24,4 +24,4 @@ async def reverse_lookup(ipaddr: str) -> str | None:
         answer = await resolver.resolve(rev_name, "PTR")
         return str(answer[0]).rstrip(".")
     except Exception:
-        return None
+        return ""

@@ -114,7 +114,7 @@ class CommandCacheConfig(BaseModel):
     """
 
     enabled: bool = Field(default=False)
-    ttl: int = 60
+    ttl: int = 180
 
 
 class CacheConfig(BaseModel):
@@ -151,8 +151,8 @@ class MaxDestinationsConfig(BaseModel):
         ping (int): Max destinations for ping.
     """
 
-    bgp: int = Field(default=3)
-    ping: int = Field(default=3)
+    bgp: int = Field(default=5)
+    ping: int = Field(default=5)
 
 
 class LimitsConfig(BaseModel):

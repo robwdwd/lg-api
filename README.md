@@ -36,21 +36,21 @@ Copy `examples/config.yml.example` to `config.yml` in the project root and edit 
 
 The `config.yml` file controls the main application settings. Below are the primary options you can configure:
 
-| Option                        | Type      | Description                                                            | Example                          |
+| Option                        | Type      | Description                                                            | Default                          |
 |-------------------------------|-----------|------------------------------------------------------------------------|----------------------------------|
 | `authentication.groups`       | mapping   | Authentication groups with username/password for device access         | See below                        |
 | `title`                       | string    | API title (displayed in docs and UI)                                   | `Looking Glass API`              |
 | `resolve_traceroute_hops`     | string    | How to resolve traceroute hops: `off`, `all`, or `missing`             | `off`                            |
 | `log_level`                   | string    | Logging level: `critical`, `error`, `warning`, `info`, `debug`, `trace`| `info`                           |
-| `root_path`                   | string    | Root path for the API (useful if served under a subpath)               | `/` or `/lgapi`                  |
+| `root_path`                   | string    | Root path for the API (useful if served under a subpath)               | `/`                              |
 | `environment`                 | string    | Environment: `prod` or `devel`                                         | `prod`                           |
 | `limits.max_sources.bgp`      | integer   | Max source locations for BGP queries                                   | `3`                              |
 | `limits.max_sources.ping`     | integer   | Max source locations for ping queries                                  | `3`                              |
-| `limits.max_destinations.bgp` | integer   | Max destination addresses for BGP queries                              | `3`                              |
-| `limits.max_destinations.ping`| integer   | Max destination addresses for ping queries                             | `3`                              |
-| `cache.enabled`               | boolean   | Enable caching (Using redis backed)                                    | `true` or `false`                |
-| `cache.commands.enabled`      | boolean   | Enable command caching                                                 | `true` or `false`                |
-| `cache.commands.ttl`          | int       | Time to live for command cache                                         | 60                               |
+| `limits.max_destinations.bgp` | integer   | Max destination addresses for BGP queries                              | `5`                              |
+| `limits.max_destinations.ping`| integer   | Max destination addresses for ping queries                             | `5`                              |
+| `cache.enabled`               | boolean   | Enable caching (Using redis backed)                                    | `false`                          |
+| `cache.commands.enabled`      | boolean   | Enable command caching                                                 | `false`                          |
+| `cache.commands.ttl`          | int       | Time to live for command cache                                         | 180                              |
 | `cache.redis.dsn`             | string    | Redis DSN connection string                                            | `redis://localhost:6379/0`       |
 | `cache.redis.namespace`       | string    | Namespace for Redis keys                                               | `lgapi`                          |
 | `cache.redis.timeout`         | integer   | Redis connection timeout (seconds)                                     | `5`                              |
@@ -177,7 +177,7 @@ cache:
   enabled: true                    # Turn all caching on or off
   commands:
     enabled: true                  # Enable command result caching
-    ttl: 60                        # TTL for command cache in seconds
+    ttl: 180                       # TTL for command cache in seconds
   redis:
     dsn: redis://localhost:6379/0  # Redis connection string
     namespace: lgapi               # Key namespace prefix
