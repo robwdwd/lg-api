@@ -2,6 +2,13 @@
 
 A flexible, multi-vendor network looking glass API written in Python with FastAPI.
 
+## User Interface
+
+This project does **not** include a built-in UI or frontend.  
+If you need a web-based interface, an optional UI is available here: [robwdwd/lg-ui](https://github.com/robwdwd/lg-ui).
+
+For development, you can use the built-in [FastAPI automatic documentation](https://fastapi.tiangolo.com/features/#automatic-docs) at `<your_url>/docs` or `<your_url>/redoc`, or build your own frontend against the API.
+
 ## Installation
 
 ### Download
