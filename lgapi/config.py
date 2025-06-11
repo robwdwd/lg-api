@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     root_path: str = Field(default="/")
     environment: Literal["prod", "devel"] = Field(default="prod")
 
+    server_id: str = Field(default="api1")
+
     cache: CacheConfig
 
     limits: LimitsConfig

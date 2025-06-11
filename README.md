@@ -44,6 +44,7 @@ The `config.yml` file controls the main application settings. Below are the prim
 | `log_level`                   | string    | Logging level: `critical`, `error`, `warning`, `info`, `debug`, `trace`| `info`                           |
 | `root_path`                   | string    | Root path for the API (useful if served under a subpath)               | `/`                              |
 | `environment`                 | string    | Environment: `prod` or `devel`                                         | `prod`                           |
+| `server_id`                   | string    | Server identifier                                                      | `api1`                           |
 | `limits.max_sources.bgp`      | integer   | Max source locations for BGP queries                                   | `3`                              |
 | `limits.max_sources.ping`     | integer   | Max source locations for ping queries                                  | `3`                              |
 | `limits.max_destinations.bgp` | integer   | Max destination addresses for BGP queries                              | `5`                              |
@@ -93,6 +94,8 @@ locations:
   AMS:                              # Location Code
     name: Amsterdam                 # Location name
     region: Western Europe          # Region
+    country: Netherlands            # Country Name
+    country_iso: NL                 # Country ISO Code (2 Letters)
     device: router.ams.example.net  # Device hostname
     authentication: core            # Use core authentication group, optional - will use fallback otherwise
     type: cisco_iosxr               # Any scrapli supported device type
@@ -102,6 +105,8 @@ locations:
   LON:                              # Juniper devices with no authentication line, fallback auth group will be used                  
     name: London                    
     region: Western Europe         
+    country: United Kingdom
+    country_iso: GB
     device: router.lon.example.net  
     type: juniper_junos
     source:

@@ -4,7 +4,7 @@
 # "BSD 2-Clause License". Please see the LICENSE file that should
 # have been included as part of this distribution.
 #
-from lgapi.config import LocationConfig
+from lgapi.config import LocationConfig, settings
 
 
 def get_locations(locations: dict[str, LocationConfig]) -> list[dict[str, str]]:
@@ -14,6 +14,9 @@ def get_locations(locations: dict[str, LocationConfig]) -> list[dict[str, str]]:
             "code": code,
             "name": location.name,
             "region": location.region,
+            "country": location.country,
+            "country_iso": location.country_iso,
+            "server_id": settings.server_id,
         }
         for code, location in locations.items()
     ]
@@ -31,6 +34,9 @@ async def get_locations_by_region(locations: dict[str, LocationConfig]) -> list[
                 "code": code,
                 "name": location.name,
                 "region": location.region,
+                "country": location.country,
+                "country_iso": location.country_iso,
+                "server_id": settings.server_id,
             }
         )
     return list(result.values())

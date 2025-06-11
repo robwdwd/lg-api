@@ -229,6 +229,9 @@ class LocationResponse(BaseModel):
     code: str
     name: str
     region: str
+    country: str
+    country_iso: str
+    server_id: str
 
 
 class LocationRegionResponse(BaseModel):

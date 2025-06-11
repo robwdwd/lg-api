@@ -51,6 +51,8 @@ class LocationConfig(BaseModel):
     Attributes:
         name (str): Name of the location.
         region (str): Region name.
+        country (str): Country name.
+        country_iso (str): ISO country code
         device (str): Device hostname.
         type (str): Device type (i.e. juniper_junos).
         authentication (str | None): Optional authentication group name.
@@ -59,6 +61,8 @@ class LocationConfig(BaseModel):
 
     name: str
     region: str
+    country: str
+    country_iso: str
     device: str
     type: str
     authentication: str | None = None
