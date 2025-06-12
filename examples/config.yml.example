@@ -87,8 +87,8 @@ commands:
       ipv4: show bgp ipv4 unicast IPADDRESS
       ipv6: show bgp ipv6 unicast IPADDRESS
     juniper_junos:
-      ipv4: show route IPADDRESS protocol bgp detail
-      ipv6: show route IPADDRESS protocol bgp detail
+      ipv4: show route IPADDRESS protocol bgp detail table inet.0
+      ipv6: show route IPADDRESS protocol bgp detail table inet6.0
   traceroute:
     cisco_iosxr:
       ipv4: traceroute IPADDRESS source SOURCE timeout 2

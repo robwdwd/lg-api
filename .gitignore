@@ -78,3 +78,4 @@ dmypy.json
 # Local
 config.yml
 .env
+config.yml.*
