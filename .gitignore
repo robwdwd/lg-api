@@ -79,3 +79,6 @@ dmypy.json
 config.yml
 .env
 config.yml.*
+
+# PDM
+.pdm-python
